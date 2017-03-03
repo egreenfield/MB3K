@@ -26,10 +26,16 @@ module.exports = {
       { test: /\.css$/, loader: ExtractTextPlugin.extract("css-loader") }
     ]
   },
-
-plugins: [
-    HtmlWebpackPluginConfig,
-    new ExtractTextPlugin("styles.css")
-  ]
+  devServer: {
+    proxy: {
+      "/api/*": {
+        target: "http://localhost:8000"
+      }
+    }    
+  },
+  plugins: [
+      HtmlWebpackPluginConfig,
+      new ExtractTextPlugin("styles.css")
+    ]
 }
 

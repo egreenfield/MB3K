@@ -6,6 +6,9 @@ import TileView from './TileView';
 export default class DashboardView  extends React.Component { 
 	constructor(props) {
 		super(props);		
+		props.dashboard.on("change",() => {
+			this.forceUpdate();
+		});
 	}
   render() {
     return (

@@ -2,5 +2,9 @@
 
 .Tile {
 	text-align: center;
+	background-color: #EEEEEE;
+	width:500px;
+	height:500px;
+
 }
 

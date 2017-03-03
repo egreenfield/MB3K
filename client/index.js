@@ -11,7 +11,8 @@ var dataMgr = new DataMgr();
 var dashboard = new Dashboard(dataMgr);
 
 
-
+dashboard.addTile();
+dashboard.load();
 
 ReactDOM.render(<App dataMgr={dataMgr} dashboard={dashboard} />, document.getElementById('root'));
 
