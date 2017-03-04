@@ -1,12 +1,19 @@
 
-import uuid from 'uuid';
-import EventEmitter from "eventemitter3";
+import { EventEmitter } from "EventEmitter3";
 import BarChartView from "../components/BarChartView"
+import Guid from '../utils/Guid';
+import DataMgr from "data/DataMgr";
+import DataQuery from "data/DataQuery";
+
 export default class Tile extends EventEmitter  {
-  constructor(dataMgr) {
+  dataMgr:DataMgr;
+  id:string;
+  query:DataQuery;
+
+  constructor(dataMgr:DataMgr) {
   	super();
   	this.dataMgr = dataMgr;
-  	this.id = uuid();
+  	this.id = Guid.newGuid();
   	this.query = this.dataMgr.newQuery(
   		`SELECT transactionName AS "Business Transaction", count(segments.errorList.errorCode) AS "Error Code (Count)" FROM transactions`);
   	this.query.on("loadComplete",() => this.emit("change"));

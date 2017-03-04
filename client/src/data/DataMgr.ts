@@ -1,20 +1,23 @@
 
 import DataQuery from "./DataQuery";
-import request from "superagent";
-export default class DataMgr {	
+import * as request from "superagent";
+
+
+export default class DataMgr {		
+	queries: DataQuery[];
 	constructor() {
 		this.queries = [];
 	}
-	newQuery(queryString) {
+	newQuery(queryString:String) {
 		var newQuery = new DataQuery(this,queryString);
 		this.queries.push(newQuery);
 		return newQuery;
 	}
-	queryByID(id) {
+	queryByID(id:String) {
 		return this.queries[0];
 	}
 
-	executeQuery(queryString) {
+	executeQuery(queryString:String) {
 		return new Promise((fulfill, reject) => {
 
 

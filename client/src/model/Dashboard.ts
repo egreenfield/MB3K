@@ -1,11 +1,15 @@
 
 import Tile from "./Tile"
-import EventEmitter from "eventemitter3";
+import { EventEmitter } from "EventEmitter3";
+import DataMgr from "data/DataMgr";
 
 export default class Dashboard extends EventEmitter {
+	name : String;
+	dataMgr : DataMgr;
+	tiles:Tile[];
 
 
-	constructor(dataMgr) {
+	constructor(dataMgr:DataMgr) {
 		super();
 		this.tiles = [
 		];

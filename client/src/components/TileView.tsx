@@ -1,9 +1,13 @@
-import React from 'react';
+import * as React from 'react';
 
-import styles from "./TileView.css";
+import Tile from 'model/Tile';
 
-export default class TileView  extends React.Component { 
-	constructor(props) {
+//import styles from "./TileView.css";
+
+interface TileViewProps {tile:Tile}
+
+export default class TileView  extends React.Component<TileViewProps, {}>  {
+	constructor(props:TileViewProps) {
 		super(props);		
 	}
   render() {

@@ -1,9 +1,14 @@
 
-import EventEmitter from "eventemitter3";
+import { EventEmitter } from "EventEmitter3";
+import DataMgr from "data/DataMgr";
 
 export default class DataQuery extends EventEmitter {
+	mgr:DataMgr;
+	queryString:String;
+	state:String;
+	data:Object;
 
-	constructor(mgr,queryString) {
+	constructor(mgr:DataMgr,queryString:String) {
 		super();
 		this.mgr = mgr;
 		this.queryString = queryString;

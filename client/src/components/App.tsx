@@ -1,11 +1,15 @@
 /*
     ./client/components/App.jsx
 */
-import React from 'react';
+import * as React from 'react';
 import DashboardView from "./DashboardView"
+import Dashboard from "model/Dashboard"
+import DataMgr from "data/DataMgr"
 
-export default class App extends React.Component {
-	constructor(props) {
+export interface AppProps {dashboard:Dashboard; dataMgr:DataMgr}
+
+export default class App extends React.Component<AppProps, {}>  {
+	constructor(props:AppProps) {
 		super(props);		
 	}
   render() {
