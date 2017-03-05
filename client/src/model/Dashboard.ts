@@ -18,6 +18,7 @@ export default class Dashboard extends EventEmitter {
 	}
 
 	addTile() {
+		
 		var newTile = new Tile(this.dataMgr);
 		newTile.on("change",() => {this.emit("change")});
 		this.tiles.push(newTile);

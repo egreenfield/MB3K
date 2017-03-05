@@ -5,7 +5,9 @@
   "author": "<ely.greenfield@appdynamics.com>",
   "license": "MIT",
   "scripts": {
-    "start": "webpack-dev-server"
+    "start": "webpack-dev-server",
+    "dev-build": "webpack -d --display-modules --progress",
+    "dist-build": "webpack -p --display-modules --progress"
   },
   "dependencies": {
     "@types/react": "^15.0.14",
