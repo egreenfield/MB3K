@@ -26,6 +26,9 @@ export default class Tile extends EventEmitter  {
   }
 
   getID() {return this.id}
-  getVizType() {return BarChartView}
-  getData() {return this.query.getData();}
+  // shouldn't be returning a viz class from a model class, should be returning an id that can be resolved to a class.
+  getVizType():any {return BarChartView}
+  getData() { 
+    return this.query.getData();  
+  }
 }

@@ -30,7 +30,7 @@ export default class DataMgr {
 			.end((err,response) => {
 				console.log("query response:",err,response);
 		      	if (err) reject(err);
-	      		else fulfill(response);
+	      		else fulfill(JSON.parse(response.text));
 			})
 		});
 	}

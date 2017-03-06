@@ -7,10 +7,13 @@
         "target": "es5",
         "jsx": "react",
         "baseUrl": "./src/",
-        "jsx":"react",
         "moduleResolution":"node"
     },
-    "include": [
+    "typeRoots": [
+            "../node_modules/@types",
+            "../@types"
+        ],
+     "include": [
         "./src/**/*"
     ]
 }
