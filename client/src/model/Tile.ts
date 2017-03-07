@@ -14,8 +14,19 @@ export default class Tile extends EventEmitter  {
   	super();
   	this.dataMgr = dataMgr;
   	this.id = Guid.newGuid();
-  	this.query = this.dataMgr.newQuery(
-  		`SELECT transactionName AS "Business Transaction", count(segments.errorList.errorCode) AS "Error Code (Count)" FROM transactions`);
+
+  	this.query = this.dataMgr.sourceFromID("metrics").newQuery(
+  		JSON.stringify({
+        application:"AD-Capital",
+        metricPath:'Business Transaction Performance|Business Transactions|LoanProcessor-Services|/processor/CreditCheck|Average Response Time (ms)',
+        timeRangeType:"BEFORE_NOW",
+        durationInMins:"30",
+        rollup:false
+      }));
+
+  	// this.query = this.dataMgr.sourceFromID("analytics").newQuery(
+  	// 	`SELECT transactionName AS "Business Transaction", count(segments.errorList.errorCode) AS "Error Code (Count)" FROM transactions`);
+
   	this.query.on("loadComplete",() => this.emit("change"));
   }
 

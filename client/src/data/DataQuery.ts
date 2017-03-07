@@ -1,16 +1,17 @@
 
 import { EventEmitter } from "EventEmitter3";
 import DataMgr from "data/DataMgr";
+import {DataSource} from "data/DataSource";
 
 export default class DataQuery extends EventEmitter {
-	mgr:DataMgr;
+	source:DataSource;
 	queryString:String;
 	state:String;
 	data:Object;
 
-	constructor(mgr:DataMgr,queryString:String) {
+	constructor(source:DataSource,queryString:String) {
 		super();
-		this.mgr = mgr;
+		this.source= source;
 		this.queryString = queryString;
 		this.state = "unloaded";
 	}
@@ -23,7 +24,7 @@ export default class DataQuery extends EventEmitter {
 				break;
 			case "unloaded":
 				this.state = "loading";
-				this.mgr.executeQuery(this.queryString).then((data) => {
+				this.source.executeQuery(this.queryString).then((data:any) => {
 					this.data = data;
 					this.state = "loaded";
 					this.emit("loadComplete");
