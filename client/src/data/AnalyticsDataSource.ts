@@ -1,6 +1,7 @@
 
 import {DataQueryParameters, DataQuery, CompoundSeriesResult} from "./DataQuery";
 import {DataSource} from "./DataSource";
+import {DataManager} from "./DataManager";
 
 import * as request from "superagent";
 
@@ -11,6 +12,7 @@ export interface AnalyticsQueryParameters extends DataQueryParameters {
 
 export class AnalyticsDataSource implements DataSource {		
 	queries: DataQuery[];
+	manager: DataManager;
 
 	constructor() {
 		this.queries = [];
@@ -20,6 +22,11 @@ export class AnalyticsDataSource implements DataSource {
 		this.queries.push(newQuery);
 		return newQuery;
 	}
+	setManager(manager:DataManager) {
+		this.manager = manager;
+	}
+	
+
 	queryByID(id:String) {
 		return this.queries[0];
 	}

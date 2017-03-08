@@ -1,25 +1,25 @@
 
 import Tile from "./Tile"
 import { EventEmitter } from "EventEmitter3";
-import DataMgr from "data/DataMgr";
+import {DataManager} from "data/DataManager";
 
 export default class Dashboard extends EventEmitter {
 	name : String;
-	dataMgr : DataMgr;
+	DataManager : DataManager;
 	tiles:Tile[];
 
 
-	constructor(dataMgr:DataMgr) {
+	constructor(DataManager:DataManager) {
 		super();
 		this.tiles = [
 		];
 		this.name = "New Dashboard";
-		this.dataMgr = dataMgr;
+		this.DataManager = DataManager;
 	}
 
 	addTile() {
 		
-		var newTile = new Tile(this.dataMgr);
+		var newTile = new Tile(this.DataManager);
 		newTile.on("change",() => {this.emit("change")});
 		this.tiles.push(newTile);
 		this.emit("change");

@@ -3,6 +3,7 @@ import {DataQueryParameters, DataQuery,CompoundSeriesResult } from "./DataQuery"
 import {DataSource} from "./DataSource";
 import * as request from "superagent";
 import * as _ from "underscore";
+import {DataManager} from "./DataManager";
 
 export interface MetricsQueryParameters extends DataQueryParameters {
 	id:string;
@@ -17,6 +18,8 @@ export interface MetricsQueryParameters extends DataQueryParameters {
 export class MetricsDataSource implements DataSource {		
 	queries: DataQuery[];
 	application:string;
+	manager: DataManager;
+
 	constructor(application:string) {
 		this.queries = [];
 		this.application = application;
@@ -26,6 +29,11 @@ export class MetricsDataSource implements DataSource {
 		this.queries.push(newQuery);
 		return newQuery;
 	}
+
+	setManager(manager:DataManager) {
+		this.manager = manager;
+	}
+	
 
 	executeQuery(params:MetricsQueryParameters):Promise<CompoundSeriesResult> {
 

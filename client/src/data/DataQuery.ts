@@ -1,7 +1,7 @@
 
 import { EventEmitter } from "EventEmitter3";
-import DataMgr from "data/DataMgr";
-import {DataSource} from "data/DataSource";
+import {DataManager} from "./DataManager";
+import {DataSource} from "./DataSource";
 
 
 export interface DataQueryResult { id:string; }
@@ -20,7 +20,12 @@ export interface CompoundSeriesResult extends DataQueryResult {
 };
 
 export interface DataQueryParameters {
-	id:string;
+	id?:string;
+};
+
+export interface QueryDefinition {
+		source:string;
+		parameters:DataQueryParameters;	
 };
 
 export class DataQuery extends EventEmitter {

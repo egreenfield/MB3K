@@ -5,14 +5,15 @@ import * as request from "superagent";
 import {AnalyticsDataSource} from "./AnalyticsDataSource";
 import {MetricsDataSource} from "./MetricsDataSource";
 
-export default class DataMgr {		
+export class DataManager {		
 	sources: any;
 	constructor() {
-		this.sources = {
-			"analytics":new AnalyticsDataSource(),
-			"ADC-metrics":new MetricsDataSource("AD-Capital")
-		};
 	}
+	addSource(name:string,source:DataSource) {
+		this.sources.push(source);
+		source.setManager(this);
+	}
+
 	sourceFromID(id:string):DataSource {
 		return this.sources[id];
 	}

@@ -7,7 +7,11 @@
   "scripts": {
     "start": "webpack-dev-server",
     "dev-build": "webpack -d --display-modules --progress",
-    "dist-build": "webpack -p --display-modules --progress"
+    "dist-build": "webpack -p --display-modules --progress",
+    "clean:dist": "rm -rf dist",
+    "clean:tmp": "rm -rf tmp",
+    "clean:modules": "rm -rf node_modules",
+    "clean:all": "npm run clean:dist && npm run clean:tmp &&  npm run clean:modules"
   },
   "dependencies": {
     "browser-request": "^0.3.3",

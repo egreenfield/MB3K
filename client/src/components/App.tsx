@@ -4,9 +4,9 @@
 import * as React from 'react';
 import DashboardView from "./DashboardView"
 import Dashboard from "model/Dashboard"
-import DataMgr from "data/DataMgr"
+import {DataManager} from "data/DataManager"
 
-export interface AppProps {dashboard:Dashboard; dataMgr:DataMgr}
+export interface AppProps {dashboard:Dashboard; manager:DataManager};
 
 export default class App extends React.Component<AppProps, {}>  {
 	constructor(props:AppProps) {
