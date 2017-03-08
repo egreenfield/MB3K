@@ -52,7 +52,7 @@ export default class SearchBox extends React.Component<SearchBoxProps, any>  {
 
         var listItems:any[] = [];
         var metrics:String[] = this.state.lastQueryResult;
-        for (var i = 0; i < metrics.length; i++) {
+        for (var i = 0; i < Math.min(15, metrics.length); i++) {
             listItems.push(
                 <div className={this.state.selectedItem == i ? "list-item-selected" : "list-item"}>{metrics[i]}</div>
             )

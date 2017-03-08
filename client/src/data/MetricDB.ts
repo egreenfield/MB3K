@@ -17,9 +17,13 @@ export default class MetricDB {
 
     find(query: String):String[] {
 
-        let parts = query.split("|")
-        let regex = ".*" + parts.join(".*\\|.*") + ".*"
+        if (query.length == 0) {
+            return [];
+        }
 
-        return this.allMetrics.filter((metric:String):Boolean => { return metric.match(regex) != null })
+        let parts = query.split("|");
+        let regex = new RegExp(".*" + parts.join(".*\\|.*") + ".*", "i");
+
+        return this.allMetrics.filter((metric:String):Boolean => { return metric.match(regex) != null });
     }
 }
