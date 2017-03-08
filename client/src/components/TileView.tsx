@@ -9,23 +9,52 @@ var styles = require('./TileView.css');
 interface TileViewProps {tile:Tile, metricDB:MetricDB}
 
 export default class TileView  extends React.Component<TileViewProps, {}>  {
-	constructor(props:TileViewProps) {
+    constructor(props:TileViewProps) {
 		super(props);
 	}
-  render() {
-  	let VizType = this.props.tile.getVizType();
-    console.log("styles is",styles);
-    return (
 
+    render() {
+  	    let VizType = this.props.tile.getVizType();
+        console.log("styles is",styles);
+        return (
+            <div>
+            <div className="navbar navbar-inverse navbar-fixed-top">
+                <div className="navbar-inner">
+                    <div className="container-fluid">
 
-     <div  id="aTile" >
-        {
-        	(this.props.tile.getState()=="loaded") &&
-        		<VizType data={this.props.tile.getData()} />
-        }
-        <SearchBox metricDB={this.props.metricDB}/>
-      </div>
-      );
-  }
+                    </div>
+                </div>
+            </div>
 
+            <div className="container-fluid">
+                <div className="row-fluid">
+                    <div className="span3">
+                        <SearchBox metricDB={this.props.metricDB}/>
+                    </div>
+                    <div className="span9">
+                        <div className="row-fluid">
+                            <div className="span12">
+                                {
+                                    (this.props.tile.getState() == "loaded") &&
+                                    <VizType data={this.props.tile.getData()}/>
+                                }
+                            </div>
+                        </div>
+                        <div className="row-fluid">
+                            <div className="span12">
+                                Controls
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr></hr>
+
+                <footer>
+                    <p>Adam, Binil, Ely, Meili</p>
+                </footer>
+            </div>
+        </div>
+        );
+    }
 }
