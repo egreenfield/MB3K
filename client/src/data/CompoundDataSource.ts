@@ -42,7 +42,14 @@ export class CompoundDataSource implements DataSource {
 			}					
 			Promise.all<DataQueryResult>(ps).then(values => {
 				console.log("values are",values);
-				fulfill(values as any);
+				let result = {
+					id:params.id,
+					series: [] as SeriesResult[]
+				};
+				(values as CompoundSeriesResult[]).forEach( subResult=> {
+					result.series = result.series.concat(subResult.series);
+				})
+				fulfill(result);
 			},reason => {
 				reject(reason);
 			});
