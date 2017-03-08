@@ -16,15 +16,15 @@ export default {
   "scales": [
     {
       "name": "x",
-      "type": "ordinal",
+      "type": "linear",
       "range": "width",
-      "domain": {"data": "table", "field": "0"}
+      "domain": {"data": "table", "field": "time"}
     },
     {
       "name": "y",
       "type": "linear",
       "range": "height",
-      "domain": {"data": "table", "field": "1"},
+      "domain": {"data": "table", "field": "value"},
       "nice": true
     }
   ],
@@ -39,9 +39,9 @@ export default {
       "from": {"data": "table"},
       "properties": {
         "enter": {
-          "x": {"scale": "x", "field": "0"},
+          "x": {"scale": "x", "field": "time"},
           "width": {"scale": "x", "band": true, "offset": -15},
-          "y": {"scale": "y", "field": "1"},
+          "y": {"scale": "y", "field": "value"},
           "y2": {"scale": "y", "value": 0}
         },
         "update": {

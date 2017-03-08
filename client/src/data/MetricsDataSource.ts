@@ -2,7 +2,7 @@
 import DataQuery from "./DataQuery";
 import {DataSource} from "./DataSource";
 import * as request from "superagent";
-
+import * as _ from "underscore";
 
 export default class AnalyticsDataSource implements DataSource {		
 	queries: DataQuery[];
@@ -36,10 +36,13 @@ export default class AnalyticsDataSource implements DataSource {
             })
             .auth('amodgupta@customer1', 'welcome-101')
 			.end((err,response) => {
-				console.log("query response:",err,response);
-				console.log("query body:",err,response.text);
 		      	if (err) reject(err);
-	      		else fulfill(JSON.parse(response.text));
+	      		else {
+					let data = JSON.parse(response.text)[0];
+				  	data.results = data.metricValues;
+				  	delete data.metricValues;
+					fulfill(data);
+				}
 			})
 		});
 	}
