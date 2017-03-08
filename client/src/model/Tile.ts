@@ -6,6 +6,7 @@ import {DataManager} from "data/DataManager";
 import {DataSet} from "data/DataSet";
 import {MetricsDataSource, MetricsQueryParameters} from "data/MetricsDataSource";
 import {CompoundDataSource} from "data/CompoundDataSource";
+import {FormulaDataSet} from "../data/FormulaDataSet";
 
 export default class Tile extends EventEmitter  {
   dataManager:DataManager;
@@ -25,32 +26,66 @@ export default class Tile extends EventEmitter  {
     //     rollup:false
     //   });
 
-    this.query = (this.dataManager.sourceFromID("compound") as CompoundDataSource).newQuery({
-      id:Guid.newGuid(),
-      subQueries: [
+    this.query = new FormulaDataSet({
+      inputs: [
         {
-    		  source:"ADC-metrics",
-		      parameters:{
+          name: "A",
+          valueField:"value",
+          dataSet: (this.dataManager.sourceFromID("ADC-metrics") as MetricsDataSource).newQuery({
             id: Guid.newGuid(),
             metricPath:'Business Transaction Performance|Business Transactions|LoanProcessor-Services|/processor/CreditCheck|Average Response Time (ms)',
             timeRangeType:"BEFORE_NOW",
             durationInMins:30,
-            rollup:false            
-          } as MetricsQueryParameters          
+            rollup:false
+          })
         },
         {
-    		  source:"ADC-metrics",
-		      parameters:{
+          name: "B",
+          valueField:"value",
+          dataSet: (this.dataManager.sourceFromID("ADC-metrics") as MetricsDataSource).newQuery({
             id: Guid.newGuid(),
             metricPath:'Business Transaction Performance|Business Transactions|LoanProcessor-Services|/processor/CreditCheck|Average CPU Used (ms)',
             timeRangeType:"BEFORE_NOW",
             durationInMins:30,
-            rollup:false            
-          } as MetricsQueryParameters          
+            rollup:false
+          })
         }
-        
-      ]    
+      ],
+      indexField: "startTimeInMillis",
+      formulas: [
+        {
+          name:"C",
+          expression: "(A+B)/2",
+          valueField:"value"
+        }
+      ]
     });
+
+    //   }
+    //   subQueries: [
+    //     {
+    // 		  source:"ADC-metrics",
+		//       parameters:{
+    //         id: Guid.newGuid(),
+    //         metricPath:'Business Transaction Performance|Business Transactions|LoanProcessor-Services|/processor/CreditCheck|Average Response Time (ms)',
+    //         timeRangeType:"BEFORE_NOW",
+    //         durationInMins:30,
+    //         rollup:false            
+    //       } as MetricsQueryParameters          
+    //     },
+    //     {
+    // 		  source:"ADC-metrics",
+		//       parameters:{
+    //         id: Guid.newGuid(),
+    //         metricPath:'Business Transaction Performance|Business Transactions|LoanProcessor-Services|/processor/CreditCheck|Average CPU Used (ms)',
+    //         timeRangeType:"BEFORE_NOW",
+    //         durationInMins:30,
+    //         rollup:false            
+    //       } as MetricsQueryParameters          
+    //     }
+        
+    //   ]    
+    // });
 
     
   	// this.query = this.dataManager.sourceFromID("analytics").newQuery(

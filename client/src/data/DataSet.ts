@@ -10,7 +10,7 @@ export interface ScalarResult extends DataQueryResult {
 	value:Number;
 };
 
-export interface SeriesResult {
+export interface SeriesResult extends DataQueryResult {
 	name:string;
 	values:any[];
 };

@@ -1,5 +1,5 @@
 
-import {DataQueryParameters, DataSet,CompoundSeriesResult } from "./DataSet";
+import {DataQueryParameters, DataSet,SeriesResult } from "./DataSet";
 import {DataSource} from "./DataSource";
 import * as request from "superagent";
 import * as _ from "underscore";
@@ -21,13 +21,16 @@ export class MetricsDataSource extends DataSource {
 		super();
 		this.application = application;
 	}
+	newQuery(params:MetricsQueryParameters):DataSet {
+		return super.newQuery(params);
+	}
 
-	executeQuery(params:MetricsQueryParameters):Promise<CompoundSeriesResult> {
+	executeQuery(params:MetricsQueryParameters):Promise<SeriesResult> {
 
         let urlBase = "http://localhost:8080/api/metrics/";//http://ec2-23-20-138-216.compute-1.amazonaws.com:8090/controller/rest/"
         let url = urlBase + "applications/" + this.application + "/metric-data";
 
-		return new Promise<CompoundSeriesResult>((fulfill, reject) => {
+		return new Promise<SeriesResult>((fulfill, reject) => {
 			request.get(url)
             .query({
                 "metric-path":params.metricPath,
@@ -45,10 +48,8 @@ export class MetricsDataSource extends DataSource {
 					let data = JSON.parse(response.text)[0];
 					fulfill({
 						id:params.id,
-						series:[{
-							values:data.metricValues,
-							name:params.metricPath
-						}]
+						values:data.metricValues,
+						name:params.metricPath
 					});
 				}
 			})

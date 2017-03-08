@@ -1,5 +1,5 @@
 
-import {DataQueryParameters, DataSet, CompoundSeriesResult} from "./DataSet";
+import {DataQueryParameters, DataSet, SeriesResult} from "./DataSet";
 import {DataSource} from "./DataSource";
 import {DataManager} from "./DataManager";
 
@@ -15,8 +15,8 @@ export class AnalyticsDataSource extends DataSource {
 		super();
 	}
 
-	executeQuery(params:AnalyticsQueryParameters):Promise<CompoundSeriesResult> {
-		return new Promise<CompoundSeriesResult>((fulfill, reject) => {
+	executeQuery(params:AnalyticsQueryParameters):Promise<SeriesResult> {
+		return new Promise<SeriesResult>((fulfill, reject) => {
 
 			request.post("/api/events/query")
 			.send(params.queryString)
@@ -26,11 +26,9 @@ export class AnalyticsDataSource extends DataSource {
 			.end((err,response) => {
 		      	if (err) reject(err);
 	      		else fulfill({
-					  id:params.id,
-					  series: [{
-						  values: JSON.parse(response.text),
-						  name: params.queryString
-					  }]
+					id:params.id,
+					values: JSON.parse(response.text),
+					name: params.queryString
 				  });
 			})
 		});

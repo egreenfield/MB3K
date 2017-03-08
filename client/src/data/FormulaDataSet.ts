@@ -6,13 +6,14 @@ import {DataManager} from "./DataManager";
 
 export interface FormulaInput {
 	name:string,
-	field:string,
+	valueField:string,
 	dataSet:DataSet,
 	includeInOutput?:boolean;
 };
 
 export interface FormulaExpression {
 	name:string,	
+	valueField:string,
 	expression:string
 };
 
@@ -68,19 +69,25 @@ export class FormulaDataSet extends DataSet {
 						mergedOutputData[i] = mergedSample = {};
 						mergedSample[this.parameters.indexField] = inputValue[this.parameters.indexField];
 					}
-					mergedSample[anInput.name] = inputValue[anInput.field];
+					mergedSample[anInput.name] = inputValue[anInput.valueField];
 				}
 				result.series.push(inputData);
 			}
 			for(let aFormula of this.parameters.formulas) {
-				let evaluator:Function = eval("(inputs) => { with(inputs) { return " + aFormula.expression + "} }");
-				for(let i=0;i<outputDataLength;i++) {
-					let mergedSample = mergedOutputData[i];
-					mergedSample[aFormula.name] = evaluator(mergedSample);
-				}
+				// let values = [] as any[];
+				// let funcExpression = "(inputs) => { with(inputs) { return " + aFormula.expression + "} }";
+				// let evaluator:Function = eval(funcExpression);
+				// for(let i=0;i<outputDataLength;i++) {
+				// 	let mergedSample = mergedOutputData[i];
+				// 	let newSample:any = {};
+				// 	newSample[aFormula.valueField] = evaluator(mergedSample);
+				// 	values.push(newSample);
+				// }
+				let values = (window as any).evaluator(aFormula.expression,mergedOutputData,aFormula.valueField,this.parameters.indexField);
 				result.series.push( {
+					id: aFormula.name,
 					name: aFormula.name,
-					values: mergedOutputData	
+					values: values	
 				});
 			}
 

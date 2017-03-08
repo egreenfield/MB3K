@@ -25,6 +25,23 @@
     <link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap.css" rel="stylesheet">
     <script src="https://unpkg.com/react@15/dist/react.min.js"></script>
     <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
+    <script>
+        window.evaluator = function(expression,inputs,valueField,indexField) {
+
+            var values = [];
+            var funcExpression = "with(inputs) { return " + expression + "}";
+            var evaluatorFunction = Function("inputs",funcExpression);
+            var dataLength = inputs.length;
+            for(var i=0;i<dataLength;i++) {
+                var inputSample = inputs[i];
+                let newSample = {};
+                newSample[valueField] = evaluatorFunction(inputSample);
+                newSample[indexField] = inputSample[indexField];
+                values.push(newSample);
+            }
+            return values;
+        }
+    </script>
 </head>
 
 <body>
