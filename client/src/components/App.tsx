@@ -14,9 +14,41 @@ export default class App extends React.Component<AppProps, {}>  {
 	}
   render() {
     return (
-     <div style={{textAlign: 'center'}}>
-        <h1>Hello World</h1>
-        <DashboardView dashboard={this.props.dashboard}/>
-      </div>);
+        <div>
+            <div className="navbar navbar-inverse navbar-fixed-top">
+                <div className="navbar-inner">
+                    <div className="container-fluid">
+
+                    </div>
+                </div>
+            </div>
+
+            <div className="container-fluid">
+                <div className="row-fluid">
+                    <div className="span3">
+                        <input type="text"></input>
+                    </div>
+                    <div className="span9">
+                        <div className="row-fluid">
+                            <div className="span12">
+                                <DashboardView dashboard={this.props.dashboard}/>
+                            </div>
+                        </div>
+                        <div className="row-fluid">
+                            <div className="span12">
+                                Controls
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr></hr>
+
+                <footer>
+                    <p>Adam, Binil, Ely, Meili</p>
+                </footer>
+            </div>
+        </div>
+    );
   }
 }
