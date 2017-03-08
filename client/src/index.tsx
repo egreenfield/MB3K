@@ -10,6 +10,7 @@ import {DataManager} from "./data/DataManager";
 import {AnalyticsDataSource} from "./data/AnalyticsDataSource";
 import {MetricsDataSource} from "./data/MetricsDataSource";
 import {CompoundDataSource} from "./data/CompoundDataSource";
+import MetricDB from "./data/MetricDB";
 let manager = new DataManager();
 
 
@@ -22,7 +23,10 @@ let dashboard = new Dashboard(manager);
 dashboard.addTile();
 dashboard.load();
 
-ReactDOM.render(<App manager={manager} dashboard={dashboard} />, document.getElementById('root'));
+let metricDB = new MetricDB();
+metricDB.load();
+
+ReactDOM.render(<App manager={manager} dashboard={dashboard} metricDB={metricDB} />, document.getElementById('root'));
 
 export default {}
 
