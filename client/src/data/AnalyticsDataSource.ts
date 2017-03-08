@@ -1,5 +1,5 @@
 
-import {DataQueryParameters, DataQuery } from "./DataQuery";
+import {DataQueryParameters, DataQuery, CompoundSeriesResult} from "./DataQuery";
 import {DataSource} from "./DataSource";
 
 import * as request from "superagent";
@@ -24,8 +24,8 @@ export class AnalyticsDataSource implements DataSource {
 		return this.queries[0];
 	}
 
-	executeQuery(params:AnalyticsQueryParameters) {
-		return new Promise((fulfill, reject) => {
+	executeQuery(params:AnalyticsQueryParameters):Promise<CompoundSeriesResult> {
+		return new Promise<CompoundSeriesResult>((fulfill, reject) => {
 
 			request.post("/api/events/query")
 			.send(params.queryString)
@@ -37,7 +37,7 @@ export class AnalyticsDataSource implements DataSource {
 	      		else fulfill({
 					  id:params.id,
 					  series: [{
-						  results: JSON.parse(response.text),
+						  values: JSON.parse(response.text),
 						  name: params.queryString
 					  }]
 				  });

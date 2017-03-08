@@ -1,5 +1,5 @@
 
-import {DataQueryParameters, DataQuery } from "./DataQuery";
+import {DataQueryParameters, DataQuery,CompoundSeriesResult } from "./DataQuery";
 import {DataSource} from "./DataSource";
 import * as request from "superagent";
 import * as _ from "underscore";
@@ -27,12 +27,12 @@ export class MetricsDataSource implements DataSource {
 		return newQuery;
 	}
 
-	executeQuery(params:MetricsQueryParameters) {
+	executeQuery(params:MetricsQueryParameters):Promise<CompoundSeriesResult> {
 
         let urlBase = "http://localhost:8080/api/metrics/";//http://ec2-23-20-138-216.compute-1.amazonaws.com:8090/controller/rest/"
         let url = urlBase + "applications/" + this.application + "/metric-data";
 
-		return new Promise((fulfill, reject) => {
+		return new Promise<CompoundSeriesResult>((fulfill, reject) => {
 			request.get(url)
             .query({
                 "metric-path":params.metricPath,
@@ -51,7 +51,7 @@ export class MetricsDataSource implements DataSource {
 					fulfill({
 						id:params.id,
 						series:[{
-							results:data.metricValues,
+							values:data.metricValues,
 							name:params.metricPath
 						}]
 					});

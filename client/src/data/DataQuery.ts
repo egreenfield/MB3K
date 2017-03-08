@@ -12,7 +12,7 @@ export interface ScalarResult extends DataQueryResult {
 
 export interface SeriesResult {
 	name:string;
-	results:any[];
+	values:any[];
 };
 
 export interface CompoundSeriesResult extends DataQueryResult {
