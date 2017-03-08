@@ -10,7 +10,7 @@ interface TileViewProps {tile:Tile, metricDB:MetricDB}
 
 export default class TileView  extends React.Component<TileViewProps, {}>  {
 	constructor(props:TileViewProps) {
-		super(props);		
+		super(props);
 	}
   render() {
   	let VizType = this.props.tile.getVizType();
@@ -19,11 +19,11 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
 
 
      <div  id="aTile" >
-         <SearchBox metricDB={this.props.metricDB}/>
         {
         	(this.props.tile.getState()=="loaded") &&
-        		<VizType data={this.props.tile.getData()} />        	
+        		<VizType data={this.props.tile.getData()} />
         }
+        <SearchBox metricDB={this.props.metricDB}/>
       </div>
       );
   }

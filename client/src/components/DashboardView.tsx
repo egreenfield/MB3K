@@ -16,12 +16,12 @@ export default class DashboardView  extends  React.Component<DashboardViewProps,
   render() {
     return (
      <div>
-	     <div>
-	     	{this.props.dashboard.getTiles().map((tile:Tile) => <TileView tile={tile} key={tile.getID()} metricDB={this.props.metricDB} />)}
-	     </div>
 		 <div style={{textAlign: 'center'}}>
 			 <h1>{this.props.dashboard.name}</h1>
 		 </div>
+	     <div>
+	     	{this.props.dashboard.getTiles().map((tile:Tile) => <TileView tile={tile} key={tile.getID()} metricDB={this.props.metricDB} />)}
+	     </div>
 	 </div>
     );
   }
