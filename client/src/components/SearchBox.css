@@ -5,3 +5,11 @@
 .list-item {
     background-color: antiquewhite;
 }
+
+.segment-matched {
+    font-weight: bold;
+}
+
+.segment-unmatched {
+
+}

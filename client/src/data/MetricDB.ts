@@ -21,9 +21,75 @@ export default class MetricDB {
             return [];
         }
 
-        let parts = query.split("|");
-        let regex = new RegExp(".*" + parts.join(".*\\|.*") + ".*", "i");
+        var result:any[] = [];
+        for (var i = 0; i < this.allMetrics.length; i++) {
+            let metric = this.allMetrics[i];
+            var matchSegments:any = this.fuzzyMatch(query, metric);
+            if (matchSegments != null) {
+                result.push({metric:metric, segments:matchSegments});
+            }
+        }
 
-        return this.allMetrics.filter((metric:String):Boolean => { return metric.match(regex) != null });
+        return result;
+    }
+
+    fuzzyMatch(search:String, haystack:String):any {
+
+        console.log("Searching for " + search + " in " + haystack)
+
+        if (search == "") {
+            return null;
+        }
+
+        var searchParts:String[] = search.split("|");
+        var haystackParts:String[] = haystack.split("|");
+
+        var segments:any[] = [];
+
+        // Consume each segment of the search string by matching them
+        // If we run out of haystack, fail
+        // If we run out of search, succeed
+        while (searchParts.length > 0) {
+            var searchPart:String = searchParts.shift();
+
+            // Consume haystack until we run out (then fail), or match
+            while (true) {
+                if (haystackParts.length == 0) {
+                    return null;
+                }
+
+                var haystackPart:String = haystackParts.shift();
+                let matchStart = haystackPart.toLocaleLowerCase().indexOf(searchPart.toLocaleLowerCase());
+
+                if (matchStart >= 0) {
+                    let matchEnd = matchStart + searchPart.length;
+
+                    if (matchStart > 0) {
+                        segments.push({text:haystackPart.substring(0, matchStart), match:false});
+                    }
+                    segments.push({text:haystackPart.substring(matchStart, matchEnd), match: true});
+                    if (matchEnd < haystackPart.length) {
+                        segments.push({text:haystackPart.substring(matchEnd), match:false})
+                    }
+
+                    if (haystackParts.length > 0) {
+                        segments.push({text: "|", match: false});
+                    }
+                    // Jump to the next search part
+                    break;
+                } else {
+                    segments.push({text:haystackPart, match:false});
+                    if (haystackParts.length > 0) {
+                        segments.push({text: "|", match: false});
+                    }
+                }
+            }
+        }
+
+        segments.push({text:haystackParts.join("|"), match:false});
+
+        // We ran out of search parts, meaning they all got matched
+        // So return a positive result
+        return segments;
     }
 }
