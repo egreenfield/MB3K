@@ -1,6 +1,6 @@
 
 import { EventEmitter } from "EventEmitter3";
-import BarChartView from "../components/BarChartView"
+import LineChartView from "../components/LineChartView"
 import Guid from '../utils/Guid';
 import DataMgr from "data/DataMgr";
 import DataQuery from "data/DataQuery";
@@ -38,7 +38,7 @@ export default class Tile extends EventEmitter  {
 
   getID() {return this.id}
   // shouldn't be returning a viz class from a model class, should be returning an id that can be resolved to a class.
-  getVizType():any {return BarChartView}
+  getVizType():any {return LineChartView}
   getData() { 
     return this.query.getData();  
   }
