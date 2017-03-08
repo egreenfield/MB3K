@@ -1,6 +1,6 @@
 
 import * as d3 from "d3";
-import {CompoundSeriesResult} from "data/DataQuery";
+import {CompoundSeriesResult} from "data/DataSet";
 
 
 export default class LineChart {

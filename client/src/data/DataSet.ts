@@ -28,17 +28,39 @@ export interface QueryDefinition {
 		parameters:DataQueryParameters;	
 };
 
-export class DataQuery extends EventEmitter {
+
+export class DataSet extends EventEmitter {
+	state:string;
+
+	constructor() {
+		super();
+		this.state = "unloaded";
+	}
+
+	getState() {return this.state}
+	setState(state:string) {
+		if(this.state == state)
+			return;
+		this.state = state;
+		this.emit("stateChange",state);		
+	}
+	load() {
+	}
+
+	getData():any {
+		return null
+	}
+}
+
+export class QueryDataSet extends DataSet {
 	source:DataSource;
 	queryParams:DataQueryParameters;
-	state:string;
 	data:DataQueryResult;
 
 	constructor(source:DataSource,queryParams:DataQueryParameters) {
 		super();
 		this.source= source;
 		this.queryParams = queryParams;
-		this.state = "unloaded";
 	}
 
 	getState() {return this.state}
@@ -48,11 +70,10 @@ export class DataQuery extends EventEmitter {
 			case "loaded":			
 				break;
 			case "unloaded":
-				this.state = "loading";
+				this.setState("loading");
 				this.source.executeQuery(this.queryParams).then((data:any) => {
 					this.data = data;
-					this.state = "loaded";
-					this.emit("loadComplete");
+					this.setState("loaded");
 				});
 		}
 	}

@@ -1,7 +1,7 @@
 
-import {DataQueryParameters, DataQuery, 
+import {DataQueryParameters, DataSet, 
 	QueryDefinition, CompoundSeriesResult, 
-	SeriesResult, DataQueryResult} from "./DataQuery";
+	SeriesResult, DataQueryResult} from "./DataSet";
 import {DataSource} from "./DataSource";
 import {DataManager} from "./DataManager"; 
 
@@ -11,25 +11,12 @@ export interface CompoundQueryParameters extends DataQueryParameters {
 	subQueries:QueryDefinition[];
 };
 
-export class CompoundDataSource implements DataSource {		
-	queries: DataQuery[];
-	manager: DataManager;
-
+export class CompoundDataSource extends DataSource {		
 	constructor() {
-		this.queries = [];
+		super();
 	}
-
-		setManager(manager:DataManager) {
-			this.manager = manager;
-		}
-
-	newQuery(params:CompoundQueryParameters):DataQuery {
-		var newQuery = new DataQuery(this,params);
-		this.queries.push(newQuery);
-		return newQuery;
-	}
-	queryByID(id:String) {
-		return this.queries[0];
+	newQuery(params:CompoundQueryParameters):DataSet {
+		return super.newQuery(params);
 	}
 
 	executeQuery(params:CompoundQueryParameters):Promise<CompoundSeriesResult> {

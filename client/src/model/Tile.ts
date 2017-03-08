@@ -3,14 +3,14 @@ import { EventEmitter } from "EventEmitter3";
 import LineChartView from "../components/LineChartView"
 import Guid from '../utils/Guid';
 import {DataManager} from "data/DataManager";
-import {DataQuery} from "data/DataQuery";
+import {DataSet} from "data/DataSet";
 import {MetricsDataSource, MetricsQueryParameters} from "data/MetricsDataSource";
 import {CompoundDataSource} from "data/CompoundDataSource";
 
 export default class Tile extends EventEmitter  {
   dataManager:DataManager;
   id:string;
-  query:DataQuery;
+  query:DataSet;
 
   constructor(DataManager:DataManager) {
   	super();
@@ -56,7 +56,7 @@ export default class Tile extends EventEmitter  {
   	// this.query = this.dataManager.sourceFromID("analytics").newQuery(
   	// 	`SELECT transactionName AS "Business Transaction", count(segments.errorList.errorCode) AS "Error Code (Count)" FROM transactions`);
 
-  	this.query.on("loadComplete",() => this.emit("change"));
+  	this.query.on("stateChange",() => this.emit("change"));
   }
 
   getState() {return this.query.state;}

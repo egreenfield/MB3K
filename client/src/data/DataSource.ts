@@ -1,14 +1,28 @@
 
-import {DataQueryParameters, DataQuery, DataQueryResult} from "./DataQuery";
+import {DataQueryParameters, DataSet, DataQueryResult, QueryDataSet} from "./DataSet";
 import {DataManager} from "./DataManager";
 
 import * as request from "superagent";
 
 
-export interface DataSource {		
-	newQuery(params:DataQueryParameters):DataQuery;
+export class DataSource {		
+	queries: DataSet[];
+	manager: DataManager;
 
-	setManager(mgr:DataManager):void;
+	constructor() {
+		this.queries = [];
+	}
 
-	executeQuery(params:DataQueryParameters):Promise<DataQueryResult>;
+	setManager(manager:DataManager) {
+		this.manager = manager;
+	}
+
+	newQuery(params:DataQueryParameters):DataSet {
+		var newQuery = new QueryDataSet(this,params);
+		this.queries.push(newQuery);
+		return newQuery;
+	}
+	executeQuery(params:DataQueryParameters):Promise<DataQueryResult> {
+		return null;
+	}
 }

@@ -1,5 +1,5 @@
 
-import {DataQueryParameters, DataQuery,CompoundSeriesResult } from "./DataQuery";
+import {DataQueryParameters, DataSet,CompoundSeriesResult } from "./DataSet";
 import {DataSource} from "./DataSource";
 import * as request from "superagent";
 import * as _ from "underscore";
@@ -15,25 +15,12 @@ export interface MetricsQueryParameters extends DataQueryParameters {
 	rollup:boolean;	
 };
 
-export class MetricsDataSource implements DataSource {		
-	queries: DataQuery[];
+export class MetricsDataSource extends DataSource {		
 	application:string;
-	manager: DataManager;
-
 	constructor(application:string) {
-		this.queries = [];
+		super();
 		this.application = application;
 	}
-	newQuery(params:MetricsQueryParameters):DataQuery {
-		var newQuery = new DataQuery(this,params);
-		this.queries.push(newQuery);
-		return newQuery;
-	}
-
-	setManager(manager:DataManager) {
-		this.manager = manager;
-	}
-	
 
 	executeQuery(params:MetricsQueryParameters):Promise<CompoundSeriesResult> {
 
