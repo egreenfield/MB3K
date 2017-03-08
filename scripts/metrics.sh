@@ -11,7 +11,7 @@ function traverse() {
     local result="$(curl -s -u "$auth" "$base_url/metrics?output=json&metric-path=${root// /%20}")"
 
     # Print the "leaves" (AKA metrics)
-    for leaf in $(echo "$result" | jq '.[] | select(.type=="leaf") | .name'); do
+    for leaf in $(echo "$result" | jq -r '.[] | select(.type=="leaf") | .name'); do
         echo "$root|$leaf"
     done
 
