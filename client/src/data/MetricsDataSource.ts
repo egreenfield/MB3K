@@ -1,37 +1,46 @@
 
-import DataQuery from "./DataQuery";
+import {DataQueryParameters, DataQuery } from "./DataQuery";
 import {DataSource} from "./DataSource";
 import * as request from "superagent";
 import * as _ from "underscore";
 
-export default class AnalyticsDataSource implements DataSource {		
-	queries: DataQuery[];
+export interface MetricsQueryParameters extends DataQueryParameters {
+	id:string;
+	metricPath:string;
+	timeRangeType:string;
+	startTime?:any;
+	endTime?:any;
+	durationInMins?:Number;
+	rollup:boolean;	
+};
 
-	constructor() {
+export class MetricsDataSource implements DataSource {		
+	queries: DataQuery[];
+	application:string;
+	constructor(application:string) {
 		this.queries = [];
+		this.application = application;
 	}
-	newQuery(queryString:String):DataQuery {
-		var newQuery = new DataQuery(this,queryString);
+	newQuery(params:MetricsQueryParameters):DataQuery {
+		var newQuery = new DataQuery(this,params);
 		this.queries.push(newQuery);
 		return newQuery;
 	}
 
-	executeQuery(queryString:string) {
-        let props = JSON.parse(queryString);        
-
+	executeQuery(params:MetricsQueryParameters) {
 
         let urlBase = "http://localhost:8080/api/metrics/";//http://ec2-23-20-138-216.compute-1.amazonaws.com:8090/controller/rest/"
-        let url = urlBase + "applications/" + props.application + "/metric-data";
+        let url = urlBase + "applications/" + this.application + "/metric-data";
 
 		return new Promise((fulfill, reject) => {
 			request.get(url)
             .query({
-                "metric-path":props.metricPath,
-                "time-range-type":props.timeRangeType,
-                "start-time":props.startTime,
-                "end-time":props.endTime,
-                "duration-in-mins":props.durationInMins,
-				"rollup":props.rollup,
+                "metric-path":params.metricPath,
+                "time-range-type":params.timeRangeType,
+                "start-time":params.startTime,
+                "end-time":params.endTime,
+                "duration-in-mins":params.durationInMins,
+				"rollup":params.rollup,
                 "output":"json"
             })
             .auth('amodgupta@customer1', 'welcome-101')
@@ -39,9 +48,13 @@ export default class AnalyticsDataSource implements DataSource {
 		      	if (err) reject(err);
 	      		else {
 					let data = JSON.parse(response.text)[0];
-				  	data.results = data.metricValues;
-				  	delete data.metricValues;
-					fulfill(data);
+					fulfill({
+						id:params.id,
+						series:[{
+							results:data.metricValues,
+							name:params.metricPath
+						}]
+					});
 				}
 			})
 		});

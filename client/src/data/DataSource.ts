@@ -1,10 +1,10 @@
 
-import DataQuery from "./DataQuery";
+import {DataQueryParameters, DataQuery, DataQueryResult} from "./DataQuery";
 import * as request from "superagent";
 
 
 export interface DataSource {		
-	newQuery(queryString:String):DataQuery;
+	newQuery(params:DataQueryParameters):DataQuery;
 
-	executeQuery(queryString:String):Promise<any>;
+	executeQuery(params:DataQueryParameters):Promise<DataQueryResult>;
 }

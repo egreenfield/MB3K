@@ -3,16 +3,36 @@ import { EventEmitter } from "EventEmitter3";
 import DataMgr from "data/DataMgr";
 import {DataSource} from "data/DataSource";
 
-export default class DataQuery extends EventEmitter {
-	source:DataSource;
-	queryString:String;
-	state:String;
-	data:Object;
 
-	constructor(source:DataSource,queryString:String) {
+export interface DataQueryResult { id:string; }
+export interface ScalarResult extends DataQueryResult {
+	name:String;
+	value:Number;
+};
+
+export interface SeriesResult {
+	name:string;
+	results:any[];
+};
+
+export interface CompoundSeriesResult extends DataQueryResult {
+	series:SeriesResult[];
+};
+
+export interface DataQueryParameters {
+	id:string;
+};
+
+export class DataQuery extends EventEmitter {
+	source:DataSource;
+	queryParams:DataQueryParameters;
+	state:string;
+	data:DataQueryResult;
+
+	constructor(source:DataSource,queryParams:DataQueryParameters) {
 		super();
 		this.source= source;
-		this.queryString = queryString;
+		this.queryParams = queryParams;
 		this.state = "unloaded";
 	}
 
@@ -24,12 +44,14 @@ export default class DataQuery extends EventEmitter {
 				break;
 			case "unloaded":
 				this.state = "loading";
-				this.source.executeQuery(this.queryString).then((data:any) => {
+				this.source.executeQuery(this.queryParams).then((data:any) => {
 					this.data = data;
 					this.state = "loaded";
 					this.emit("loadComplete");
 				});
 		}
 	}
-	getData() {return this.data;}
+	getData():DataQueryResult {
+		return this.data;
+	}
 }

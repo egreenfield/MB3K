@@ -1,18 +1,17 @@
 
 import * as d3 from "d3";
-
+import {CompoundSeriesResult} from "data/DataQuery";
 
 
 export default class LineChart {
     constructor() {
 
     }
-    renderInto(svgElement:SVGElement,data:any) {
+    renderInto(svgElement:SVGElement,data:CompoundSeriesResult) {
         let svg = d3.select(svgElement);
         svg.attr("width",600);
         svg.attr("height",400);
 
-        console.log("RENDERING");
         let margin = {top: 20, right: 20, bottom: 30, left: 50},
             width = +svg.attr("width") - margin.left - margin.right,
             height = +svg.attr("height") - margin.top - margin.bottom,
@@ -27,20 +26,33 @@ export default class LineChart {
             .rangeRound([height, 0]);
 
         let line = d3.line()
-            .x(function(d:any) { return x(d.startTimeInMillis); })
-            .y(function(d:any) { return y(d.value); });
-
-
-    
-        x.domain(d3.extent(data.results,(d:any) => { 
+            .x((d:any) => { return x(d.startTimeInMillis); })
+            .y((d:any) => { return y(d.value); });
+        
+        if(data.series.length == 0) {
+            return;
+        }
+        let aSeries = data.series[0];
+        x.domain(d3.extent(aSeries.results,(d:any) => { 
                 return d.startTimeInMillis;
             }) as any
-         );
-    
-        y.domain(d3.extent(data.results, (d:any) => { 
-                return d.value; 
-            }) as any
         );
+        let masterExtent;  
+
+        for (let aSeries of data.series) {
+        
+            let ext = d3.extent(aSeries.results, (d:any) => { 
+                    return d.value; 
+                });
+            if(masterExtent) {
+                masterExtent[0] = Math.min(masterExtent[0],ext[0]);
+                masterExtent[1] = Math.max(masterExtent[1],ext[1]);
+            } else {
+                masterExtent = ext;
+            }
+        }
+
+        y.domain(masterExtent);
 
         g.append("g")
             .attr("transform", "translate(0," + height + ")")
@@ -59,13 +71,16 @@ export default class LineChart {
             .text("Value");
 
 
-        g.append("path")
-            .datum(data.results)
-            .attr("fill", "none")
-            .attr("stroke", "steelblue")
-            .attr("stroke-linejoin", "round")
-            .attr("stroke-linecap", "round")
-            .attr("stroke-width", 1.5)
-            .attr("d", line);
+        for (let aSeries of data.series) {
+        
+            g.append("path")
+                .datum(aSeries.results)
+                .attr("fill", "none")
+                .attr("stroke", "steelblue")
+                .attr("stroke-linejoin", "round")
+                .attr("stroke-linecap", "round")
+                .attr("stroke-width", 1.5)
+                .attr("d", line);
+        }
     }
 }

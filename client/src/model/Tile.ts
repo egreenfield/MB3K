@@ -3,7 +3,8 @@ import { EventEmitter } from "EventEmitter3";
 import LineChartView from "../components/LineChartView"
 import Guid from '../utils/Guid';
 import DataMgr from "data/DataMgr";
-import DataQuery from "data/DataQuery";
+import {DataQuery} from "data/DataQuery";
+import {MetricsDataSource} from "data/MetricsDataSource";
 
 export default class Tile extends EventEmitter  {
   dataMgr:DataMgr;
@@ -15,14 +16,13 @@ export default class Tile extends EventEmitter  {
   	this.dataMgr = dataMgr;
   	this.id = Guid.newGuid();
 
-  	this.query = this.dataMgr.sourceFromID("metrics").newQuery(
-  		JSON.stringify({
-        application:"AD-Capital",
+  	this.query = (this.dataMgr.sourceFromID("ADC-metrics") as MetricsDataSource).newQuery({
+        id: Guid.newGuid(),
         metricPath:'Business Transaction Performance|Business Transactions|LoanProcessor-Services|/processor/CreditCheck|Average Response Time (ms)',
         timeRangeType:"BEFORE_NOW",
-        durationInMins:"30",
+        durationInMins:30,
         rollup:false
-      }));
+      });
 
   	// this.query = this.dataMgr.sourceFromID("analytics").newQuery(
   	// 	`SELECT transactionName AS "Business Transaction", count(segments.errorList.errorCode) AS "Error Code (Count)" FROM transactions`);

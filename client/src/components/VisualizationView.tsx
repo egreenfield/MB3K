@@ -1,6 +1,6 @@
 import * as React from 'react';
-
-export interface VisualizationViewProps {data:any}
+import {CompoundSeriesResult} from 'data/DataQuery';
+export interface VisualizationViewProps {data:CompoundSeriesResult}
 
 export class VisualizationView<PropType,OType>  extends React.Component<PropType, OType>  {
 	constructor(props:PropType) {
