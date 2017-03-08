@@ -8,9 +8,10 @@ import {MetricsDataSource} from "./MetricsDataSource";
 export class DataManager {		
 	sources: any;
 	constructor() {
+		this.sources = {};
 	}
 	addSource(name:string,source:DataSource) {
-		this.sources.push(source);
+		this.sources[name] = source;
 		source.setManager(this);
 	}
 

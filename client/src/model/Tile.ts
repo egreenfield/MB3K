@@ -5,18 +5,19 @@ import Guid from '../utils/Guid';
 import {DataManager} from "data/DataManager";
 import {DataQuery} from "data/DataQuery";
 import {MetricsDataSource} from "data/MetricsDataSource";
+import {CompoundDataSource} from "data/CompoundDataSource";
 
 export default class Tile extends EventEmitter  {
-  DataManager:DataManager;
+  dataManager:DataManager;
   id:string;
   query:DataQuery;
 
   constructor(DataManager:DataManager) {
   	super();
-  	this.DataManager = DataManager;
+  	this.dataManager = DataManager;
   	this.id = Guid.newGuid();
 
-  	this.query = (this.DataManager.sourceFromID("ADC-metrics") as MetricsDataSource).newQuery({
+  	this.query = (this.dataManager.sourceFromID("ADC-metrics") as MetricsDataSource).newQuery({
         id: Guid.newGuid(),
         metricPath:'Business Transaction Performance|Business Transactions|LoanProcessor-Services|/processor/CreditCheck|Average Response Time (ms)',
         timeRangeType:"BEFORE_NOW",
@@ -24,7 +25,20 @@ export default class Tile extends EventEmitter  {
         rollup:false
       });
 
-  	// this.query = this.DataManager.sourceFromID("analytics").newQuery(
+    // this.query = (this.dataManager.sourceFromID("compound") as CompoundDataSource).newQuery({
+    //   id:Guid.newGuid(),
+    //   subQueries: [{
+    //     source:"AD-Capital",
+    //     {
+    //       id: Guid.newGuid(),
+    //       metricPath:'Business Transaction Performance|Business Transactions|LoanProcessor-Services|/processor/CreditCheck|Average Response Time (ms)',
+    //       timeRangeType:"BEFORE_NOW",
+    //       durationInMins:30,
+    //       rollup:false          
+    //     }
+    //   }]    
+    // });
+  	// this.query = this.dataManager.sourceFromID("analytics").newQuery(
   	// 	`SELECT transactionName AS "Business Transaction", count(segments.errorList.errorCode) AS "Error Code (Count)" FROM transactions`);
 
   	this.query.on("loadComplete",() => this.emit("change"));

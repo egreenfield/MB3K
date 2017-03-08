@@ -1,5 +1,7 @@
 
-import {DataQueryParameters, DataQuery, QueryDefinition, CompoundSeriesResult} from "./DataQuery";
+import {DataQueryParameters, DataQuery, 
+	QueryDefinition, CompoundSeriesResult, 
+	SeriesResult, DataQueryResult} from "./DataQuery";
 import {DataSource} from "./DataSource";
 import {DataManager} from "./DataManager"; 
 
@@ -32,12 +34,19 @@ export class CompoundDataSource implements DataSource {
 
 	executeQuery(params:CompoundQueryParameters):Promise<CompoundSeriesResult> {
 		
-		// return new Promise<CompoundSeriesResult>((fulfill, reject) => {
+		 return new Promise<CompoundSeriesResult>((fulfill, reject) => {
 		 	var ps = [];
 			for(let aQuery of params.subQueries) {
 				let source = this.manager.sourceFromID(aQuery.source);
-				ps.push(source.executeQuery(aQuery.parameters);
+				ps.push(source.executeQuery(aQuery.parameters));
 			}					
+			Promise.all<DataQueryResult>(ps).then(values => {
+				console.log("values are",values);
+				fulfill(values as any);
+			},reason => {
+				reject(reason);
+			});
+		 });
 		// 	request.post("/api/events/query")
 		// 	.send(params.queryString)
 		// 	.set('X-Events-API-AccountName','customer1_23efd6e2-df72-4833-9e06-3ec32e9c951f')
@@ -54,6 +63,5 @@ export class CompoundDataSource implements DataSource {
 		// 		  });
 		// 	})
 		// });
-		return null;
 	}
 }
