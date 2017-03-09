@@ -52,6 +52,8 @@ export default class SearchBox extends React.Component<SearchBoxProps, any>  {
             event.preventDefault();
             if (this.state.selectedItem != -1) {
                 this.props.acceptCallback(this.state.lastQueryResult[this.state.selectedItem].metric);
+            } else if (this.state.query.charAt(0) == "=") {
+                this.props.acceptCallback(this.state.query);
             } else {
                 this.props.cancelCallback();
             }

@@ -54,7 +54,11 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
     }
 
 	addSeriesToTile(metric: string) {
-        this.props.tile.addMetricSeries(metric);
+        if (metric.charAt(0) == "=") {
+            this.props.tile.addForumla(metric.substr(1));
+        } else {
+            this.props.tile.addMetricSeries(metric);
+        }
     }
 
     deleteSeriesFromTile(series: Series) {
