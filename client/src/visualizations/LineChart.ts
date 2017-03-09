@@ -51,7 +51,7 @@ export class LineChart {
             // .select(".domain")
             // .remove();
 
-        this.yAxisGenerator = d3.axisLeft(y).tickSize(-this.width)
+        this.yAxisGenerator = d3.axisLeft(y).tickSize(-this.width);
 
         this.yAxisView = 
             this.rootGroup.append("g");
@@ -194,13 +194,18 @@ export class LineChart {
         let t= this.yAxisView.transition()
             .delay(exitDuration)
             .call(this.yAxisGenerator as any);
-        t.select(".domain").remove();
-        t.selectAll(".tick:not(:first-of-type) line").attr("stroke", "#CCC").attr("stroke-dasharray", "2,2");
-        t.selectAll(".tick text").attr("x", -8).attr("y", 0);
+        this.yAxisView.select(".domain").remove();
+        t.selectAll(".tick:not(:first-of-type) line")
+            .attr("stroke", "#CCC")
+            .attr("stroke-dasharray", "2,2")
+            .attr("x1",-15);
+
+        t.selectAll(".tick text").attr("x", -8).attr("y", -5);
         
         this.xAxisView.transition()
             .delay(exitDuration)
             .call(d3.axisBottom(x) as any)
+            .select(".domain").remove();
 
     }
 }
