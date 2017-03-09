@@ -3,7 +3,8 @@ import Series from "../model/Series";
 import SearchBox from "./SearchBox";
 import HistoryItem from "./HistoryItem";
 import MetricDB from "../data/MetricDB";
-import{Tile} from "../model/Tile";
+import {Tile} from "../model/Tile";
+import RelatedItem from "./RelatedItem";
 
 export interface SeriesItemProps {
     series: Series,
@@ -32,11 +33,24 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
         this.handleCancelSearch = this.handleCancelSearch.bind(this);
         this.handleSearchClick = this.handleSearchClick.bind(this);
         this.handleHistoryClick = this.handleHistoryClick.bind(this);
+        this.handleRelatedClick = this.handleRelatedClick.bind(this);
+
+        this.handleAddFromHistory = this.handleAddFromHistory.bind(this);
+        this.handleAddFromRelated = this.handleAddFromRelated.bind(this);
     }
 
     handleDeleteClick() {
         this.props.deleteCallback(this.props.series);
         event.preventDefault();
+    }
+
+    handleRelatedClick() {
+        this.setState({mode: "related"});
+    }
+
+    handleAddFromRelated(metrics: string[]) {
+        this.setState({mode: "display"});
+        this.props.addCallback(metrics);
     }
 
     handleClickDisplay() {
@@ -53,6 +67,11 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
 
     handleHistoryClick() {
         this.setState({mode: "history"});
+    }
+
+    handleAddFromHistory(metrics: string[]) {
+        this.setState({mode: "search"});
+        this.props.addCallback(metrics);
     }
 
     ellipsify(s:string) {
@@ -86,15 +105,22 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
                                     {this.state.mode == "history" &&
                                         <table>
                                             {this.props.tile.getHistory().map((m: string) =>
-                                                <HistoryItem metricPath={m} addCallback={this.props.addCallback}/>)}
+                                                <HistoryItem metricPath={m}
+                                                             addCallback={this.handleAddFromHistory}/>)}
                                         </table>}
+                                    {this.state.mode == "related" &&
+                                    <table>
+                                        {this.props.metricDB.findRelated(this.props.series.expression).map((m: string) =>
+                                            <RelatedItem metricPath={m}
+                                                         addCallback={this.handleAddFromRelated}/>)}
+                                    </table>}
                                 </div>}
                         </td>
                         <td width="130" style={{"vertical-align": "top"}}>
                             <div className="btn-toolbar" role="toolbar">
                                 <div className="btn-group" role="group">
                                 {
-                                    this.state.mode != "display" &&
+                                    this.state.mode != "display" && this.state.mode != "related" &&
                                     <button
                                         onClick={this.handleSearchClick}
                                         className={"btn btn-default " + (this.state.mode == "search" ? "active" : "")}>
@@ -102,7 +128,7 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
                                     </button>
                                 }
                                 {
-                                    this.state.mode != "display" &&
+                                    this.state.mode != "display" && this.state.mode != "related" &&
                                     <button
                                         onClick={this.handleHistoryClick}
                                         className={"btn btn-default " + (this.state.mode == "history" ? "active" : "")}>
@@ -115,6 +141,15 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
                                     <button type="button" className="btn btn-default"
                                             onClick={this.handleDeleteClick} style={floatRight}>
                                         <span className="glyphicon glyphicon-minus-sign" aria-hidden="true"></span>
+                                    </button>
+                                }
+                                {
+                                    (this.state.mode=="display" || this.state.mode=="related")  &&
+                                    <button
+                                        onClick={this.handleRelatedClick}
+                                        className={"btn btn-default " + (this.state.mode == "related" ? "active" : "")}
+                                        style={floatRight}>
+                                        <span className="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
                                     </button>
                                 }
                             </div>
