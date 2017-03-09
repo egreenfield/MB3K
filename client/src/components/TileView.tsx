@@ -70,6 +70,9 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
                                 <SearchBox metricDB={this.props.metricDB} acceptCallback={this.addSeriesToTile}/>
                             </div>
                             <div className="row">
+                                History
+                            </div>
+                            <div className="row">
                                 <table>
                                     {this.props.tile.getHistory().map((m: string) =>
                                         <HistoryItem metricPath={m} addCallback={this.addSeriesToTile}/>)}

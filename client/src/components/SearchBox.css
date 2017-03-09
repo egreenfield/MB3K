@@ -6,6 +6,10 @@
     background-color: antiquewhite;
 }
 
+.list-item:hover {
+    background-color: gold;
+}
+
 .segment-matched {
     font-weight: bold;
 }
