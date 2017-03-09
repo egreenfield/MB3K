@@ -5,7 +5,6 @@ import Guid from '../utils/Guid';
 import {DataManager} from "data/DataManager";
 import {DataSet} from "data/DataSet";
 import {MetricsDataSource, MetricsQueryParameters} from "data/MetricsDataSource";
-import {CompoundDataSource} from "data/CompoundDataSource";
 import {FormulaDataSet, FormulaInput} from "../data/FormulaDataSet";
 import Series from "./Series";
 import foo = require("es6-promise");

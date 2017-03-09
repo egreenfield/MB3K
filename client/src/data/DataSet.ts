@@ -15,7 +15,7 @@ export interface SeriesResult extends DataQueryResult {
 	values:any[];
 };
 
-export interface CompoundSeriesResult extends DataQueryResult {
+export interface MultiSeriesResult extends DataQueryResult {
 	series:SeriesResult[];
 };
 

@@ -19,3 +19,5 @@ mouse picking of search results.
 
 
 add enter/exit transitions for dots when the x axis changes.
+
+fix charts to not crash when series have different numbers of datapoints.

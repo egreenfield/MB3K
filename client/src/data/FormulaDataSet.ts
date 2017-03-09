@@ -1,5 +1,5 @@
 import {DataQueryParameters, DataSet, 
-	QueryDefinition, CompoundSeriesResult, 
+	QueryDefinition, MultiSeriesResult, 
 	SeriesResult, DataQueryResult} from "./DataSet";
 import {DataSource} from "./DataSource";
 import {DataManager} from "./DataManager"; 
@@ -52,7 +52,7 @@ export class FormulaDataSet extends DataSet {
 		});
 		if(loaded) {
 			// compute expressions.
-			let result:CompoundSeriesResult = {
+			let result:MultiSeriesResult = {
 				//TODO what should this ID be?
 				id: "foo",
 				series:[]				

@@ -1,6 +1,6 @@
 
 import * as d3 from "d3";
-import {CompoundSeriesResult} from "data/DataSet";
+import {MultiSeriesResult} from "data/DataSet";
 
 
 export interface SeriesChartData {

@@ -3,7 +3,7 @@ import * as React from 'react';
 import Tile from 'model/Tile';
 import SearchBox from "./SearchBox";
 import MetricDB from "../data/MetricDB";
-import {SeriesResult,CompoundSeriesResult} from "../data/DataSet";
+import {SeriesResult,MultiSeriesResult} from "../data/DataSet";
 
 import {SeriesChartData} from "visualizations/LineChart";
 import Series from "../model/Series";
@@ -30,7 +30,7 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
 		this.deleteSeriesFromTile = this.deleteSeriesFromTile.bind(this);
 	}
 
-    buildChartData(results:CompoundSeriesResult):SeriesChartData {
+    buildChartData(results:MultiSeriesResult):SeriesChartData {
         let series = (results && results.series) || [];
         return {
             series: series.map((seriesData:SeriesResult,i:number) => {
