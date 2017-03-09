@@ -97,13 +97,25 @@ export class LineChart {
         let lineGroups = this.rootGroup.selectAll(".line")
             .data(data.series);
 
-        // console.log("changed lines:",lineGroups.size());
-        // console.log("new lines:",lineGroups.enter().size());
-        // console.log("dead lines:",lineGroups.exit().size());
+        console.log("changed lines:",lineGroups.size());
+        console.log("new lines:",lineGroups.enter().size());
+        console.log("dead lines:",lineGroups.exit().size());
+
+        lineGroups.select("path")
+                    .datum((d) => {return d.values})
+                    .transition()
+                    .attr("d", this.line)
+
+
         let newLineGroups = lineGroups.enter()
                 .append("g")
                 .classed("line",true);
         
+        lineGroups.exit()
+            .transition()
+            .attr("opacity",0)
+            .remove();
+
         newLineGroups
                     .append("path")
                     .attr("fill", "none")
@@ -114,8 +126,17 @@ export class LineChart {
                     .attr("d", this.line)
                     .transition()
                     .attr("stroke-width", 2.5)
+        
+        lineGroups.selectAll("circle") 
+            .transition()
+            .attr("cx", (d:any) => x(d.startTimeInMillis) )
+            .attr("cy", (d:any) => y(d.value) )
 
-        newLineGroups.selectAll(".dots") 
+        console.log("changed circles:",lineGroups.size());
+        console.log("new circles:",lineGroups.enter().size());
+        console.log("dead circles:",lineGroups.exit().size());
+
+        newLineGroups.selectAll("circle") 
             .data(d =>  d.values)
                 .enter()
                 .append("circle")
