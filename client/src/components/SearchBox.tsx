@@ -77,7 +77,7 @@ export default class SearchBox extends React.Component<SearchBoxProps, any>  {
         }
     }
 
-  render() {
+    render() {
 
         var listItems:any[] = [];
         var rows:String[] = this.state.lastQueryResult;
@@ -93,16 +93,15 @@ export default class SearchBox extends React.Component<SearchBoxProps, any>  {
             )
         }
 
-  	return (
-     <div>
-         <input type="text" value={this.state.query}
-                style={inputStyle}
-                ref={(input) => { this.input = input; }}
-                onChange={this.handleQueryChange}
-                onKeyDown={this.handleInputKeyDown}/>
-         {listItems}
-     </div>
-      );
-  }
-
+        return (
+         <div>
+             <input type="text" value={this.state.query}
+                    style={inputStyle}
+                    ref={(input) => { this.input = input; }}
+                    onChange={this.handleQueryChange}
+                    onKeyDown={this.handleInputKeyDown}/>
+             {listItems}
+         </div>
+          );
+    }
 }

@@ -40,7 +40,7 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
     }
 
     handleCancelSearch() {
-        this.setState({mode: "display"});
+        this.setState({mode: "search"});
     }
 
     handleSearchClick() {
