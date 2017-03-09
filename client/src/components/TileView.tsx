@@ -8,6 +8,7 @@ import {SeriesResult,CompoundSeriesResult} from "../data/DataSet";
 import {SeriesChartData} from "visualizations/LineChart";
 import Series from "../model/Series";
 import SeriesItem from "./SeriesItem";
+import HistoryItem from "./HistoryItem";
 
 var styles = require('./TileView.css');
 
@@ -57,7 +58,14 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
                 <div className="container">
                     <div className="row">
                         <div className="col-md-3">
-                            <SearchBox metricDB={this.props.metricDB} acceptCallback={this.handleSearchAccepted}/>
+                            <div className="row">
+                                <SearchBox metricDB={this.props.metricDB} acceptCallback={this.handleSearchAccepted}/>
+                            </div>
+                            <div className="row">
+                                <table>
+                                    {this.props.tile.getHistory().map((m: string) => <HistoryItem metricPath={m}/>)}
+                                </table>
+                            </div>
                         </div>
                         <div className="col-md-9">
                             <div className="row">
