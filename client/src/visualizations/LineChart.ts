@@ -97,24 +97,47 @@ export class LineChart {
         let lineGroups = this.rootGroup.selectAll(".line")
             .data(data.series);
 
-        console.log("changed lines:",lineGroups.size());
-        console.log("new lines:",lineGroups.enter().size());
-        console.log("dead lines:",lineGroups.exit().size());
+        // console.log("changed lines:",lineGroups.size());
+        // console.log("new lines:",lineGroups.enter().size());
+        // console.log("dead lines:",lineGroups.exit().size());
 
+// update existing lines, esp. because axes might have changed.
         lineGroups.select("path")
                     .datum((d) => {return d.values})
                     .transition()
                     .attr("d", this.line)
 
+        lineGroups.selectAll("circle") 
+            .transition()
+            .attr("cx", (d:any) => x(d.startTimeInMillis) )
+            .attr("cy", (d:any) => y(d.value) )
 
+        
+// remove dead lines
+        lineGroups.exit()
+            .selectAll("circle")
+            .transition()
+            .delay((d,i) => i*10)
+            .attr("r", 0)
+            
+        lineGroups.exit()
+            .selectAll("path")
+            .transition()
+            .delay((d:any) => d.length * 10)
+            .duration(500)
+            .attr("stroke-width", 0)
+
+        lineGroups.exit()
+            .transition()
+            .delay((d:any) => d.values.length * 10 + 500)
+            .remove();
+
+
+
+// create new lines
         let newLineGroups = lineGroups.enter()
                 .append("g")
                 .classed("line",true);
-        
-        lineGroups.exit()
-            .transition()
-            .attr("opacity",0)
-            .remove();
 
         newLineGroups
                     .append("path")
@@ -122,32 +145,30 @@ export class LineChart {
                     .attr("stroke", (d) => {return d.color;})
                     .attr("stroke-linejoin", "round")
                     .attr("stroke-linecap", "round")
+                    .attr("stroke-width", 0)
                     .datum((d) => {return d.values})
                     .attr("d", this.line)
                     .transition()
+                    .delay((d,i) => {return d.length * 10})
                     .attr("stroke-width", 2.5)
+
         
-        lineGroups.selectAll("circle") 
-            .transition()
-            .attr("cx", (d:any) => x(d.startTimeInMillis) )
-            .attr("cy", (d:any) => y(d.value) )
 
-        console.log("changed circles:",lineGroups.size());
-        console.log("new circles:",lineGroups.enter().size());
-        console.log("dead circles:",lineGroups.exit().size());
-
-        newLineGroups.selectAll("circle") 
-            .data(d =>  d.values)
+        newLineGroups.each((d,i,n) => {
+            d3.select(n[i]).selectAll("circle") 
+            .data(d.values)
                 .enter()
                 .append("circle")
                     .attr("fill", "#FFFFFF")
-                    .attr("stroke", "#000")
+                    .attr("stroke", d.color)
                     .attr("stroke-width", 2.5)
                     .attr("cx", d => x(d.startTimeInMillis) )
                     .attr("cy", d => y(d.value) )
                     .transition()
-                    .attr("r", 2.5)
-
+                    .delay((d,i) => i*10)
+                    .attr("r", 2.5)            
+        })
+        
 
         for (let aSeries of data.series) {
         

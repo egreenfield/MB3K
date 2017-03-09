@@ -1,0 +1,19 @@
+more chart animations
+chart styling
+tooltips
+better UX representation of metric paths
+support for offset time
+	styling of offset lines
+	UX for specifying offset time
+	how does offset time affect History?
+
+support for expressions
+	UX for setting expressions
+	UX for choosing between expressions and metrics
+	styling of expression lines
+	how do expressions effect history?
+
+overall styling
+popup on search results
+mouse picking of search results.
+
