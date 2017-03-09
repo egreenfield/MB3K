@@ -3,7 +3,7 @@ import Series from "../model/Series";
 import SearchBox from "./SearchBox";
 import HistoryItem from "./HistoryItem";
 import MetricDB from "../data/MetricDB";
-import Tile from "../model/Tile";
+import {Tile} from "../model/Tile";
 
 export interface SeriesItemProps {
     series: Series,
