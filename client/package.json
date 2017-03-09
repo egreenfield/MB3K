@@ -22,7 +22,8 @@
     "request": "^2.79.0",
     "request-promise": "^4.1.1",
     "superagent": "^3.5.0",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "material-ui": "0.17.0"
   },
   "devDependencies": {
     "@types/underscore": "^1.7.36",
