@@ -6,6 +6,15 @@ import MetricDB from "../data/MetricDB";
 
 export interface DashboardViewProps {dashboard:Dashboard, metricDB:MetricDB}
 
+const navbar = {
+	"background-color": "#373636",
+	"width": "100%",
+	"height": "40px",
+	"padding-left": "21px",
+	"padding-top": "9px",
+	top: 0
+}
+
 export default class DashboardView  extends  React.Component<DashboardViewProps, {}>  {
 	constructor(props:DashboardViewProps) {
 		super(props);		
@@ -16,10 +25,10 @@ export default class DashboardView  extends  React.Component<DashboardViewProps,
   render() {
     return (
      <div>
-		 <div style={{textAlign: 'center'}}>
-			 <h1>{this.props.dashboard.name}</h1>
+		 <div style={navbar}>
+		 	<img src="/src/logo.svg" width={141}/>
 		 </div>
-	     <div>
+		 <div>
 	     	{this.props.dashboard.getTiles().map((tile:Tile) => <TileView tile={tile} key={tile.getID()} metricDB={this.props.metricDB} />)}
 	     </div>
 	 </div>

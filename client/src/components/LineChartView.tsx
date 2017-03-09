@@ -12,7 +12,7 @@ export default class LineChartView  extends  VisualizationView<VisualizationView
 	}
     render() {
         return (
-            <svg ref={(r) => {this.root = r;}}>
+            <svg ref={(r) => {this.root = r;}} width="800" height="600">
             </svg>
         );			
     }
