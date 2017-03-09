@@ -1,7 +1,7 @@
 import * as React from "react";
 import MetricDB from "../data/MetricDB";
 
-export interface SearchBoxProps { metricDB:MetricDB }
+export interface SearchBoxProps { metricDB:MetricDB, acceptCallback:any }
 
 var styles = require('./SearchBox.css');
 
@@ -35,9 +35,13 @@ export default class SearchBox extends React.Component<SearchBoxProps, any>  {
 
     handleInputKeyDown(event:any) {
 
+        let enter:Boolean = event.keyCode == 13;
         let esc:Boolean = event.keyCode == 27;
-        if (esc) {
+        if (enter || esc) {
             event.preventDefault();
+            if (this.state.selectedItem != -1) {
+                this.props.acceptCallback(this.state.lastQueryResult[this.state.selectedItem].metric);
+            }
             this.updateQuery("");
             return;
         }

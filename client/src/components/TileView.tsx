@@ -11,7 +11,13 @@ interface TileViewProps {tile:Tile, metricDB:MetricDB}
 export default class TileView  extends React.Component<TileViewProps, {}>  {
     constructor(props:TileViewProps) {
 		super(props);
+
+		this.handleSearchAccepted = this.handleSearchAccepted.bind(this);
 	}
+
+	handleSearchAccepted(metric:String) {
+        this.props.tile.addSeries(metric);
+    }
 
     render() {
   	    let VizType = this.props.tile.getVizType();
@@ -29,7 +35,7 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
             <div className="container-fluid">
                 <div className="row-fluid">
                     <div className="span3">
-                        <SearchBox metricDB={this.props.metricDB}/>
+                        <SearchBox metricDB={this.props.metricDB} acceptCallback={this.handleSearchAccepted}/>
                     </div>
                     <div className="span9">
                         <div className="row-fluid">

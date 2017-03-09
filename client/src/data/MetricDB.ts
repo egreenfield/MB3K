@@ -35,8 +35,6 @@ export default class MetricDB {
 
     fuzzyMatch(search:String, haystack:String):any {
 
-        console.log("Searching for " + search + " in " + haystack)
-
         if (search == "") {
             return null;
         }
