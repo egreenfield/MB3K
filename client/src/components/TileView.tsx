@@ -23,7 +23,7 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
     constructor(props:TileViewProps) {
 		super(props);
 
-		this.addSeriesToTile = this.addSeriesToTile.bind(this);
+		this.addSeriesesToTile = this.addSeriesesToTile.bind(this);
 		this.deleteSeriesFromTile = this.deleteSeriesFromTile.bind(this);
 	}
 
@@ -45,12 +45,14 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
         }
     }
 
-	addSeriesToTile(metric: string) {
-        if (metric.charAt(0) == "=") {
-            this.props.tile.addForumla(metric.substr(1));
-        } else {
-            this.props.tile.addMetricSeries(metric);
-        }
+	addSeriesesToTile(metrics: string[]) {
+        metrics.forEach((metric:string) => {
+            if (metric.charAt(0) == "=") {
+                this.props.tile.addForumla(metric.substr(1));
+            } else {
+                this.props.tile.addMetricSeries(metric);
+            }
+        });
     }
 
     deleteSeriesFromTile(series: Series) {
@@ -70,14 +72,14 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
                                     tile={this.props.tile}
                                     series={s}
                                     metricDB={this.props.metricDB}
-                                    addCallback={this.addSeriesToTile}
+                                    addCallback={this.addSeriesesToTile}
                                     deleteCallback={this.deleteSeriesFromTile}
                                 />)}
                             <SeriesItem
                                 tile={this.props.tile}
                                 series={null}
                                 metricDB={this.props.metricDB}
-                                addCallback={this.addSeriesToTile}
+                                addCallback={this.addSeriesesToTile}
                                 deleteCallback={null}
                             />
                         </ul>

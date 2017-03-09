@@ -21,7 +21,8 @@ export default class SearchBox extends React.Component<SearchBoxProps, any>  {
 		    query: "",
             lastQueryResult: [],
             isInputFocused: true,
-            selectedItem: -1
+            firstSelectedItem: -1,
+            lastSelectedItem: -1
         };
 
         this.handleQueryChange = this.handleQueryChange.bind(this);
@@ -33,11 +34,35 @@ export default class SearchBox extends React.Component<SearchBoxProps, any>  {
         this.updateQuery(newQuery);
     }
 
-    private updateQuery(newQuery: any) {
+    updateQuery(newQuery: any) {
         let newQueryResult = this.props.metricDB.find(newQuery);
         let newSelectedItem = this.state.lastQueryResult.length > 0 ? 0 : -1;
 
-        this.setState({query: newQuery, lastQueryResult: newQueryResult, selectedItem: newSelectedItem});
+        this.setState({
+            query: newQuery,
+            lastQueryResult: newQueryResult,
+            firstSelectedItem: newSelectedItem,
+            lastSelectedItem: newSelectedItem});
+    }
+
+    isSelected(i:number) {
+        let first = this.state.firstSelectedItem;
+        let last = this.state.lastSelectedItem;
+        if (first <= last) {
+            return first <= i && i <= last;
+        } else {
+            return last <= i && i <= first;
+        }
+    }
+
+    getSelectedMetrics() {
+        let first = this.state.firstSelectedItem;
+        let last = this.state.lastSelectedItem;
+
+        let low = first <= last ? first : last;
+        let high = last >= first ? last : first;
+
+        return this.state.lastQueryResult.slice(low, high + 1).map((row:any) => row.metric)
     }
 
     componentDidMount() {
@@ -50,10 +75,10 @@ export default class SearchBox extends React.Component<SearchBoxProps, any>  {
         let esc:Boolean = event.keyCode == 27;
         if (enter || esc) {
             event.preventDefault();
-            if (this.state.selectedItem != -1) {
-                this.props.acceptCallback(this.state.lastQueryResult[this.state.selectedItem].metric);
+            if (this.state.firstSelectedItem != -1) {
+                this.props.acceptCallback(this.getSelectedMetrics());
             } else if (this.state.query.charAt(0) == "=") {
-                this.props.acceptCallback(this.state.query);
+                this.props.acceptCallback([this.state.query]);
             } else {
                 this.props.cancelCallback();
             }
@@ -64,18 +89,21 @@ export default class SearchBox extends React.Component<SearchBoxProps, any>  {
         let down:boolean = event.keyCode == 40;
         let up:boolean = event.keyCode == 38;
 
-        if (up || down) {
+        if (up || down && this.state.lastQueryResult != null) {
             event.preventDefault();
 
-            if (this.state.lastQueryResult != null) {
-                this.setState({selectedItem:
-                    Math.max(
-                        0,
-                        Math.min(
-                            this.state.lastQueryResult.length - 1,
-                            this.state.selectedItem + (down ? 1 : -1)))
-                });
-            }
+            // "Last" is the cursor that the arrow keys move
+            // For single-select, first just rides along with last
+            // For multi-select, first stays the same for the duration of the multi-selection
+            var newLast = Math.max(
+                0,
+                Math.min(
+                    this.state.lastQueryResult.length - 1,
+                    this.state.lastSelectedItem + (down ? 1 : -1)))
+
+            var newFirst = event.shiftKey ? this.state.firstSelectedItem : newLast;
+
+            this.setState({firstSelectedItem: newFirst, lastSelectedItem: newLast});
         }
     }
 
@@ -86,7 +114,7 @@ export default class SearchBox extends React.Component<SearchBoxProps, any>  {
         for (var i = 0; i < Math.min(15, rows.length); i++) {
             var row:any = rows[i];
             listItems.push(
-                <div className={this.state.selectedItem == i ? "list-item-selected" : "list-item"}>{
+                <div className={this.isSelected(i) ? "list-item-selected" : "list-item"}>{
                     row.segments.map((seg:any) =>
                         <span className={seg.match ? "segment-matched" : "segment-unmatched"}>{seg.text}</span>
                     )
