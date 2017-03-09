@@ -26,7 +26,7 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
     constructor(props:TileViewProps) {
 		super(props);
 
-		this.handleSearchAccepted = this.handleSearchAccepted.bind(this);
+		this.addSeriesToTile = this.addSeriesToTile.bind(this);
 	}
     buildChartData(results:CompoundSeriesResult):SeriesChartData {
         return {
@@ -39,7 +39,7 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
         }
     }
 
-	handleSearchAccepted(metric:string) {
+	addSeriesToTile(metric:string) {
         this.props.tile.addSeries(metric);
     }
 
@@ -59,11 +59,12 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
                     <div className="row">
                         <div className="col-md-3">
                             <div className="row">
-                                <SearchBox metricDB={this.props.metricDB} acceptCallback={this.handleSearchAccepted}/>
+                                <SearchBox metricDB={this.props.metricDB} acceptCallback={this.addSeriesToTile}/>
                             </div>
                             <div className="row">
                                 <table>
-                                    {this.props.tile.getHistory().map((m: string) => <HistoryItem metricPath={m}/>)}
+                                    {this.props.tile.getHistory().map((m: string) =>
+                                        <HistoryItem metricPath={m} addCallback={this.addSeriesToTile}/>)}
                                 </table>
                             </div>
                         </div>
