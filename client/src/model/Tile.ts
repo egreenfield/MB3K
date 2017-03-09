@@ -27,6 +27,13 @@ export class Tile extends EventEmitter {
         this.history = [];
         this.duration = 30/*min*/*60/1*1000/1;
 
+        this.query = new FormulaDataSet({
+            inputs: [],
+            indexField: "startTimeInMillis",
+            formulas: []
+        });
+
+
         this.addSeries('Business Transaction Performance|Business Transactions|LoanProcessor-Services|/processor/CreditCheck|Average Response Time (ms)');
         // this.addSeries('Overall Application Performance|Calls per Minute');
     }
