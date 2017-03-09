@@ -10,7 +10,6 @@ export default class LineChartView  extends  VisualizationView<VisualizationView
 
 	constructor(props:VisualizationViewProps) {
 		super(props);		
-		this.chart = new LineChart();
 	}
     render() {
         return (
@@ -19,9 +18,11 @@ export default class LineChartView  extends  VisualizationView<VisualizationView
         );			
     }
     componentDidUpdate() {
-        this.chart.renderInto(this.root,this.props.data);		
+        this.chart.renderInto(this.props.data);		
     }
     componentDidMount() {
-        this.chart.renderInto(this.root,this.props.data);		
+        if(this.chart == null)
+            this.chart = new LineChart(this.root);
+        this.chart.renderInto(this.props.data);		
 }
 }
