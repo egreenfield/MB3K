@@ -68,7 +68,7 @@ export default class Tile extends EventEmitter {
                 this.history.splice(i);
             }
         }
-        this.history.push(metricPath);
+        this.history.unshift(metricPath);
         while (this.history.length > 20) {
             this.history.shift();
         }
