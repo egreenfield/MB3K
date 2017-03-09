@@ -17,7 +17,7 @@ export default class HistoryItem extends React.Component<HistoryItemProps, any> 
     }
 
     render() {
-        return (<tr onClick={this.handleClick}><td>{this.props.metricPath}</td></tr>)
+        return (<tr onDoubleClick={this.handleClick}><td>{this.props.metricPath}</td></tr>)
     }
 
 }
