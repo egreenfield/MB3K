@@ -7,7 +7,8 @@ export interface SearchBoxProps { metricDB:MetricDB, acceptCallback:any, cancelC
 var styles = require('./SearchBox.css');
 
 const inputStyle = {
-    width: "100%"
+    width: "100%",
+    padding: "5px"
 }
 
 export default class SearchBox extends React.Component<SearchBoxProps, any>  {

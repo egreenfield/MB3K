@@ -44,7 +44,7 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
     }
 
     handleCancelSearch() {
-        this.setState({mode: "display"});
+        this.setState({mode: this.props.series ? "display" : "search"});
     }
 
     handleSearchClick() {
@@ -68,7 +68,7 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
             <li className="list-group-item">
                 <table width="100%">
                     <tr>
-                        <td width="*">
+                        <td width="*" style={{"padding-right": 10}}>
                             {this.state.mode == "display" && this.props.series ?
                                 <span onMouseDown={this.handleClickDisplay}>
                                     <span style={{background: this.props.series.color}}>
@@ -90,7 +90,7 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
                                         </table>}
                                 </div>}
                         </td>
-                        <td width="130">
+                        <td width="130" style={{"vertical-align": "top"}}>
                             <div className="btn-toolbar" role="toolbar">
                                 <div className="btn-group" role="group">
                                 {
