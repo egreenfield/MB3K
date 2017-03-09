@@ -78,6 +78,10 @@ export default class Tile extends EventEmitter {
         return this.id
     }
 
+    getSeries(): Series[] {
+        return this.series;
+    }
+
     getHistory(): string[] {
         return this.history.map((s) => s.getMetricPath());
     }

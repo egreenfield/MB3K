@@ -6,6 +6,9 @@ import MetricDB from "../data/MetricDB";
 import {SeriesResult,CompoundSeriesResult} from "../data/DataSet";
 
 import {SeriesChartData} from "visualizations/LineChart";
+import Series from "../model/Series";
+import SeriesItem from "./SeriesItem";
+import HistoryItem from "./HistoryItem";
 
 var styles = require('./TileView.css');
 
@@ -23,7 +26,7 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
     constructor(props:TileViewProps) {
 		super(props);
 
-		this.handleSearchAccepted = this.handleSearchAccepted.bind(this);
+		this.addSeriesToTile = this.addSeriesToTile.bind(this);
 	}
 
     buildChartData(results:CompoundSeriesResult):SeriesChartData {
@@ -38,7 +41,7 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
         }
     }
 
-	handleSearchAccepted(metric:string) {
+	addSeriesToTile(metric:string) {
         this.props.tile.addSeries(metric);
     }
 
@@ -57,7 +60,15 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
                 <div className="container">
                     <div className="row">
                         <div className="col-md-3">
-                            <SearchBox metricDB={this.props.metricDB} acceptCallback={this.handleSearchAccepted}/>
+                            <div className="row">
+                                <SearchBox metricDB={this.props.metricDB} acceptCallback={this.addSeriesToTile}/>
+                            </div>
+                            <div className="row">
+                                <table>
+                                    {this.props.tile.getHistory().map((m: string) =>
+                                        <HistoryItem metricPath={m} addCallback={this.addSeriesToTile}/>)}
+                                </table>
+                            </div>
                         </div>
                         <div className="col-md-9">
                             <div className="row">
@@ -69,36 +80,7 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
                             <div className="row">
                                 <div>
                                     <ul className="list-group" id="serieses">
-                                        <li className="list-group-item">
-                                            Cras justo odio
-                                            <button type="button" className="btn btn-danger btn-xs delete">
-                                                <span className="glyphicon glyphicon-minus-sign" aria-hidden="true"></span>
-                                            </button>
-                                        </li>
-                                        <li className="list-group-item">
-                                            Dapibus ac facilisis in
-                                            <button type="button" className="btn btn-danger btn-xs delete">
-                                                <span className="glyphicon glyphicon-minus-sign" aria-hidden="true"></span>
-                                            </button>
-                                        </li>
-                                        <li className="list-group-item">
-                                            Morbi leo risus
-                                            <button type="button" className="btn btn-danger btn-xs delete">
-                                                <span className="glyphicon glyphicon-minus-sign" aria-hidden="true"></span>
-                                            </button>
-                                        </li>
-                                        <li className="list-group-item">
-                                            Porta ac consectetur ac
-                                            <button type="button" className="btn btn-danger btn-xs delete">
-                                                <span className="glyphicon glyphicon-minus-sign" aria-hidden="true"></span>
-                                            </button>
-                                        </li>
-                                        <li className="list-group-item">
-                                            Vestibulum at eros
-                                            <button type="button" className="btn btn-danger btn-xs delete">
-                                                <span className="glyphicon glyphicon-minus-sign" aria-hidden="true"></span>
-                                            </button>
-                                        </li>
+                                        {this.props.tile.getSeries().map((s: Series) => <SeriesItem series={s}/>)}
                                     </ul>
                                 </div>
                             </div>
