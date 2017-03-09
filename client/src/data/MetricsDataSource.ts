@@ -11,7 +11,8 @@ export interface MetricsQueryParameters extends DataQueryParameters {
 	timeRangeType:string;
 	startTime?:any;
 	endTime?:any;
-	durationInMins?:Number;
+	durationInMins?:number;
+	offsetInMins?:number;
 	rollup:boolean;	
 };
 
@@ -30,6 +31,17 @@ export class MetricsDataSource extends DataSource {
         let urlBase = "http://localhost:8080/api/metrics/";//http://ec2-23-20-138-216.compute-1.amazonaws.com:8090/controller/rest/"
         let url = urlBase + "applications/" + this.application + "/metric-data";
 
+		if(params.offsetInMins) {
+			let offsetInMilli = params.offsetInMins*60*1000;
+			params = (Object as any).assign({},params);
+			if (params.startTime) params.startTime -= offsetInMilli;
+			if (params.endTime) params.endTime -= offsetInMilli;
+			if (params.timeRangeType == "BEFORE_NOW") {
+				params.startTime = (new Date).getTime() - offsetInMilli;
+				params.timeRangeType = "BEFORE_TIME";
+			}
+		}
+
 		return new Promise<SeriesResult>((fulfill, reject) => {
 			request.get(url)
             .query({
@@ -46,6 +58,13 @@ export class MetricsDataSource extends DataSource {
 		      	if (err) reject(err);
 	      		else {
 					let data = JSON.parse(response.text)[0];
+					if(params.offsetInMins) {
+						let offsetInMilli = params.offsetInMins*60*1000;
+						data.metricValues = data.metricValues.forEach((e:any) => {
+							e.startTimeInMillis += offsetInMilli;
+						});
+					}
+
 					fulfill({
 						id:params.id,
 						values:data.metricValues,

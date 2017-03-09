@@ -1,8 +1,9 @@
-more chart animations
+chart pan/zoom
 chart styling
 tooltips
 better UX representation of metric paths
 support for offset time
+	querying offset times.
 	styling of offset lines
 	UX for specifying offset time
 	how does offset time affect History?
@@ -21,3 +22,4 @@ mouse picking of search results.
 add enter/exit transitions for dots when the x axis changes.
 
 fix charts to not crash when series have different numbers of datapoints.
+more chart animations
