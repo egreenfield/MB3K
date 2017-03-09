@@ -27,6 +27,7 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
 		super(props);
 
 		this.addSeriesToTile = this.addSeriesToTile.bind(this);
+		this.deleteSeriesFromTile = this.deleteSeriesFromTile.bind(this);
 	}
 
     buildChartData(results:CompoundSeriesResult):SeriesChartData {
@@ -41,8 +42,12 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
         }
     }
 
-	addSeriesToTile(metric:string) {
+	addSeriesToTile(metric: string) {
         this.props.tile.addSeries(metric);
+    }
+
+    deleteSeriesFromTile(series: Series) {
+        this.props.tile.deleteSeries(series);
     }
 
     render() {
@@ -80,7 +85,8 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
                             <div className="row">
                                 <div>
                                     <ul className="list-group" id="serieses">
-                                        {this.props.tile.getSeries().map((s: Series) => <SeriesItem series={s}/>)}
+                                        {this.props.tile.getSeries().map((s: Series) =>
+                                            <SeriesItem series={s} deleteCallback={this.deleteSeriesFromTile}/>)}
                                     </ul>
                                 </div>
                             </div>

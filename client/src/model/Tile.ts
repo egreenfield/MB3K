@@ -14,7 +14,7 @@ export default class Tile extends EventEmitter {
     dataManager: DataManager;
     id: string;
     series: Series[];
-    history: Series[];
+    history: string[];
     query: DataSet;
 
     constructor(DataManager: DataManager) {
@@ -29,14 +29,17 @@ export default class Tile extends EventEmitter {
     }
 
     addSeries(metricPath: string) {
-        var series = new Series(metricPath);
-        this.series.push(series);
-        this.addToHistory(series);
-        this.refreshData();
+        var dups = this.series.filter((s) => s.metricPath == metricPath);
+        if (dups.length == 0) {
+            var series = new Series(metricPath);
+            this.series.push(series);
+            this.refreshData();
+        }
+        this.addToHistory(metricPath);
     }
 
     deleteSeries(series: Series) {
-        this.series.filter((el) => el == series);
+        this.series = this.series.filter((el) => el != series);
         this.refreshData();
     }
 
@@ -59,8 +62,13 @@ export default class Tile extends EventEmitter {
         this.load();
     }
 
-    addToHistory(series: Series) {
-        this.history.push(series);
+    addToHistory(metricPath: string) {
+        for (var i = this.history.length - 1; i >= 0; i--) {
+            if (this.history[i] == metricPath) {
+                this.history.splice(i);
+            }
+        }
+        this.history.push(metricPath);
         while (this.history.length > 20) {
             this.history.shift();
         }
@@ -83,7 +91,7 @@ export default class Tile extends EventEmitter {
     }
 
     getHistory(): string[] {
-        return this.history.map((s) => s.getMetricPath());
+        return this.history;
     }
 
     // shouldn't be returning a viz class from a model class, should be returning an id that can be resolved to a class.
