@@ -60,6 +60,7 @@ export default class Tile extends EventEmitter {
     }
 
     addToHistory(series: Series) {
+        this.history.filter((el) => el == series);
         this.history.push(series);
         while (this.history.length > 20) {
             this.history.shift();
