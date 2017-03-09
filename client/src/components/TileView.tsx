@@ -36,7 +36,8 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
             series: series.map((seriesData:SeriesResult,i:number) => {
                 return {
                     values:seriesData.values,
-                    color: (seriesColors[i%seriesColors.length])
+                    color: (seriesColors[i%seriesColors.length]),
+                    id: seriesData.id
                 }
             })
         }

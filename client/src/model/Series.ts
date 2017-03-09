@@ -17,11 +17,12 @@ export default class Series extends EventEmitter  {
         this.name = "A";
         this.metricPath = metricPath;
         this.guid = Guid.newGuid();
+
     }
 
     getMetricsQueryParameters(): MetricsQueryParameters {
         return {
-            id: Guid.newGuid(),
+            id: this.guid,
             metricPath: this.metricPath,
             timeRangeType: "BEFORE_NOW",
             durationInMins: 30,

@@ -1,7 +1,7 @@
 import * as React from "react";
 import Series from "../model/Series";
 
-export interface SeriesItemProps { series: Series, deleteCallback: any }
+export interface SeriesItemProps { series: Series, deleteCallback: (series:Series) => void}
 
 var styles = require('./SeriesItem.css');
 

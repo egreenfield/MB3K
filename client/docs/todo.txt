@@ -17,3 +17,5 @@ overall styling
 popup on search results
 mouse picking of search results.
 
+
+add enter/exit transitions for dots when the x axis changes.

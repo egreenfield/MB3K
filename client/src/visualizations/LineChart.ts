@@ -5,21 +5,23 @@ import {CompoundSeriesResult} from "data/DataSet";
 
 export interface SeriesChartData {
     series: {
-        values:any[]
-        color:any
+        values:any[];
+        color:any;
+        id:string;
     }[]
 };
 
 export class LineChart {
     root:SVGElement;
     rootGroup:d3.Selection<d3.BaseType,{},null,undefined>;
-    width:Number;
-    height:Number;
+    width:number;
+    height:number;
     line:d3.Line<[Number,Number]>;
     x:any;
     y:any;
     xAxisView:d3.Selection<d3.BaseType,{},null,undefined>;
     yAxisView:d3.Selection<d3.BaseType,{},null,undefined>;
+    yAxisGenerator:d3.Axis<number | { valueOf(): number; }>;
 
     constructor(svgElement:SVGElement) {
         this.root = svgElement;
@@ -49,21 +51,23 @@ export class LineChart {
             // .select(".domain")
             // .remove();
 
+        this.yAxisGenerator = d3.axisLeft(y).tickSize(-this.width)
+
         this.yAxisView = 
             this.rootGroup.append("g");
-        this.yAxisView            
-                .append("text")
-                .attr("fill", "#000")
-                .attr("transform", "rotate(-90)")
-                .attr("y", 6)
-                .attr("dy", "0.71em")
-                .attr("text-anchor", "end")
-                .text("Value");
+
+        // this.yAxisView            
+        //         .append("text")
+        //         .attr("fill", "#000")
+        //         .attr("transform", "rotate(-90)")
+        //         .attr("y", 6)
+        //         .attr("dy", "0.71em")
+        //         .attr("text-anchor", "end")
+        //         .text("Value");
         
     }
 
     renderInto(data:SeriesChartData) {
-
         let svg = d3.select(this.root);
         if(data.series.length == 0) {
             return;
@@ -79,58 +83,75 @@ export class LineChart {
             }) as any
         );
         y.domain([
-            d3.min(data.series, (series) => { 
-                return d3.min(series.values, (v) => { 
-                    return v.value; 
-                }); 
-            }),
-            d3.max(data.series, (series) => { 
-                return d3.max(series.values, (v) => { 
-                    return v.value; 
-                }); 
-            })
+            Math.min(0,d3.min(data.series, series => d3.min(series.values, v => v.value))),
+            d3.max(data.series, series => d3.max(series.values, v => v.value))
         ]);
 
-        this.yAxisView.call(d3.axisLeft(this.y))
-        this.xAxisView.call(d3.axisBottom(x))
 
         let lineGroups = this.rootGroup.selectAll(".line")
-            .data(data.series);
+            .data(data.series,(d:any) =>  d.id);
 
         // console.log("changed lines:",lineGroups.size());
         // console.log("new lines:",lineGroups.enter().size());
         // console.log("dead lines:",lineGroups.exit().size());
 
-// update existing lines, esp. because axes might have changed.
-        lineGroups.select("path")
-                    .datum((d) => {return d.values})
-                    .transition()
-                    .attr("d", this.line)
 
-        lineGroups.selectAll("circle") 
-            .transition()
-            .attr("cx", (d:any) => x(d.startTimeInMillis) )
-            .attr("cy", (d:any) => y(d.value) )
-
-        
-// remove dead lines
+        let exitDuration = 0;
+        const sampleExitStagger = 5;
+        const lineExitDuration = 50;
+        // remove dead lines
         lineGroups.exit()
             .selectAll("circle")
             .transition()
-            .delay((d,i) => i*10)
+            .delay((d,i) => i*sampleExitStagger)
+            .duration(lineExitDuration)
             .attr("r", 0)
             
         lineGroups.exit()
             .selectAll("path")
             .transition()
-            .delay((d:any) => d.length * 10)
-            .duration(500)
+            .delay((d:any) => d.length * sampleExitStagger)
+            .duration(lineExitDuration)
             .attr("stroke-width", 0)
 
         lineGroups.exit()
             .transition()
-            .delay((d:any) => d.values.length * 10 + 500)
+            .delay((d:any) => {
+                let dur = d.values.length * sampleExitStagger + lineExitDuration;
+                exitDuration = Math.max(dur,exitDuration);
+                return dur;
+            })
             .remove();
+// update existing lines, esp. because axes might have changed.
+        lineGroups.select("path")
+                    .datum((d) => {return d.values})
+                    .transition()
+                    .delay(exitDuration)
+                    .attr("d", this.line)
+
+        lineGroups.each((d,i,n) => {
+            let circles = d3.select(n[i]).selectAll("circle") 
+            .data(d.values);
+            circles.transition()
+                .delay(exitDuration)
+                .attr("cx", (d:any) => x(d.startTimeInMillis) )
+                .attr("cy", (d:any) => y(d.value) )
+            circles
+                .enter()
+                .append("circle")
+                    .attr("fill", "#FFFFFF")
+                    .attr("stroke", d.color)
+                    .attr("stroke-width", 2.5)
+                    .attr("cx", d => x(d.startTimeInMillis) )
+                    .attr("cy", d => y(d.value) )
+                    .transition()
+                    .delay((d,i) => i*10)
+                    .attr("r", 2.5)            
+            circles
+                .exit()
+                .remove();
+        })
+
 
 
 
@@ -169,30 +190,17 @@ export class LineChart {
                     .attr("r", 2.5)            
         })
         
-
-        for (let aSeries of data.series) {
+        //todo why do we need to cast as any?  type def bug, or our bug?
+        let t= this.yAxisView.transition()
+            .delay(exitDuration)
+            .call(this.yAxisGenerator as any);
+        t.select(".domain").remove();
+        t.selectAll(".tick:not(:first-of-type) line").attr("stroke", "#CCC").attr("stroke-dasharray", "2,2");
+        t.selectAll(".tick text").attr("x", -8).attr("y", 0);
         
+        this.xAxisView.transition()
+            .delay(exitDuration)
+            .call(d3.axisBottom(x) as any)
 
-            // // Add the scatterplot
-            // g.selectAll("dot")
-            //     .data(aSeries.values)
-            // .enter()
-            //     .append("circle")
-            //         .attr("r", 2.5)
-            //         .attr("fill", "#FFFFFF")
-            //         .attr("stroke", aSeries.color)
-            //         .attr("stroke-width", 2.5)
-            //         .attr("cx", function(d) { return x(d.startTimeInMillis); })
-            //         .attr("cy", function(d) { return y(d.value); });
-            // g.selectAll("dotHitArea")
-            //     .data(aSeries.values)
-            // .enter()
-            //     .append("circle")
-            //         .attr("r", 5)
-            //         .attr("fill-opacity", "0")
-            //         .attr("cx", function(d) { return x(d.startTimeInMillis); })
-            //         .attr("cy", function(d) { return y(d.value); })
-                
-        }
     }
 }
