@@ -65,20 +65,6 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
 
                 <div className="container">
                     <div className="row">
-                        <div className="col-md-3">
-                            <div className="row">
-                                <SearchBox metricDB={this.props.metricDB} acceptCallback={this.addSeriesToTile}/>
-                            </div>
-                            <div className="row">
-                                History
-                            </div>
-                            <div className="row">
-                                <table>
-                                    {this.props.tile.getHistory().map((m: string) =>
-                                        <HistoryItem metricPath={m} addCallback={this.addSeriesToTile}/>)}
-                                </table>
-                            </div>
-                        </div>
                         <div className="col-md-9">
                             <div className="row">
                                 <div className="col-md-12">
@@ -90,7 +76,20 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
                                 <div>
                                     <ul className="list-group" id="serieses">
                                         {this.props.tile.getSeries().map((s: Series) =>
-                                            <SeriesItem series={s} deleteCallback={this.deleteSeriesFromTile}/>)}
+                                            <SeriesItem
+                                                tile={this.props.tile}
+                                                series={s}
+                                                metricDB={this.props.metricDB}
+                                                addCallback={this.addSeriesToTile}
+                                                deleteCallback={this.deleteSeriesFromTile}
+                                            />)}
+                                        <SeriesItem
+                                            tile={this.props.tile}
+                                            series={null}
+                                            metricDB={this.props.metricDB}
+                                            addCallback={this.addSeriesToTile}
+                                            deleteCallback={null}
+                                        />
                                     </ul>
                                 </div>
                             </div>
