@@ -25,9 +25,11 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
 
 		this.handleSearchAccepted = this.handleSearchAccepted.bind(this);
 	}
+
     buildChartData(results:CompoundSeriesResult):SeriesChartData {
+        let series = (results && results.series) || [];
         return {
-            series: results.series.map((seriesData:SeriesResult,i:number) => {
+            series: series.map((seriesData:SeriesResult,i:number) => {
                 return {
                     values:seriesData.values,
                     color: (seriesColors[i%seriesColors.length])
@@ -60,10 +62,7 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
                         <div className="col-md-9">
                             <div className="row">
                                 <div className="col-md-12">
-                                    {
-                                        (this.props.tile.getState() == "loaded") &&
-                                        <VizType data={this.buildChartData(this.props.tile.getData())}/>
-                                    }
+                                    <VizType data={this.buildChartData(this.props.tile.getData())}/>
                                 </div>
                             </div>
 

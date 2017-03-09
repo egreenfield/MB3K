@@ -13,21 +13,10 @@ export default class LineChartView  extends  VisualizationView<VisualizationView
 		this.chart = new LineChart();
 	}
     render() {
-        let data = this.props.data as any;
-                
-        if(data) {
-            return (
-                <svg ref={(r) => {this.root = r;}}>
-                </svg>
-            );			
-        }
-        else {
-            return (
-                <div>
-                        loading a linechart
-                </div>
-            );
-        }
+        return (
+            <svg ref={(r) => {this.root = r;}}>
+            </svg>
+        );			
     }
     componentDidUpdate() {
         this.chart.renderInto(this.root,this.props.data);		
