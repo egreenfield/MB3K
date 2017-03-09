@@ -6,6 +6,8 @@ import MetricDB from "../data/MetricDB";
 import {SeriesResult,CompoundSeriesResult} from "../data/DataSet";
 
 import {SeriesChartData} from "visualizations/LineChart";
+import Series from "../model/Series";
+import SeriesItem from "./SeriesItem";
 
 var styles = require('./TileView.css');
 
@@ -70,36 +72,7 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
                             <div className="row">
                                 <div>
                                     <ul className="list-group" id="serieses">
-                                        <li className="list-group-item">
-                                            Cras justo odio
-                                            <button type="button" className="btn btn-danger btn-xs delete">
-                                                <span className="glyphicon glyphicon-minus-sign" aria-hidden="true"></span>
-                                            </button>
-                                        </li>
-                                        <li className="list-group-item">
-                                            Dapibus ac facilisis in
-                                            <button type="button" className="btn btn-danger btn-xs delete">
-                                                <span className="glyphicon glyphicon-minus-sign" aria-hidden="true"></span>
-                                            </button>
-                                        </li>
-                                        <li className="list-group-item">
-                                            Morbi leo risus
-                                            <button type="button" className="btn btn-danger btn-xs delete">
-                                                <span className="glyphicon glyphicon-minus-sign" aria-hidden="true"></span>
-                                            </button>
-                                        </li>
-                                        <li className="list-group-item">
-                                            Porta ac consectetur ac
-                                            <button type="button" className="btn btn-danger btn-xs delete">
-                                                <span className="glyphicon glyphicon-minus-sign" aria-hidden="true"></span>
-                                            </button>
-                                        </li>
-                                        <li className="list-group-item">
-                                            Vestibulum at eros
-                                            <button type="button" className="btn btn-danger btn-xs delete">
-                                                <span className="glyphicon glyphicon-minus-sign" aria-hidden="true"></span>
-                                            </button>
-                                        </li>
+                                        {this.props.tile.getSeries().map((s: Series) => <SeriesItem series={s}/>)}
                                     </ul>
                                 </div>
                             </div>
