@@ -64,14 +64,25 @@ export class FormulaDataSet extends DataSet {
 			for(let anInput of this.parameters.inputs) {
 				let inputData = anInput.dataSet.getData();
 				outputDataLength = Math.max(inputData.values.length,outputDataLength);
+				// if(outputDataLength != inputData.values.length) {
+				// 	console.log("ERROR:",outputDataLength,inputData.values.length);
+				// 	console.log("while processing",anInput.name);
+				// }
 				for(let i=0;i<outputDataLength;i++) {
 					let mergedSample = mergedOutputData[i];
-					let inputValue = inputData.values[i];
+					let inputValue = inputData.values[i];					
 					if(mergedSample == null) {
 						mergedOutputData[i] = mergedSample = {};
 						mergedSample[this.parameters.indexField] = inputValue[this.parameters.indexField];
 					}
-					mergedSample[anInput.name] = inputValue[anInput.valueField];
+					if(inputValue == null)
+						mergedSample[anInput.name] = 0;
+					else {
+						mergedSample[anInput.name] = inputValue[anInput.valueField];
+						if(mergedSample[this.parameters.indexField] != inputValue[this.parameters.indexField]) {
+							throw new Error("TIME FIELDS DON'T MATCH UP");
+						}
+					}
 				}
 				inputData.color = anInput.color;
 				result.series.push(inputData);
