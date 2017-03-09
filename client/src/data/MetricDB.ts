@@ -2,8 +2,8 @@ import * as request from "superagent";
 
 export default class MetricDB {
 
-    allMetrics:String[] = [];
-
+    allMetrics:string[] = [];
+    tierAndNodes:{[tier: string]: string[]} ={};
     load() {
         let thisDB = this;
         request.get("http://localhost:8080/api/test-metrics")
@@ -12,6 +12,8 @@ export default class MetricDB {
                     console.log("Failed to load metrics DB: " + err);
                 }
                 thisDB.allMetrics = JSON.parse(response.text);
+           //     this.findRelated('Application Infrastructure Performance|Authentication-Service|Individual Nodes|AD-Capital_REST_NODE|JVM|Process CPU Usage %');
+           //     this.findRelated('Application Infrastructure Performance|Authentication-Service|JVM|Process CPU Usage %');
             });
     }
 
@@ -90,4 +92,92 @@ export default class MetricDB {
         // So return a positive result
         return segments;
     }
+
+    findRelated(query: string) {
+        if (query.length == 0) {
+            return [];
+        }
+
+        var result:any[] = [];
+        for (var i = 0; i < this.allMetrics.length; i++) {
+            let metric = this.allMetrics[i];
+            if (this.isRelatedMetrics(query, metric)) {
+                result.push(metric);
+            }
+        }
+        console.log(query + " is related to ");
+        console.log(result);
+        return result;
+    }
+
+    isRelatedMetrics(search: String, haystack: String):boolean {
+        if (search == "") {
+            return null;
+        }
+        if ( search == haystack) {
+            return false;
+        }
+        var searchParts:string[] = search.split("|");
+        var haystackParts:string[] = haystack.split("|");
+
+        var index=search.indexOf('Individual Nodes');
+
+        // search is node level metrics
+        if (index >= 0) {
+            if (haystack.length >= index) {
+                if (haystack.substr(0, index) != search.substr(0, index)) {
+                    return false;
+                } else {
+                    if (!(haystack.indexOf(search.substr(search.indexOf("|", index+'Individual Nodes'.length+1))) > 0)) {
+                        return false;
+                    }
+                }
+            } else {
+                return false;
+            }
+        } else { // search is a tier metrics
+            for (var i = 0; i < searchParts.length; i++) {
+                if (!this.contains(haystackParts, searchParts[i])) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    contains(a: string[], element:string): boolean{
+        var i = a.length;
+        while (i--) {
+            if (a[i] == element) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    // buildTiersAndNodes() {
+    //
+    //     for (var i = 0; i < this.allMetrics.length; i++) {
+    //         var metric = this.allMetrics[i];
+    //         if (metric.indexOf("Overall Application Performance|")<0) {
+    //             continue;
+    //         }
+    //         var parts = metric.split("|");
+    //         for (var j = 0; j < parts.length; j++) {
+    //             if (parts[j] == "Individual Nodes") {
+    //                 this.tierAndNodes[parts[j - 1]] =
+    //                     this.tierAndNodes[parts[j - 1]] || [];
+    //                 if (! this.contains(this.tierAndNodes[parts[j - 1]], parts[j + 1])) {
+    //                     this.tierAndNodes[parts[j - 1]].push(parts[j + 1]);
+    //                 }
+    //                 break;
+    //             }
+    //         }
+    //
+    //     }
+    //
+    //    // console.log(this.tierAndNodes);
+    // }
+
 }
