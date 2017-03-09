@@ -17,7 +17,7 @@ export class Tile extends EventEmitter {
     query: FormulaDataSet;
     endTime:number;
     duration:number;
-    namer: SeriesNamer = new SeriesNamer();
+    propertyPicker: SeriesPropertyPicker = new SeriesPropertyPicker();
 
 
     constructor(DataManager: DataManager) {
@@ -41,7 +41,8 @@ export class Tile extends EventEmitter {
     addMetricSeries(metricPath: string) {
         var duplicates = this.series.filter((s) => s.expression == metricPath && !s.isFormula);
         if (duplicates.length == 0) {
-            var series = new Series(this.namer.getNextName(), metricPath, false);
+            var props = this.propertyPicker.pickRandomSeriesProps();
+            var series = new Series(props.name, metricPath, false, props.color);
             this.series.push(series);
             this.refreshData();
         }
@@ -51,7 +52,8 @@ export class Tile extends EventEmitter {
     addForumla(formula: string) {
         var duplicates = this.series.filter((s) => s.expression == formula && s.isFormula);
         if (duplicates.length == 0) {
-            var series = new Series(this.namer.getNextName(), formula, true);
+            var props = this.propertyPicker.pickRandomSeriesProps();
+            var series = new Series(props.name, formula, true, props.color);
             this.series.push(series);
             this.refreshData();
         }
@@ -71,7 +73,8 @@ export class Tile extends EventEmitter {
         return {
             name: s.name,
             valueField: "value",
-            dataSet: (this.dataManager.sourceFromID("ADC-metrics") as MetricsDataSource).newQuery(s.getMetricsQueryParameters())
+            dataSet: (this.dataManager.sourceFromID("ADC-metrics") as MetricsDataSource).newQuery(s.getMetricsQueryParameters()),
+            color: s.color
         }
     }
 
@@ -79,7 +82,8 @@ export class Tile extends EventEmitter {
         return {
             name: s.name,
             valueField: "value",
-            expression: s.expression
+            expression: s.expression,
+            color: s.color
         }
     }
 
@@ -146,17 +150,35 @@ export class Tile extends EventEmitter {
     }
 }
 
-class SeriesNamer {
+class SeriesPropertyPicker {
+    colors: string[] = [
+        "#E34471",
+        "#598693",
+        "#F2CC49",
+        "#EA4D4C",
+        "#7AACC1"
+    ];
     alphabets: string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     nextIndex: number = 0;
 
-    getNextName(): string {
+    pickRandomSeriesProps(): SeriesProps {
         var ch = this.alphabets.charAt(this.nextIndex % this.alphabets.length);
         var id = Math.floor(this.nextIndex / this.alphabets.length);
+        var name = ch + (id == 0 ? "" : id);
+        var color = this.colors[this.nextIndex % this.colors.length]
 
         this.nextIndex++;
 
-        return ch + (id == 0 ? "" : id);
+        return new SeriesProps(name, color);
     }
+}
 
+class SeriesProps {
+    name: string;
+    color: string;
+
+    constructor(name: string, color: string) {
+        this.name = name;
+        this.color = color;
+    }
 }

@@ -14,14 +14,6 @@ var styles = require('./TileView.css');
 
 interface TileViewProps {tile:Tile, metricDB:MetricDB}
 
-const seriesColors = [
-    "#E34471",
-    "#598693",
-    "#7AACC1",
-    "#F2CC49",
-    "#EA4D4C"
-];
-
 const cell = {
     "vertical-align": "top",
     "padding": "21px"
@@ -44,7 +36,7 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
             series: series.map((seriesData:SeriesResult,i:number) => {
                 return {
                     values:seriesData.values,
-                    color: (seriesColors[i%seriesColors.length]),
+                    color: seriesData.color,
                     id: seriesData.id
                 }
             }),
