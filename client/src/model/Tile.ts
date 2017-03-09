@@ -19,7 +19,6 @@ export class Tile extends EventEmitter {
     duration:number;
     namer: SeriesNamer = new SeriesNamer();
 
-
     constructor(DataManager: DataManager) {
         super();
         this.dataManager = DataManager;
@@ -62,16 +61,17 @@ export class Tile extends EventEmitter {
         this.refreshData();
     }
 
-    getDuration():[number,number] {
+    getTimespan():[number,number] {
         let end:number = (this.endTime)? this.endTime:(new Date().getTime());
         return [end-this.duration,end];
     }
 
-    toMetricFormulaInput(s: Series): FormulaInput {
+        toMetricFormulaInput(s: Series): FormulaInput {
+        let timespan = this.getTimespan();
         return {
             name: s.name,
             valueField: "value",
-            dataSet: (this.dataManager.sourceFromID("ADC-metrics") as MetricsDataSource).newQuery(s.getMetricsQueryParameters())
+            dataSet: (this.dataManager.sourceFromID("ADC-metrics") as MetricsDataSource).newQuery(s.getMetricsQueryParameters(timespan))
         }
     }
 
@@ -97,10 +97,12 @@ export class Tile extends EventEmitter {
         this.load();
     }
 
-    shiftTimeRangeTo(domain:number[]) {
-        this.endTime = domain[1];
-        this.duration = (domain[1] - domain[0]);
-        this.refreshData();
+    shiftTimeRangeTo(domain:number[],reload:boolean) {
+        this.endTime = Math.round(domain[1]);
+        this.duration = Math.round((domain[1] - domain[0]));
+        if(reload) {
+            this.refreshData();
+        }
         this.emit("change");
     }
 

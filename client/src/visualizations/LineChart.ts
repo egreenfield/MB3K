@@ -25,40 +25,51 @@ export class LineChart {
     yAxisView:d3.Selection<d3.BaseType,{},null,undefined>;
     yAxisGenerator:d3.Axis<number | { valueOf(): number; }>;
     xDomain:[number,number];
-    panToCallback:(delta:number[]) => void;
+    animateChanges:boolean = true;
+
+    panToCallback:(delta:number[],reload:boolean) => void;
 
     constructor(svgElement:SVGElement) {
         this.root = svgElement;
         let svg = d3.select(this.root);
         svg.attr("width",600);
         svg.attr("height",400);
-
+        
+        this.root.onwheel = () => false;
         let margin = {top: 20, right: 20, bottom: 30, left: 50};
 
         this.width = +svg.attr("width") - margin.left - margin.right;
         this.height = +svg.attr("height") - margin.top - margin.bottom;
-        this.rootGroup = svg.append("g").
+
+
+        //clippath
+         svg.append("defs").append("rect").
             attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+            .attr("width", this.width)
+            .attr("height", this.height)
+            .style("fill", "#FFAAAA")
+            .attr("id","clipper")
+
+        this.rootGroup = svg.append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+            .style("clip-path","url('#clipper')")
         
         let baseDomain:number[];
-
         let zoom = d3.zoom()
-            .scaleExtent([1, 10])
+//            .scaleExtent([0, 10])
             .on("start", () => {
                 baseDomain = this.xDomain.concat();
+                return false  
             })
             .on("end",() => {
-                let delta = this.x.invert(0) - this.x.invert(d3.event.transform.x);
-                let newDomain = [baseDomain[0]+delta,baseDomain[1]+delta];
-                (this.rootGroup.node() as any)["__zoom"] = d3.zoomIdentity.translate(0,0);;
-                this.panToCallback && this.panToCallback(newDomain);
+//                this.animateChanges = false;
+                this.panToCallback && this.panToCallback(this.computeNewDomain(baseDomain,d3.event.transform),true);
+                (this.rootGroup.node() as any)["__zoom"] = d3.zoomIdentity.translate(0,0);;                
             })
-            .on("zoom", () => {                
-                let delta = this.x.invert(0) - this.x.invert(d3.event.transform.x);
-                let newDomain = [baseDomain[0]+delta,baseDomain[1]+delta];
-                //console.log("translate by",d3.event.transform.x,":",newDomain.map(e => Math.round(e/1000/60) % 60));
-                //this.panToCallback && this.panToCallback(newDomain);
-            });
+            .on("zoom", () => {   
+                this.panToCallback && this.panToCallback(this.computeNewDomain(baseDomain,d3.event.transform),false);
+                return false  
+            })
         
         this.rootGroup.call(zoom);
 
@@ -89,20 +100,20 @@ export class LineChart {
         this.yAxisView = 
             this.rootGroup.append("g");
 
-        // this.yAxisView            
-        //         .append("text")
-        //         .attr("fill", "#000")
-        //         .attr("transform", "rotate(-90)")
-        //         .attr("y", 6)
-        //         .attr("dy", "0.71em")
-        //         .attr("text-anchor", "end")
-        //         .text("Value");
-        
     }
 
     setPanToCallback(callback:(newDomain:number[]) => void) {
         this.panToCallback = callback;
     }
+
+    computeNewDomain(baseDomain:number[], transform:d3.ZoomTransform) {
+        let scale = transform.k*transform.k;        
+        let mid = (baseDomain[1] + baseDomain[0])/2;
+        let delta =  (scale != 1)? 0:(this.x.invert(0) - this.x.invert(transform.x));
+        let newDomain = [ (baseDomain[0]-mid)*scale + mid + delta,(baseDomain[1]-mid)*scale + mid + delta]                    
+        return newDomain;
+    }
+
     renderInto(data:SeriesChartData) {
         let svg = d3.select(this.root);
         if(data.series.length == 0) {
@@ -121,6 +132,8 @@ export class LineChart {
             this.xDomain = [data.xStart,data.xEnd];
         }
 
+        // console.log("domain is",new Date(this.xDomain[0]),new Date(this.xDomain[1]));
+        // console.log("times are",data.series[0].values.map(v => new Date(v.startTimeInMillis)));
         x.domain(this.xDomain);
         
         y.domain([
@@ -164,36 +177,73 @@ export class LineChart {
             })
             .remove();
 // update existing lines, esp. because axes might have changed.
-        lineGroups.select("path")
-                    .datum((d) => {return d.values})
-                    .transition()
-                    .delay(exitDuration)
-                    .attr("d", this.line)
-
+    //    if(this.animateChanges) {
+    //         lineGroups.select("path")
+    //                     .datum((d) => {return d.values})
+    //                     .transition()
+    //                     .delay(exitDuration)
+    //                     .attr("d", this.line)
+    //    } else {
+    //        this.animateChanges = true;
+    //         lineGroups.select("path")
+    //                     .datum((d) => {return d.values})
+    //                     .attr("d", this.line)
+    //    }
         lineGroups.each((d,i,n) => {
             let circles = d3.select(n[i]).selectAll("circle") 
             .data(d.values,(d:any) =>  d.startTimeInMillis);
-            circles.transition()
-                .delay(exitDuration)
-                .attr("cx", (d:any) => x(d.startTimeInMillis) )
-                .attr("cy", (d:any) => y(d.value) )
-            circles
-                .enter()
-                .append("circle")
-                    .attr("fill", "#FFFFFF")
-                    .attr("stroke", d.color)
-                    .attr("stroke-width", 2.5)
-                    .attr("cx", d => x(d.startTimeInMillis) )
-                    .attr("cy", d => y(d.value) )
-                    .transition()
-                    .delay((d,i) => i*10)
-                    .attr("r", 2.5)            
+            this.animateChanges = (circles.enter().size() == 0 &&
+                                    circles.exit().size() == 0);
+            
+            if(this.animateChanges) {
+                circles.transition()
+                    .delay(exitDuration)
+                    .attr("cx", (d:any) => x(d.startTimeInMillis) )
+                    .attr("cy", (d:any) => y(d.value) )
+                circles
+                    .enter()
+                    .append("circle")
+                        .attr("fill", "#FFFFFF")
+                        .attr("stroke", d.color)
+                        .attr("stroke-width", 2.5)
+                        .attr("cx", d => x(d.startTimeInMillis) )
+                        .attr("cy", d => y(d.value) )
+                        .transition()
+                        .delay((d,i) => i*10)
+                        .attr("r", 2.5)            
+            } else {
+                circles
+                    .attr("cx", (d:any) => x(d.startTimeInMillis) )
+                    .attr("cy", (d:any) => y(d.value) )
+                circles
+                    .enter()
+                    .append("circle")
+                        .attr("fill", "#FFFFFF")
+                        .attr("stroke", d.color)
+                        .attr("stroke-width", 2.5)
+                        .attr("cx", d => x(d.startTimeInMillis) )
+                        .attr("cy", d => y(d.value) )
+                        .attr("r", 2.5)                            
+            }
             circles
                 .exit()
                 .remove();
         })
 
 
+// update existing lines, esp. because axes might have changed.
+       if(this.animateChanges) {
+            lineGroups.select("path")
+                        .datum((d) => {return d.values})
+                        .transition()
+                        .delay(exitDuration)
+                        .attr("d", this.line)
+       } else {
+ //          this.animateChanges = true;
+            lineGroups.select("path")
+                        .datum((d) => {return d.values})
+                        .attr("d", this.line)
+       }
 
 
 // create new lines
@@ -201,6 +251,7 @@ export class LineChart {
                 .append("g")
                 .classed("line",true);
 
+        
         newLineGroups
                     .append("path")
                     .attr("fill", "none")

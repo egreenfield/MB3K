@@ -33,7 +33,7 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
     buildChartData():SeriesChartData {
         let tile = this.props.tile;
         let results = tile.getData();
-        let domain = tile.getDuration();
+        let domain = tile.getTimespan();
         let series = (results && results.series) || [];
         return {
             series: series.map((seriesData:SeriesResult,i:number) => {
@@ -73,7 +73,7 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
                         <div className="col-md-9">
                             <div className="row">
                                 <div className="col-md-12">
-                                    <VizType data={this.buildChartData()} panTo={(newDomain:number[]) => {this.props.tile.shiftTimeRangeTo(newDomain) }} />
+                                    <VizType data={this.buildChartData()} panTo={(newDomain:number[],reload:boolean) => {this.props.tile.shiftTimeRangeTo(newDomain,reload) }} />
                                 </div>
                             </div>
 

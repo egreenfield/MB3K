@@ -22,15 +22,16 @@ export default class Series extends EventEmitter  {
         this.isFormula = isFormula;
     }
 
-    getMetricsQueryParameters(): MetricsQueryParameters {
+    getMetricsQueryParameters(timespan:number[]): MetricsQueryParameters {
         if (this.isFormula) {
             return null; // Ugly hack!
         } else {
             return {
                 id: this.guid,
                 metricPath: this.expression,
-                timeRangeType: "BEFORE_NOW",
-                durationInMins: 30,
+                timeRangeType: "BETWEEN_TIMES",
+                startTime: timespan[0],
+                endTime: timespan[1],
                 rollup: false
             }
         }

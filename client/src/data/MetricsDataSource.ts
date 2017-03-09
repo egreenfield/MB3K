@@ -64,7 +64,8 @@ export class MetricsDataSource extends DataSource {
 							e.startTimeInMillis += offsetInMilli;
 						});
 					}
-
+					// console.log("requested ",new Date(params.startTime), new Date(params.endTime));
+					// console.log("got back", data.metricValues.map((v:any) => new Date(v.startTimeInMillis)));
 					fulfill({
 						id:params.id,
 						values:data.metricValues,
