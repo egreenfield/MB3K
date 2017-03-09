@@ -25,7 +25,7 @@ export default class Tile extends EventEmitter {
         this.history = [];
 
         this.addSeries('Business Transaction Performance|Business Transactions|LoanProcessor-Services|/processor/CreditCheck|Average Response Time (ms)');
-        this.addSeries('Business Transaction Performance|Business Transactions|LoanProcessor-Services|/processor/CreditCheck|Average CPU Used (ms)');
+        // this.addSeries('Overall Application Performance|Calls per Minute');
     }
 
     addSeries(metricPath: string) {
@@ -56,6 +56,7 @@ export default class Tile extends EventEmitter {
         });
 
         this.query.on("stateChange", () => this.emit("change"));
+        this.load();
     }
 
     addToHistory(series: Series) {
