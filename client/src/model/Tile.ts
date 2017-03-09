@@ -22,6 +22,11 @@ export default class Tile extends EventEmitter {
         this.id = Guid.newGuid();
         this.series = [];
         this.history = [];
+        this.query = new FormulaDataSet({
+            inputs: [],
+            indexField: "startTimeInMillis",
+            formulas: []
+        });
 
         this.addSeries('Business Transaction Performance|Business Transactions|LoanProcessor-Services|/processor/CreditCheck|Average Response Time (ms)');
         // this.addSeries('Overall Application Performance|Calls per Minute');
