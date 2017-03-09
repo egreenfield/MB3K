@@ -49,7 +49,7 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
     }
 
 	addSeriesToTile(metric: string) {
-        this.props.tile.addSeries(metric);
+        this.props.tile.addMetricSeries(metric);
     }
 
     deleteSeriesFromTile(series: Series) {

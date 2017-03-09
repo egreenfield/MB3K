@@ -31,7 +31,6 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
     }
 
     handleDeleteClick() {
-        console.log("deleting " + this.props.series.getMetricPath());
         this.props.deleteCallback(this.props.series);
         event.preventDefault();
     }
@@ -60,7 +59,7 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
                         <td width="*">
                             {this.state.mode == "display" && this.props.series ?
                                 <span onMouseDown={this.handleClickDisplay}>
-                                    {this.props.series.getMetricPath()}
+                                    <b>{this.props.series.name}</b>: {this.props.series.expression}
                                 </span> :
                                 <div>
                                     {this.state.mode == "search" &&

@@ -8,30 +8,43 @@ import {MetricsQueryParameters} from "../data/MetricsDataSource";
 import {DataSet} from "../data/DataSet";
 
 export default class Series extends EventEmitter  {
-    name: string;
     guid: string;
-    metricPath: string;
+    name: string;
+    expression: string;
+    isFormula: boolean;
 
-    constructor(metricPath: string) {
+
+    constructor(name: string, expression: string, isFormula: boolean) {
         super();
-        this.name = "A";
-        this.metricPath = metricPath;
         this.guid = Guid.newGuid();
-
+        this.name = name;
+        this.expression = expression;
+        this.isFormula = isFormula;
     }
 
-    getMetricsQueryParameters(start:number,end:number): MetricsQueryParameters {
-        return {
-            id: this.guid,
-            metricPath: this.metricPath,
-            timeRangeType: "BETWEEN_TIMES",
-            "startTime": start,
-            "endTime": end,
-            rollup: false
+    getMetricsQueryParameters(): MetricsQueryParameters {
+        if (this.isFormula) {
+            return null; // Ugly hack!
+        } else {
+            return {
+                id: this.guid,
+                metricPath: this.expression,
+                timeRangeType: "BEFORE_NOW",
+                durationInMins: 30,
+                rollup: false
+            }
         }
     }
 
-    getMetricPath(): string {
-        return this.metricPath;
+    getFormula(): string {
+        if (this.isFormula) {
+            return this.expression;
+        } else {
+            return null; // Ugly hack!
+        }
+    }
+
+    getExpression(): string {
+        return this.expression;
     }
 }

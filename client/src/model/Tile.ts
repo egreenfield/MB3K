@@ -5,7 +5,7 @@ import Guid from '../utils/Guid';
 import {DataManager} from "data/DataManager";
 import {DataSet,MultiSeriesResult} from "data/DataSet";
 import {MetricsDataSource, MetricsQueryParameters} from "data/MetricsDataSource";
-import {FormulaDataSet, FormulaInput} from "../data/FormulaDataSet";
+import {FormulaDataSet, FormulaInput, FormulaExpression} from "../data/FormulaDataSet";
 import Series from "./Series";
 import foo = require("es6-promise");
 
@@ -17,6 +17,7 @@ export class Tile extends EventEmitter {
     query: FormulaDataSet;
     endTime:number;
     duration:number;
+    namer: SeriesNamer = new SeriesNamer();
 
 
     constructor(DataManager: DataManager) {
@@ -34,43 +35,62 @@ export class Tile extends EventEmitter {
         });
 
 
-        this.addSeries('Business Transaction Performance|Business Transactions|LoanProcessor-Services|/processor/CreditCheck|Average Response Time (ms)');
-        // this.addSeries('Overall Application Performance|Calls per Minute');
+        this.addMetricSeries('Business Transaction Performance|Business Transactions|LoanProcessor-Services|/processor/CreditCheck|Average Response Time (ms)');
     }
 
-    addSeries(metricPath: string) {
-        var dups = this.series.filter((s) => s.metricPath == metricPath);
-        if (dups.length == 0) {
-            var series = new Series(metricPath);
+    addMetricSeries(metricPath: string) {
+        var duplicates = this.series.filter((s) => s.expression == metricPath && !s.isFormula);
+        if (duplicates.length == 0) {
+            var series = new Series(this.namer.getNextName(), metricPath, false);
             this.series.push(series);
             this.refreshData();
         }
         this.addToHistory(metricPath);
     }
 
+    addForumla(formula: string) {
+        var duplicates = this.series.filter((s) => s.expression == formula && s.isFormula);
+        if (duplicates.length == 0) {
+            var series = new Series(this.namer.getNextName(), formula, true);
+            this.series.push(series);
+            this.refreshData();
+        }
+    }
+
     deleteSeries(series: Series) {
         this.series = this.series.filter((el) => el != series);
         this.refreshData();
     }
+
     getDuration():[number,number] {
         let end:number = (this.endTime)? this.endTime:(new Date().getTime());
         return [end-this.duration,end];
     }
 
-    toFormulaInput(s: Series): FormulaInput {
-        let duration = this.getDuration();
+    toMetricFormulaInput(s: Series): FormulaInput {
         return {
             name: s.name,
             valueField: "value",
-            dataSet: (this.dataManager.sourceFromID("ADC-metrics") as MetricsDataSource).newQuery(s.getMetricsQueryParameters(duration[0],duration[1]))
+            dataSet: (this.dataManager.sourceFromID("ADC-metrics") as MetricsDataSource).newQuery(s.getMetricsQueryParameters())
+        }
+    }
+
+    toFormulaInput(s: Series): FormulaExpression {
+        return {
+            name: s.name,
+            valueField: "value",
+            expression: s.expression
         }
     }
 
     refreshData() {
+        var metrics = this.series.filter((s) => !s.isFormula);
+        var formulas = this.series.filter((s) => s.isFormula);
+
         this.query = new FormulaDataSet({
-            inputs: this.series.map((s) => this.toFormulaInput(s)),
+            inputs: metrics.map((s) => this.toMetricFormulaInput(s)),
             indexField: "startTimeInMillis",
-            formulas: []
+            formulas: formulas.map((s) => this.toFormulaInput(s))
         });
 
         this.query.on("stateChange", () => this.emit("change"));
@@ -124,4 +144,19 @@ export class Tile extends EventEmitter {
     getData() {
         return this.query.getData();
     }
+}
+
+class SeriesNamer {
+    alphabets: string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    nextIndex: number = 0;
+
+    getNextName(): string {
+        var ch = this.alphabets.charAt(this.nextIndex % this.alphabets.length);
+        var id = Math.floor(this.nextIndex / this.alphabets.length);
+
+        this.nextIndex++;
+
+        return ch + (id == 0 ? "" : id);
+    }
+
 }
