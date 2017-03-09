@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import Tile from 'model/Tile';
+import {Tile} from 'model/Tile';
 import SearchBox from "./SearchBox";
 import MetricDB from "../data/MetricDB";
 import {SeriesResult,MultiSeriesResult} from "../data/DataSet";
@@ -30,7 +30,10 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
 		this.deleteSeriesFromTile = this.deleteSeriesFromTile.bind(this);
 	}
 
-    buildChartData(results:MultiSeriesResult):SeriesChartData {
+    buildChartData():SeriesChartData {
+        let tile = this.props.tile;
+        let results = tile.getData();
+        let domain = tile.getDuration();
         let series = (results && results.series) || [];
         return {
             series: series.map((seriesData:SeriesResult,i:number) => {
@@ -39,7 +42,9 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
                     color: (seriesColors[i%seriesColors.length]),
                     id: seriesData.id
                 }
-            })
+            }),
+            xStart: domain[0],
+            xEnd: domain[1]
         }
     }
 
@@ -79,7 +84,7 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
                         <div className="col-md-9">
                             <div className="row">
                                 <div className="col-md-12">
-                                    <VizType data={this.buildChartData(this.props.tile.getData())}/>
+                                    <VizType data={this.buildChartData()} panTo={(newDomain:number[]) => {this.props.tile.shiftTimeRangeTo(newDomain) }} />
                                 </div>
                             </div>
 

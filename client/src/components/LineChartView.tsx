@@ -2,7 +2,6 @@ import * as React from 'react';
 import {VisualizationView,VisualizationViewProps} from './VisualizationView';
 import {LineChart} from "../visualizations/LineChart";
 
-
 export default class LineChartView  extends  VisualizationView<VisualizationViewProps, {}>  {
 
 	root:SVGElement;
@@ -21,8 +20,10 @@ export default class LineChartView  extends  VisualizationView<VisualizationView
         this.chart.renderInto(this.props.data);		
     }
     componentDidMount() {
-        if(this.chart == null)
+        if(this.chart == null) {
             this.chart = new LineChart(this.root);
+            this.chart.setPanToCallback(this.props.panTo);
+        }
         this.chart.renderInto(this.props.data);		
 }
 }

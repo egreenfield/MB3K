@@ -1,7 +1,7 @@
 import * as React from 'react';
 import TileView from './TileView';
 import Dashboard from 'model/Dashboard'
-import Tile from 'model/Tile';
+import {Tile} from 'model/Tile';
 import MetricDB from "../data/MetricDB";
 
 export interface DashboardViewProps {dashboard:Dashboard, metricDB:MetricDB}

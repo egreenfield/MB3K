@@ -3,18 +3,21 @@ import {EventEmitter} from "EventEmitter3";
 import LineChartView from "../components/LineChartView"
 import Guid from '../utils/Guid';
 import {DataManager} from "data/DataManager";
-import {DataSet} from "data/DataSet";
+import {DataSet,MultiSeriesResult} from "data/DataSet";
 import {MetricsDataSource, MetricsQueryParameters} from "data/MetricsDataSource";
 import {FormulaDataSet, FormulaInput} from "../data/FormulaDataSet";
 import Series from "./Series";
 import foo = require("es6-promise");
 
-export default class Tile extends EventEmitter {
+export class Tile extends EventEmitter {
     dataManager: DataManager;
     id: string;
     series: Series[];
     history: string[];
-    query: DataSet;
+    query: FormulaDataSet;
+    endTime:number;
+    duration:number;
+
 
     constructor(DataManager: DataManager) {
         super();
@@ -22,6 +25,7 @@ export default class Tile extends EventEmitter {
         this.id = Guid.newGuid();
         this.series = [];
         this.history = [];
+        this.duration = 30/*min*/*60/1*1000/1;
 
         this.addSeries('Business Transaction Performance|Business Transactions|LoanProcessor-Services|/processor/CreditCheck|Average Response Time (ms)');
         // this.addSeries('Overall Application Performance|Calls per Minute');
@@ -41,12 +45,17 @@ export default class Tile extends EventEmitter {
         this.series = this.series.filter((el) => el != series);
         this.refreshData();
     }
+    getDuration():[number,number] {
+        let end:number = (this.endTime)? this.endTime:(new Date().getTime());
+        return [end-this.duration,end];
+    }
 
     toFormulaInput(s: Series): FormulaInput {
+        let duration = this.getDuration();
         return {
             name: s.name,
             valueField: "value",
-            dataSet: (this.dataManager.sourceFromID("ADC-metrics") as MetricsDataSource).newQuery(s.getMetricsQueryParameters())
+            dataSet: (this.dataManager.sourceFromID("ADC-metrics") as MetricsDataSource).newQuery(s.getMetricsQueryParameters(duration[0],duration[1]))
         }
     }
 
@@ -59,6 +68,13 @@ export default class Tile extends EventEmitter {
 
         this.query.on("stateChange", () => this.emit("change"));
         this.load();
+    }
+
+    shiftTimeRangeTo(domain:number[]) {
+        this.endTime = domain[1];
+        this.duration = (domain[1] - domain[0]);
+        this.refreshData();
+        this.emit("change");
     }
 
     addToHistory(metricPath: string) {

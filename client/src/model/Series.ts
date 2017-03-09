@@ -20,12 +20,13 @@ export default class Series extends EventEmitter  {
 
     }
 
-    getMetricsQueryParameters(): MetricsQueryParameters {
+    getMetricsQueryParameters(start:number,end:number): MetricsQueryParameters {
         return {
             id: this.guid,
             metricPath: this.metricPath,
-            timeRangeType: "BEFORE_NOW",
-            durationInMins: 30,
+            timeRangeType: "BETWEEN_TIMES",
+            "startTime": start,
+            "endTime": end,
             rollup: false
         }
     }

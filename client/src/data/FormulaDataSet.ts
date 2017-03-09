@@ -100,7 +100,7 @@ export class FormulaDataSet extends DataSet {
 			this.setState("unloaded");
 		}
 	}
-	getData():SeriesResult {
+	getData():MultiSeriesResult {
 		return this.data;
 	}
 }

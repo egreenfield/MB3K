@@ -1,5 +1,5 @@
 
-import Tile from "./Tile"
+import {Tile} from "./Tile"
 import { EventEmitter } from "EventEmitter3";
 import {DataManager} from "data/DataManager";
 

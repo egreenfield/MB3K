@@ -8,7 +8,9 @@ export interface SeriesChartData {
         values:any[];
         color:any;
         id:string;
-    }[]
+    }[],
+    xStart?:any;
+    xEnd?:any;
 };
 
 export class LineChart {
@@ -22,6 +24,8 @@ export class LineChart {
     xAxisView:d3.Selection<d3.BaseType,{},null,undefined>;
     yAxisView:d3.Selection<d3.BaseType,{},null,undefined>;
     yAxisGenerator:d3.Axis<number | { valueOf(): number; }>;
+    xDomain:[number,number];
+    panToCallback:(delta:number[]) => void;
 
     constructor(svgElement:SVGElement) {
         this.root = svgElement;
@@ -33,7 +37,36 @@ export class LineChart {
 
         this.width = +svg.attr("width") - margin.left - margin.right;
         this.height = +svg.attr("height") - margin.top - margin.bottom;
-        this.rootGroup = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        this.rootGroup = svg.append("g").
+            attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+        
+        let baseDomain:number[];
+
+        let zoom = d3.zoom()
+            .scaleExtent([1, 10])
+            .on("start", () => {
+                baseDomain = this.xDomain.concat();
+            })
+            .on("end",() => {
+                let delta = this.x.invert(0) - this.x.invert(d3.event.transform.x);
+                let newDomain = [baseDomain[0]+delta,baseDomain[1]+delta];
+                (this.rootGroup.node() as any)["__zoom"] = d3.zoomIdentity.translate(0,0);;
+                this.panToCallback && this.panToCallback(newDomain);
+            })
+            .on("zoom", () => {                
+                let delta = this.x.invert(0) - this.x.invert(d3.event.transform.x);
+                let newDomain = [baseDomain[0]+delta,baseDomain[1]+delta];
+                //console.log("translate by",d3.event.transform.x,":",newDomain.map(e => Math.round(e/1000/60) % 60));
+                //this.panToCallback && this.panToCallback(newDomain);
+            });
+        
+        this.rootGroup.call(zoom);
+
+        var rect = this.rootGroup.append("rect")
+            .attr("width", this.width)
+            .attr("height", this.height)
+            .style("fill", "none")
+            .style("pointer-events", "all");
 
         let x = this.x = d3.scaleTime()
             .rangeRound([0, this.width]);
@@ -67,6 +100,9 @@ export class LineChart {
         
     }
 
+    setPanToCallback(callback:(newDomain:number[]) => void) {
+        this.panToCallback = callback;
+    }
     renderInto(data:SeriesChartData) {
         let svg = d3.select(this.root);
         if(data.series.length == 0) {
@@ -77,11 +113,16 @@ export class LineChart {
         let y = this.y;
 
 
+        if(data.xEnd === undefined || data.xStart === undefined) {
+            this.xDomain = d3.extent(data.series[0].values,(d:any) => { 
+                    return d.startTimeInMillis;
+                });
+        } else {
+            this.xDomain = [data.xStart,data.xEnd];
+        }
 
-        x.domain(d3.extent(data.series[0].values,(d:any) => { 
-                return d.startTimeInMillis;
-            }) as any
-        );
+        x.domain(this.xDomain);
+        
         y.domain([
             Math.min(0,d3.min(data.series, series => d3.min(series.values, v => v.value))),
             d3.max(data.series, series => d3.max(series.values, v => v.value))
@@ -131,7 +172,7 @@ export class LineChart {
 
         lineGroups.each((d,i,n) => {
             let circles = d3.select(n[i]).selectAll("circle") 
-            .data(d.values);
+            .data(d.values,(d:any) =>  d.startTimeInMillis);
             circles.transition()
                 .delay(exitDuration)
                 .attr("cx", (d:any) => x(d.startTimeInMillis) )
@@ -177,7 +218,7 @@ export class LineChart {
 
         newLineGroups.each((d,i,n) => {
             d3.select(n[i]).selectAll("circle") 
-            .data(d.values)
+            .data(d.values,(d:any) =>  d.startTimeInMillis)
                 .enter()
                 .append("circle")
                     .attr("fill", "#FFFFFF")
