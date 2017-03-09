@@ -41,47 +41,77 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
     }
 
     render() {
-
   	    let VizType = this.props.tile.getVizType();
+
         return (
             <div>
-            <div className="navbar navbar-inverse navbar-fixed-top">
-                <div className="navbar-inner">
-                    <div className="container-fluid">
-
-                    </div>
-                </div>
-            </div>
-
-            <div className="container-fluid">
-                <div className="row-fluid">
-                    <div className="span3">
-                        <SearchBox metricDB={this.props.metricDB} acceptCallback={this.handleSearchAccepted}/>
-                    </div>
-                    <div className="span9">
-                        <div className="row-fluid">
-                            <div className="span12">
-                                {
-                                    (this.props.tile.getState() == "loaded") &&
-                                    <VizType data={this.buildChartData(this.props.tile.getData())}/>
-                                }
-                            </div>
-                        </div>
-                        <div className="row-fluid">
-                            <div className="span12">
-                                Controls
-                            </div>
+                <div className="navbar navbar-inverse navbar-fixed-top">
+                    <div className="navbar-inner">
+                        <div className="container-fluid">
                         </div>
                     </div>
                 </div>
 
-                <hr></hr>
+                <div className="container">
+                    <div className="row">
+                        <div className="col-md-3">
+                            <SearchBox metricDB={this.props.metricDB} acceptCallback={this.handleSearchAccepted}/>
+                        </div>
+                        <div className="col-md-9">
+                            <div className="row">
+                                <div className="col-md-12">
+                                    {
+                                        (this.props.tile.getState() == "loaded") &&
+                                        <VizType data={this.buildChartData(this.props.tile.getData())}/>
+                                    }
+                                </div>
+                            </div>
 
-                <footer>
-                    <p>Adam, Binil, Ely, Meili</p>
-                </footer>
+                            <div className="row">
+                                <div>
+                                    <ul className="list-group" id="serieses">
+                                        <li className="list-group-item">
+                                            Cras justo odio
+                                            <button type="button" className="btn btn-danger btn-xs delete">
+                                                <span className="glyphicon glyphicon-minus-sign" aria-hidden="true"></span>
+                                            </button>
+                                        </li>
+                                        <li className="list-group-item">
+                                            Dapibus ac facilisis in
+                                            <button type="button" className="btn btn-danger btn-xs delete">
+                                                <span className="glyphicon glyphicon-minus-sign" aria-hidden="true"></span>
+                                            </button>
+                                        </li>
+                                        <li className="list-group-item">
+                                            Morbi leo risus
+                                            <button type="button" className="btn btn-danger btn-xs delete">
+                                                <span className="glyphicon glyphicon-minus-sign" aria-hidden="true"></span>
+                                            </button>
+                                        </li>
+                                        <li className="list-group-item">
+                                            Porta ac consectetur ac
+                                            <button type="button" className="btn btn-danger btn-xs delete">
+                                                <span className="glyphicon glyphicon-minus-sign" aria-hidden="true"></span>
+                                            </button>
+                                        </li>
+                                        <li className="list-group-item">
+                                            Vestibulum at eros
+                                            <button type="button" className="btn btn-danger btn-xs delete">
+                                                <span className="glyphicon glyphicon-minus-sign" aria-hidden="true"></span>
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr></hr>
+
+                    <footer>
+                    </footer>
+                </div>
             </div>
-        </div>
         );
     }
 }
