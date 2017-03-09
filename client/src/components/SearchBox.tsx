@@ -7,7 +7,8 @@ export interface SearchBoxProps { metricDB:MetricDB, acceptCallback:any, cancelC
 var styles = require('./SearchBox.css');
 
 const inputStyle = {
-    width: "100%"
+    width: "100%",
+    padding: "5px"
 }
 
 export default class SearchBox extends React.Component<SearchBoxProps, any>  {
@@ -75,13 +76,19 @@ export default class SearchBox extends React.Component<SearchBoxProps, any>  {
         let esc:Boolean = event.keyCode == 27;
         if (enter || esc) {
             event.preventDefault();
-            if (this.state.firstSelectedItem != -1) {
-                this.props.acceptCallback(this.getSelectedMetrics());
-            } else if (this.state.query.charAt(0) == "=") {
-                this.props.acceptCallback([this.state.query]);
-            } else {
+
+            if (enter) {
+                if (this.state.firstSelectedItem != -1) {
+                    this.props.acceptCallback(this.getSelectedMetrics());
+                } else if (this.state.query.charAt(0) == "=") {
+                    this.props.acceptCallback([this.state.query]);
+                }
+            }
+
+            if (esc) {
                 this.props.cancelCallback();
             }
+
             this.updateQuery("");
             return;
         }

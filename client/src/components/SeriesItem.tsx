@@ -15,6 +15,10 @@ export interface SeriesItemProps {
 
 var styles = require('./SeriesItem.css');
 
+const floatRight = {
+    float: "right"
+}
+
 export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
     constructor(props:SeriesItemProps) {
         super(props);
@@ -40,7 +44,7 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
     }
 
     handleCancelSearch() {
-        this.setState({mode: "search"});
+        this.setState({mode: this.props.series ? "display" : "search"});
     }
 
     handleSearchClick() {
@@ -51,12 +55,20 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
         this.setState({mode: "history"});
     }
 
+    ellipsify(s:string) {
+        if (s.length > 50) {
+            return "\u2026" + s.substring(s.length - 49)
+        } else {
+            return s
+        }
+    }
+
     render() {
         return (
             <li className="list-group-item">
                 <table width="100%">
                     <tr>
-                        <td width="*">
+                        <td width="*" style={{"padding-right": 10}}>
                             {this.state.mode == "display" && this.props.series ?
                                 <span onMouseDown={this.handleClickDisplay}>
                                     <span style={{background: this.props.series.color}}>
@@ -64,7 +76,7 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
                                     </span>
                                     &nbsp;
                                     <b>{this.props.series.name}</b>:
-                                    {this.props.series.expression}
+                                    <span>{this.ellipsify(this.props.series.expression)}</span>
                                 </span> :
                                 <div>
                                     {this.state.mode == "search" &&
@@ -78,7 +90,7 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
                                         </table>}
                                 </div>}
                         </td>
-                        <td width="150">
+                        <td width="130" style={{"vertical-align": "top"}}>
                             <div className="btn-toolbar" role="toolbar">
                                 <div className="btn-group" role="group">
                                 {
@@ -100,7 +112,8 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
                                 </div>
                                 {
                                     this.props.deleteCallback &&
-                                    <button type="button" className="btn btn-default" onClick={this.handleDeleteClick}>
+                                    <button type="button" className="btn btn-default"
+                                            onClick={this.handleDeleteClick} style={floatRight}>
                                         <span className="glyphicon glyphicon-minus-sign" aria-hidden="true"></span>
                                     </button>
                                 }
