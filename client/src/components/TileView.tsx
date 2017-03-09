@@ -12,11 +12,11 @@ var styles = require('./TileView.css');
 interface TileViewProps {tile:Tile, metricDB:MetricDB}
 
 const seriesColors = [
-    "#121326",
-    "#330F40",
-    "#730037",
-    "#CC4021",
-    "#FF8730"
+    "#E34471",
+    "#598693",
+    "#7AACC1",
+    "#F2CC49",
+    "#EA4D4C"
 ];
 
 export default class TileView  extends React.Component<TileViewProps, {}>  {
