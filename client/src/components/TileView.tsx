@@ -3,19 +3,40 @@ import * as React from 'react';
 import Tile from 'model/Tile';
 import SearchBox from "./SearchBox";
 import MetricDB from "../data/MetricDB";
+import {SeriesResult,CompoundSeriesResult} from "../data/DataSet";
+
+import {SeriesChartData} from "visualizations/LineChart";
 
 var styles = require('./TileView.css');
 
 interface TileViewProps {tile:Tile, metricDB:MetricDB}
 
+const seriesColors = [
+    "#121326",
+    "#330F40",
+    "#730037",
+    "#CC4021",
+    "#FF8730"
+];
+
 export default class TileView  extends React.Component<TileViewProps, {}>  {
     constructor(props:TileViewProps) {
 		super(props);
 	}
-
+    
+    buildChartData(results:CompoundSeriesResult):SeriesChartData {
+        return {
+            series: results.series.map((seriesData:SeriesResult,i:number) => {
+                return {
+                    values:seriesData.values,
+                    color: (seriesColors[i%seriesColors.length])
+                }
+            })
+        }
+    }
     render() {
+
   	    let VizType = this.props.tile.getVizType();
-        console.log("styles is",styles);
         return (
             <div>
             <div className="navbar navbar-inverse navbar-fixed-top">
@@ -36,7 +57,7 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
                             <div className="span12">
                                 {
                                     (this.props.tile.getState() == "loaded") &&
-                                    <VizType data={this.props.tile.getData()}/>
+                                    <VizType data={this.buildChartData(this.props.tile.getData())}/>
                                 }
                             </div>
                         </div>

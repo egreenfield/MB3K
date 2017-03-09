@@ -1,16 +1,14 @@
 import * as React from 'react';
 import {VisualizationView,VisualizationViewProps} from './VisualizationView';
-import LineChart from "../visualizations/LineChart";
+import {LineChart} from "../visualizations/LineChart";
 
 
-export interface LineChartViewProps extends VisualizationViewProps {};
-
-export default class LineChartView  extends  VisualizationView<LineChartViewProps, {}>  {
+export default class LineChartView  extends  VisualizationView<VisualizationViewProps, {}>  {
 
 	root:SVGElement;
 	chart:LineChart;
 
-	constructor(props:LineChartViewProps) {
+	constructor(props:VisualizationViewProps) {
 		super(props);		
 		this.chart = new LineChart();
 	}

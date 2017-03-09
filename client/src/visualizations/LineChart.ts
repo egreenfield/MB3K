@@ -3,11 +3,18 @@ import * as d3 from "d3";
 import {CompoundSeriesResult} from "data/DataSet";
 
 
-export default class LineChart {
+export interface SeriesChartData {
+    series: {
+        values:any[]
+        color:any
+    }[]
+};
+
+export class LineChart {
     constructor() {
 
     }
-    renderInto(svgElement:SVGElement,data:CompoundSeriesResult) {
+    renderInto(svgElement:SVGElement,data:SeriesChartData) {
         let svg = d3.select(svgElement);
         svg.attr("width",600);
         svg.attr("height",400);
@@ -31,7 +38,7 @@ export default class LineChart {
             .rangeRound([height, 0]);
 
         let line = d3.line()
-        .curve(d3.curveBasis)
+        .curve(d3.curveCatmullRom)
             .x((d:any) => { return x(d.startTimeInMillis); })
             .y((d:any) => { return y(d.value); });
 
@@ -74,11 +81,32 @@ export default class LineChart {
             g.append("path")
                 .datum(aSeries.values)
                 .attr("fill", "none")
-                .attr("stroke", "steelblue")
+                .attr("stroke", aSeries.color)
                 .attr("stroke-linejoin", "round")
                 .attr("stroke-linecap", "round")
-                .attr("stroke-width", 1.5)
+                .attr("stroke-width", 2.5)
                 .attr("d", line);
+
+            // Add the scatterplot
+            g.selectAll("dot")
+                .data(aSeries.values)
+            .enter()
+                .append("circle")
+                    .attr("r", 2.5)
+                    .attr("fill", "#FFFFFF")
+                    .attr("stroke", aSeries.color)
+                    .attr("stroke-width", 2.5)
+                    .attr("cx", function(d) { return x(d.startTimeInMillis); })
+                    .attr("cy", function(d) { return y(d.value); });
+            g.selectAll("dotHitArea")
+                .data(aSeries.values)
+            .enter()
+                .append("circle")
+                    .attr("r", 5)
+                    .attr("fill-opacity", "0")
+                    .attr("cx", function(d) { return x(d.startTimeInMillis); })
+                    .attr("cy", function(d) { return y(d.value); })
+                
         }
     }
 }
