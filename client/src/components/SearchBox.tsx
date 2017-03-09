@@ -1,11 +1,18 @@
 import * as React from "react";
 import MetricDB from "../data/MetricDB";
+import DOMElement = React.DOMElement;
 
-export interface SearchBoxProps { metricDB:MetricDB, acceptCallback:any }
+export interface SearchBoxProps { metricDB:MetricDB, acceptCallback:any, cancelCallback:any }
 
 var styles = require('./SearchBox.css');
 
+const inputStyle = {
+    width: "100%"
+}
+
 export default class SearchBox extends React.Component<SearchBoxProps, any>  {
+
+    private input:any;
 
     constructor(props:SearchBoxProps) {
 		super(props);
@@ -33,6 +40,10 @@ export default class SearchBox extends React.Component<SearchBoxProps, any>  {
         this.setState({query: newQuery, lastQueryResult: newQueryResult, selectedItem: newSelectedItem});
     }
 
+    componentDidMount() {
+        this.input.focus();
+    }
+
     handleInputKeyDown(event:any) {
 
         let enter:Boolean = event.keyCode == 13;
@@ -41,6 +52,8 @@ export default class SearchBox extends React.Component<SearchBoxProps, any>  {
             event.preventDefault();
             if (this.state.selectedItem != -1) {
                 this.props.acceptCallback(this.state.lastQueryResult[this.state.selectedItem].metric);
+            } else {
+                this.props.cancelCallback();
             }
             this.updateQuery("");
             return;
@@ -83,6 +96,8 @@ export default class SearchBox extends React.Component<SearchBoxProps, any>  {
   	return (
      <div>
          <input type="text" value={this.state.query}
+                style={inputStyle}
+                ref={(input) => { this.input = input; }}
                 onChange={this.handleQueryChange}
                 onKeyDown={this.handleInputKeyDown}/>
          {listItems}
