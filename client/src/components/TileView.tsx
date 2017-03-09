@@ -14,19 +14,16 @@ var styles = require('./TileView.css');
 
 interface TileViewProps {tile:Tile, metricDB:MetricDB}
 
-const seriesColors = [
-    "#E34471",
-    "#598693",
-    "#7AACC1",
-    "#F2CC49",
-    "#EA4D4C"
-];
+const cell = {
+    "vertical-align": "top",
+    "padding": "21px"
+}
 
 export default class TileView  extends React.Component<TileViewProps, {}>  {
     constructor(props:TileViewProps) {
 		super(props);
 
-		this.addSeriesToTile = this.addSeriesToTile.bind(this);
+		this.addSeriesesToTile = this.addSeriesesToTile.bind(this);
 		this.deleteSeriesFromTile = this.deleteSeriesFromTile.bind(this);
 	}
 
@@ -39,7 +36,7 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
             series: series.map((seriesData:SeriesResult,i:number) => {
                 return {
                     values:seriesData.values,
-                    color: (seriesColors[i%seriesColors.length]),
+                    color: seriesData.color,
                     id: seriesData.id
                 }
             }),
@@ -48,8 +45,14 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
         }
     }
 
-	addSeriesToTile(metric: string) {
-        this.props.tile.addMetricSeries(metric);
+	addSeriesesToTile(metrics: string[]) {
+        metrics.forEach((metric:string) => {
+            if (metric.charAt(0) == "=") {
+                this.props.tile.addForumla(metric.substr(1));
+            } else {
+                this.props.tile.addMetricSeries(metric);
+            }
+        });
     }
 
     deleteSeriesFromTile(series: Series) {
@@ -60,53 +63,32 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
   	    let VizType = this.props.tile.getVizType();
 
         return (
-            <div>
-                <div className="navbar navbar-inverse navbar-fixed-top">
-                    <div className="navbar-inner">
-                        <div className="container-fluid">
-                        </div>
-                    </div>
-                </div>
-
-                <div className="container">
-                    <div className="row">
-                        <div className="col-md-9">
-                            <div className="row">
-                                <div className="col-md-12">
-                                    <VizType data={this.buildChartData()} panTo={(newDomain:number[],reload:boolean) => {this.props.tile.shiftTimeRangeTo(newDomain,reload) }} />
-                                </div>
-                            </div>
-
-                            <div className="row">
-                                <div>
-                                    <ul className="list-group" id="serieses">
-                                        {this.props.tile.getSeries().map((s: Series) =>
-                                            <SeriesItem
-                                                tile={this.props.tile}
-                                                series={s}
-                                                metricDB={this.props.metricDB}
-                                                addCallback={this.addSeriesToTile}
-                                                deleteCallback={this.deleteSeriesFromTile}
-                                            />)}
-                                        <SeriesItem
-                                            tile={this.props.tile}
-                                            series={null}
-                                            metricDB={this.props.metricDB}
-                                            addCallback={this.addSeriesToTile}
-                                            deleteCallback={null}
-                                        />
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <hr></hr>
-
-                    <footer>
-                    </footer>
-                </div>
-            </div>
+            <table>
+                <tr>
+                    <td width={600} style={cell}>
+                        <ul className="list-group" id="serieses">
+                            {this.props.tile.getSeries().map((s: Series) =>
+                                <SeriesItem
+                                    tile={this.props.tile}
+                                    series={s}
+                                    metricDB={this.props.metricDB}
+                                    addCallback={this.addSeriesesToTile}
+                                    deleteCallback={this.deleteSeriesFromTile}
+                                />)}
+                            <SeriesItem
+                                tile={this.props.tile}
+                                series={null}
+                                metricDB={this.props.metricDB}
+                                addCallback={this.addSeriesesToTile}
+                                deleteCallback={null}
+                            />
+                        </ul>
+                    </td>
+                    <td width="*" style={cell}>
+                        <VizType data={this.buildChartData()} panTo={(newDomain:number[],reload:boolean) => {this.props.tile.shiftTimeRangeTo(newDomain,reload) }} />
+                    </td>
+                </tr>
+            </table>
         );
     }
 }

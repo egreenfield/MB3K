@@ -12,14 +12,16 @@ export default class Series extends EventEmitter  {
     name: string;
     expression: string;
     isFormula: boolean;
+    color: string;
 
 
-    constructor(name: string, expression: string, isFormula: boolean) {
+    constructor(name: string, expression: string, isFormula: boolean, color: string) {
         super();
         this.guid = Guid.newGuid();
         this.name = name;
         this.expression = expression;
         this.isFormula = isFormula;
+        this.color = color;
     }
 
     getMetricsQueryParameters(timespan:number[]): MetricsQueryParameters {

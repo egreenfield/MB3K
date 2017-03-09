@@ -69,7 +69,8 @@ export class MetricsDataSource extends DataSource {
 					fulfill({
 						id:params.id,
 						values:data.metricValues,
-						name:params.metricPath
+						name:params.metricPath,
+						color: "#E34471"
 					});
 				}
 			})

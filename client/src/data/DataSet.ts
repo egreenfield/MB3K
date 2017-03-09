@@ -13,6 +13,7 @@ export interface ScalarResult extends DataQueryResult {
 export interface SeriesResult extends DataQueryResult {
 	name:string;
 	values:any[];
+	color: string;
 };
 
 export interface MultiSeriesResult extends DataQueryResult {

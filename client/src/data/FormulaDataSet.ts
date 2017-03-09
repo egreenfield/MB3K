@@ -9,12 +9,14 @@ export interface FormulaInput {
 	valueField:string,
 	dataSet:DataSet,
 	includeInOutput?:boolean;
+	color: string;
 };
 
 export interface FormulaExpression {
 	name:string,	
 	valueField:string,
-	expression:string
+	expression:string,
+	color: string
 };
 
 export interface FormulaParameters{
@@ -71,6 +73,7 @@ export class FormulaDataSet extends DataSet {
 					}
 					mergedSample[anInput.name] = inputValue[anInput.valueField];
 				}
+				inputData.color = anInput.color;
 				result.series.push(inputData);
 			}
 			for(let aFormula of this.parameters.formulas) {
@@ -87,7 +90,8 @@ export class FormulaDataSet extends DataSet {
 				result.series.push( {
 					id: aFormula.name,
 					name: aFormula.name,
-					values: values	
+					values: values,
+					color: aFormula.color,
 				});
 			}
 

@@ -9,7 +9,7 @@ export interface SeriesItemProps {
     series: Series,
     tile:Tile,
     metricDB: MetricDB,
-    addCallback: (metric:String) => void,
+    addCallback: (metric:String[]) => void,
     deleteCallback: (series:Series) => void
 }
 
@@ -40,7 +40,7 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
     }
 
     handleCancelSearch() {
-        this.setState({mode: "display"});
+        this.setState({mode: "search"});
     }
 
     handleSearchClick() {
@@ -59,7 +59,12 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
                         <td width="*">
                             {this.state.mode == "display" && this.props.series ?
                                 <span onMouseDown={this.handleClickDisplay}>
-                                    <b>{this.props.series.name}</b>: {this.props.series.expression}
+                                    <span style={{background: this.props.series.color}}>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;
+                                    </span>
+                                    &nbsp;
+                                    <b>{this.props.series.name}</b>:
+                                    {this.props.series.expression}
                                 </span> :
                                 <div>
                                     {this.state.mode == "search" &&

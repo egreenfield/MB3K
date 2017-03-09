@@ -32,10 +32,6 @@ export class LineChart {
     constructor(svgElement:SVGElement) {
         this.root = svgElement;
         let svg = d3.select(this.root);
-        svg.attr("width",600);
-        svg.attr("height",400);
-        
-        this.root.onwheel = () => false;
         let margin = {top: 20, right: 20, bottom: 30, left: 50};
 
         this.width = +svg.attr("width") - margin.left - margin.right;
