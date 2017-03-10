@@ -13,22 +13,33 @@ const inputStyle = {
 
 export default class SearchBox extends React.Component<SearchBoxProps, any>  {
 
-    private input:any;
+    private input: HTMLInputElement;
 
     constructor(props:SearchBoxProps) {
 		super(props);
 
-		this.state = {
-		    query: "",
-            lastQueryResult: [],
-            isInputFocused: true,
-            firstSelectedItem: -1,
-            lastSelectedItem: -1
-        };
+		this.state = this.getInitState();
 
         this.handleQueryChange = this.handleQueryChange.bind(this);
         this.handleInputKeyDown = this.handleInputKeyDown.bind(this);
 	}
+
+	getInitState(): any {
+        return {
+            query: "",
+            lastQueryResult: [],
+            isInputFocused: true,
+            firstSelectedItem: -1,
+            lastSelectedItem: -1,
+
+            popupStyle: {
+                top: 0,
+                left: 0,
+                position: 'relative',
+                width: 900
+            }
+        };
+    }
 
 	handleQueryChange(event:any) {
         let newQuery = event.target.value;
@@ -43,7 +54,8 @@ export default class SearchBox extends React.Component<SearchBoxProps, any>  {
             query: newQuery,
             lastQueryResult: newQueryResult,
             firstSelectedItem: newSelectedItem,
-            lastSelectedItem: newSelectedItem});
+            lastSelectedItem: newSelectedItem
+        });
     }
 
     isSelected(i:number) {
@@ -68,6 +80,18 @@ export default class SearchBox extends React.Component<SearchBoxProps, any>  {
 
     componentDidMount() {
         this.input.focus();
+    }
+
+    componentWillReceiveProps(nextProps: any) {
+        var rect = this.input.getBoundingClientRect();
+        this.state = this.getInitState();
+        this.state.popupStyle = {
+            top: rect.bottom,
+            left: rect.left,
+            position: 'fixed',
+            width: 900
+        };
+        this.setState(this.state);
     }
 
     handleInputKeyDown(event:any) {
@@ -115,7 +139,6 @@ export default class SearchBox extends React.Component<SearchBoxProps, any>  {
     }
 
     render() {
-
         var listItems:any[] = [];
         var rows:String[] = this.state.lastQueryResult;
         for (var i = 0; i < Math.min(15, rows.length); i++) {
@@ -137,7 +160,9 @@ export default class SearchBox extends React.Component<SearchBoxProps, any>  {
                     ref={(input) => { this.input = input; }}
                     onChange={this.handleQueryChange}
                     onKeyDown={this.handleInputKeyDown}/>
+             <div style={this.state.popupStyle}>
              {listItems}
+             </div>
          </div>
           );
     }
