@@ -1,0 +1,6 @@
+.popup {
+    position: fixed;
+    width: 1100px;
+    overflow: visible;
+    z-index: 10;
+}

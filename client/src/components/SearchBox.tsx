@@ -89,7 +89,8 @@ export default class SearchBox extends React.Component<SearchBoxProps, any>  {
             top: rect.bottom,
             left: rect.left,
             position: 'fixed',
-            width: 900
+            width: 900,
+            overflow: 'visible'
         };
         this.setState(this.state);
     }

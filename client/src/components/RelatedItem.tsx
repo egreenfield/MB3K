@@ -16,7 +16,7 @@ export default class RelatedItem extends React.Component<RelatedItemProps, any> 
     }
 
     render() {
-        return (<tr className="list-item" onClick={this.handleClick}><td>{this.props.metricPath}</td></tr>)
+        return (<div className="list-item" onClick={this.handleClick}>{this.props.metricPath}</div>)
     }
 
 }
