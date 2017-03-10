@@ -123,7 +123,7 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
                                     this.state.mode != "display" && this.state.mode != "related" &&
                                     <button
                                         onClick={this.handleSearchClick}
-                                        className={"btn btn-default " + (this.state.mode == "search" ? "active" : "")}>
+                                        className={"btn btn-sm btn-default " + (this.state.mode == "search" ? "active" : "")}>
                                         <span className="glyphicon glyphicon-search" aria-hidden="true"></span>
                                     </button>
                                 }
@@ -131,15 +131,18 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
                                     this.state.mode != "display" && this.state.mode != "related" &&
                                     <button
                                         onClick={this.handleHistoryClick}
-                                        className={"btn btn-default " + (this.state.mode == "history" ? "active" : "")}>
+                                        className={"btn btn-sm btn-default " + (this.state.mode == "history" ? "active" : "")}>
                                         <span className="glyphicon glyphicon-time" aria-hidden="true"></span>
                                     </button>
                                 }
                                 </div>
+
+                                <div className="btn-group" role="group" style={floatRight}>
                                 {
                                     this.props.deleteCallback &&
-                                    <button type="button" className="btn btn-default"
-                                            onClick={this.handleDeleteClick} style={floatRight}>
+                                    <button
+                                        className="btn btn-default btn-sm"
+                                        onClick={this.handleDeleteClick}>
                                         <span className="glyphicon glyphicon-minus-sign" aria-hidden="true"></span>
                                     </button>
                                 }
@@ -147,11 +150,12 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
                                     (this.state.mode=="display" || this.state.mode=="related")  &&
                                     <button
                                         onClick={this.handleRelatedClick}
-                                        className={"btn btn-default " + (this.state.mode == "related" ? "active" : "")}
+                                        className={"btn btn-default btn-sm " + (this.state.mode == "related" ? "active" : "")}
                                         style={floatRight}>
                                         <span className="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
                                     </button>
                                 }
+                                </div>
                             </div>
                         </td>
                     </tr>
