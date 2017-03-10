@@ -154,7 +154,7 @@ export default class SearchBox extends React.Component<SearchBoxProps, any>  {
         }
 
         return (
-         <div>
+         <div style={{width: '420px'}}>
              <input type="text" value={this.state.query}
                     style={inputStyle}
                     ref={(input) => { this.input = input; }}
