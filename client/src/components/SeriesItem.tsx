@@ -118,7 +118,7 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
                         </td>
                         <td width="130" style={{"vertical-align": "top"}}>
                             <div className="btn-toolbar" role="toolbar">
-                                <div className="btn-group" role="group">
+                                <div className="btn-group" role="group" style={floatRight}>
                                 {
                                     this.state.mode != "display" && this.state.mode != "related" &&
                                     <button
