@@ -153,6 +153,12 @@ export class Tile extends EventEmitter {
 
 class SeriesPropertyPicker {
     colors: string[] = [
+        '#E57333',
+        '#B5AD21',
+        '#092772',
+        '#B6711D',
+        '#3A680A',
+
         "#E34471",
         "#598693",
         "#F2CC49",
