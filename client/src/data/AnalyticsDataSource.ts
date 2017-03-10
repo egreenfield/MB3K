@@ -29,8 +29,9 @@ export class AnalyticsDataSource extends DataSource {
 					id:params.id,
 					values: JSON.parse(response.text),
 					name: params.queryString,
-					color: "#E34471"
-				  });
+					color: "#E34471",
+				  	weight:1
+				});
 			})
 		});
 	}

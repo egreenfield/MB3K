@@ -84,6 +84,7 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
                                 deleteCallback={null}
                             />
                         </ul>
+                        {(this.props.tile.getSeries().length < 1)?<img src="/src/tree.png" width="313" className="tree" />:""}
                     </td>
                     <td width="*" style={cell}>
                         <VizType data={this.buildChartData()} panTo={(newDomain:number[],reload:boolean) => {this.props.tile.shiftTimeRangeTo(newDomain,reload) }} />
