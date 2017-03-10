@@ -65,7 +65,7 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
 
     render() {
         return (
-            <li className="list-group-item">
+            <li className="list-group-item" style={{"font-family": "'Inconsolata', monospace"}}>
                 <table width="100%">
                     <tr>
                         <td width="*" style={{"padding-right": 10}}>
