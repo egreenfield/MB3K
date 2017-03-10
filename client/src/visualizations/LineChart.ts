@@ -122,6 +122,16 @@ export class LineChart {
         let y = this.y;
 
 
+        let lineGroups = this.rootGroup.selectAll(".line")
+            .data(data.series,(d:any) =>  d.id);
+
+        if(this.animateChanges) {
+//          this.animateChanges = true;
+            lineGroups.select("path")
+                        .datum((d) => {return d.values})
+                        .attr("d", this.line)
+             
+        }
         if(data.xEnd === undefined || data.xStart === undefined) {
             this.xDomain = d3.extent(data.series[0].values,(d:any) => { 
                     return d.startTimeInMillis;
@@ -140,8 +150,6 @@ export class LineChart {
         ]);
 
 
-        let lineGroups = this.rootGroup.selectAll(".line")
-            .data(data.series,(d:any) =>  d.id);
 
         // console.log("changed lines:",lineGroups.size());
         // console.log("new lines:",lineGroups.enter().size());
