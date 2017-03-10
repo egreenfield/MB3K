@@ -2,9 +2,9 @@ import * as React from "react";
 
 export interface RelatedItemProps { relatedMetric: string, parentMetric: string, addCallback: any, addAllCallback: any }
 
-export default class RelatedItem extends React.Component<RelatedItemProps, any>  {
+export default class RelatedItem extends React.Component<RelatedItemProps, any> {
 
-    constructor(props:RelatedItemProps) {
+    constructor(props: RelatedItemProps) {
         super(props);
 
         this.handleClick = this.handleClick.bind(this);
@@ -28,25 +28,22 @@ export default class RelatedItem extends React.Component<RelatedItemProps, any> 
         return false;
     }
 
-    // beautify(name:string):any[] {
-    //     var index = name.indexOf('Individual Nodes');
-    //     var spans = [];
-    //     if (index >0) {
-    //         spans.push(<span className="segment-matched">SIBLING NODES:</span>);
-    //         spans.push(<span className="segment-unmatched">{name.substr(index + 'Individual Nodes'.length + 1)}</span>);
-    //     }else {
-    //         spans.push(<span className="segment-matched">PARENT TIER:</span>);
-    //         spans.push(<span className="segment-unmatched">{name.substr(name.indexOf("|") + 1)}</span>);
-    //     }
-    //     return spans;
-    // }
-
 
     render() {
-        var parentSplits = this.props.parentMetric.split("|");
-        var splits = this.props.relatedMetric.split("|");
-
         var spans = [];
+        var index = this.props.relatedMetric.indexOf('Individual Nodes');
+        if (index < 0) {
+            spans.push(<span className="relation-name">Similar Names:&nbsp;</span>);
+            index = this.props.relatedMetric.indexOf("|") ;
+        }else {
+            spans.push(<span className="relation-name">Sibling Nodes:&nbsp;</span>);
+            index = index +'Individual Nodes'.length;
+        }
+
+        var parentSplits = this.props.parentMetric.substr(index+1).split("|");
+        var splits = this.props.relatedMetric.substr(index+1).split("|");
+
+
         for (var i = 0; i < splits.length; i++) {
             if (this.contains(parentSplits, splits[i])) {
                 spans.push(<span className="segment-matched">{splits[i]}</span>);

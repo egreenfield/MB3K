@@ -47,7 +47,7 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
             this.state = this.getInitState();
             this.state.historyPopupStyle = {
                 top: rect.bottom,
-                left: rect.left - 500,
+                left: rect.left - 450,
             };
             this.setState(this.state);
         }
@@ -56,7 +56,7 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
             this.state = this.getInitState();
             this.state.relatedMetricsPopupStyle = {
                 top: rect.bottom,
-                left: rect.left - 500,
+                left: rect.left - 450,
 
             };
             this.setState(this.state);
