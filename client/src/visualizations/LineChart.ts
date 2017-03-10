@@ -89,20 +89,20 @@ export class LineChart {
         let x = this.x = d3.scaleTime()
             .rangeRound([0, this.width]);
 
-        let y = this.y = d3.scaleLinear()
+        let yScale = this.y = d3.scaleLinear()
             .rangeRound([this.height, 0]);
 
         this.line = d3.line()
         .curve(d3.curveCatmullRom)
             .x((d:any) =>  x(d.startTimeInMillis) )
-            .y((d:any) => y(d.value));
+            .y((d:any) => yScale(d.value));
        
         this.xAxisView = this.axisLayer.append("g")
             .attr("transform", "translate(0," + this.height + ")")
             // .select(".domain")
             // .remove();
 
-        this.yAxisGenerator = d3.axisLeft(y).tickSize(-this.width);
+        this.yAxisGenerator = d3.axisLeft(yScale).tickSize(-this.width);
 
         this.yAxisView = 
             this.axisLayer.append("g");
@@ -128,7 +128,7 @@ export class LineChart {
         }
 
         let x = this.x;
-        let y = this.y;
+        let yScale = this.y;
 
 
         let lineGroups = this.seriesLayer.selectAll(".line")
@@ -153,12 +153,12 @@ export class LineChart {
         // console.log("times are",data.series[0].values.map(v => new Date(v.startTimeInMillis)));
         x.domain(this.xDomain);
         
-        y.domain([
+        yScale.domain([
             Math.min(0,d3.min(data.series, series => d3.min(series.values, v => v.value))),
-            d3.max(data.series, series => d3.max(series.values, v => v.value))
+            Math.max(20,d3.max(data.series, series => d3.max(series.values, v => v.value)))
         ]);
 
-        y.nice();
+        yScale.nice();
 
 
 
@@ -221,7 +221,7 @@ export class LineChart {
                 circles.transition()
                     .delay(exitDuration)
                     .attr("cx", (d:any) => x(d.startTimeInMillis) )
-                    .attr("cy", (d:any) => y(d.value) )
+                    .attr("cy", (d:any) => yScale(d.value) )
                 circles
                     .enter()
                     .append("circle")
@@ -229,14 +229,14 @@ export class LineChart {
                         .attr("stroke", d.color)
                         .attr("stroke-width", 1)
                         .attr("cx", d => x(d.startTimeInMillis) )
-                        .attr("cy", d => y(d.value) )
+                        .attr("cy", d => yScale(d.value) )
                         .transition()
                         .delay((d,i) => i*10)
                         .attr("r", 2.5)            
             } else {
                 circles
                     .attr("cx", (d:any) => x(d.startTimeInMillis) )
-                    .attr("cy", (d:any) => y(d.value) )
+                    .attr("cy", (d:any) => yScale(d.value) )
                 circles
                     .enter()
                     .append("circle")
@@ -244,7 +244,7 @@ export class LineChart {
                         .attr("stroke", d.color)
                         .attr("stroke-width", 1)
                         .attr("cx", d => x(d.startTimeInMillis) )
-                        .attr("cy", d => y(d.value) )
+                        .attr("cy", d => yScale(d.value) )
                         .attr("r", 2.5)                            
             }
             circles
@@ -298,7 +298,7 @@ export class LineChart {
                     .attr("stroke", d.color)
                     .attr("stroke-width", 1)
                     .attr("cx", d => x(d.startTimeInMillis) )
-                    .attr("cy", d => y(d.value) )
+                    .attr("cy", d => yScale(d.value) )
                     .transition()
                     .delay((d,i) => i*10)
                     .attr("r", 2.5)            
