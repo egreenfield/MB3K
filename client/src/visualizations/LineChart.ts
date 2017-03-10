@@ -17,6 +17,9 @@ export class LineChart {
     root:SVGElement;
     rootGroup:d3.Selection<d3.BaseType,{},null,undefined>;
     dataGroup:d3.Selection<d3.BaseType,{},null,undefined>;
+    lineLayer:d3.Selection<d3.BaseType,{},null,undefined>;
+    seriesLayer:d3.Selection<d3.BaseType,{},null,undefined>;
+    axisLayer:d3.Selection<d3.BaseType,{},null,undefined>;
     width:number;
     height:number;
     line:d3.Line<[Number,Number]>;
@@ -42,17 +45,19 @@ export class LineChart {
 
         //clippath
          svg.append("defs").append("clipPath").attr("id","plotArea").append("rect")
-            .attr("transform", "translate(0,-8)")
+            .attr("transform", "translate(0,-20)")
             .attr("width", this.width)
-            .attr("height", this.height+8)
+            .attr("height", this.height+20)
             .style("fill", "#FFAAAA")
 
         this.rootGroup = svg.append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
+        this.axisLayer = this.rootGroup.append("g");
         this.dataGroup = this.rootGroup.append("g")
             .style("clip-path","url('#plotArea')")
-        
+        this.lineLayer = this.dataGroup.append("g");
+        this.seriesLayer = this.dataGroup.append("g");
         let baseDomain:number[];
         let zoom = d3.zoom()
 //            .scaleExtent([0, 10])
@@ -91,7 +96,7 @@ export class LineChart {
             .x((d:any) =>  x(d.startTimeInMillis) )
             .y((d:any) => y(d.value));
        
-        this.xAxisView = this.rootGroup.append("g")
+        this.xAxisView = this.axisLayer.append("g")
             .attr("transform", "translate(0," + this.height + ")")
             // .select(".domain")
             // .remove();
@@ -99,7 +104,7 @@ export class LineChart {
         this.yAxisGenerator = d3.axisLeft(y).tickSize(-this.width);
 
         this.yAxisView = 
-            this.rootGroup.append("g");
+            this.axisLayer.append("g");
 
     }
 
@@ -125,7 +130,7 @@ export class LineChart {
         let y = this.y;
 
 
-        let lineGroups = this.dataGroup.selectAll(".line")
+        let lineGroups = this.seriesLayer.selectAll(".line")
             .data(data.series,(d:any) =>  d.id);
 
         if(this.animateChanges) {
@@ -153,10 +158,6 @@ export class LineChart {
         ]);
 
 
-
-        // console.log("changed lines:",lineGroups.size());
-        // console.log("new lines:",lineGroups.enter().size());
-        // console.log("dead lines:",lineGroups.exit().size());
 
 
         let exitDuration = 0;
@@ -223,7 +224,7 @@ export class LineChart {
                     .append("circle")
                         .attr("fill", "#FFFFFF")
                         .attr("stroke", d.color)
-                        .attr("stroke-width", 2.5)
+                        .attr("stroke-width", 1)
                         .attr("cx", d => x(d.startTimeInMillis) )
                         .attr("cy", d => y(d.value) )
                         .transition()
@@ -238,7 +239,7 @@ export class LineChart {
                     .append("circle")
                         .attr("fill", "#FFFFFF")
                         .attr("stroke", d.color)
-                        .attr("stroke-width", 2.5)
+                        .attr("stroke-width", 1)
                         .attr("cx", d => x(d.startTimeInMillis) )
                         .attr("cy", d => y(d.value) )
                         .attr("r", 2.5)                            
@@ -281,7 +282,7 @@ export class LineChart {
                     .attr("d", this.line)
                     .transition()
                     .delay((d,i) => {return d.length * 10})
-                    .attr("stroke-width", 2.5)
+                    .attr("stroke-width", 1)
 
         
 
@@ -292,7 +293,7 @@ export class LineChart {
                 .append("circle")
                     .attr("fill", "#FFFFFF")
                     .attr("stroke", d.color)
-                    .attr("stroke-width", 2.5)
+                    .attr("stroke-width", 1)
                     .attr("cx", d => x(d.startTimeInMillis) )
                     .attr("cy", d => y(d.value) )
                     .transition()
@@ -307,8 +308,8 @@ export class LineChart {
                 .call(this.yAxisGenerator as any);
             this.yAxisView.select(".domain").remove();
             t.selectAll(".tick:not(:first-of-type) line")
-                .attr("stroke", "#CCC")
-                .attr("stroke-dasharray", "2,2")
+                .attr("stroke", "#EEE")
+//                .attr("stroke-dasharray", "2,2")
                 .attr("x1",-15);
 
             t.selectAll(".tick text").attr("x", -8).attr("y", -5);
@@ -332,5 +333,89 @@ export class LineChart {
                 .call(d3.axisBottom(x) as any)
                 .select(".domain").remove();                        
         }
+
+        this.drawTimeMarkers();
+
+        
+    }
+          
+          
+
+    drawTimeMarkers() {
+        const secInMilli = 1000,
+            minuteInMilli = 60 * secInMilli,
+            hourInMilli = 60 * minuteInMilli,
+            dayInMilli = 24 * hourInMilli,
+            weekInMilli = 7 * dayInMilli,
+            monthInMilli = 30 * dayInMilli,
+            yearInMilli = 365 * dayInMilli;
+        const maxDividers = 5;
+        let x = this.x;
+
+        let ticks:Date[] = x.ticks();
+        let xdist = this.xDomain[1] - this.xDomain[0];
+    
+        let matchTicks:Date[] = [];        
+        let candidates:Date[] = ticks;
+        ticks.forEach( t=> {
+            if(t.getSeconds() == 0) {matchTicks.push(t)};
+        });
+        if (matchTicks.length > maxDividers) {
+            candidates = matchTicks;matchTicks = [];
+            ticks.forEach( t=> {
+                if(t.getMinutes() == 0) {matchTicks.push(t)};
+            });
+        }
+        if (matchTicks.length > maxDividers) {
+            candidates = matchTicks;matchTicks = [];
+            ticks.forEach( t=> {
+                if(t.getHours() == 0) {matchTicks.push(t)};
+            });
+        }
+        if(matchTicks.length > maxDividers) {
+            candidates = matchTicks;matchTicks = [];
+            ticks.forEach( t=> {
+                if(t.getDay() == 0) {matchTicks.push(t)};
+            });
+        }
+        if(matchTicks.length > maxDividers) {
+            candidates = matchTicks;matchTicks = [];
+            ticks.forEach( t=> {
+                if(t.getDate() == 0) {matchTicks.push(t)};
+            });
+        }
+        if (matchTicks.length > maxDividers) {
+            candidates = matchTicks;matchTicks = [];
+            ticks.forEach( t=> {
+                if(t.getMonth() == 0) {matchTicks.push(t)};
+            });
+        }
+        if(matchTicks.length > maxDividers) {
+            candidates = matchTicks;
+        }
+//        console.log("found ",markedTicks.length,"at scale ",markerScale);
+        
+        let lineMarkers = this.lineLayer
+                            .selectAll(".timeMarker")
+                            .data(matchTicks,(d:any) => d.getTime());
+
+        //console.log("changing",lineMarkers.size(),"creating",lineMarkers.enter().size(),"destroying",lineMarkers.exit().size());
+
+        lineMarkers
+            .enter()
+            .append("line")
+            .classed("timeMarker",true)
+            .attr("stroke","#CCC")
+            .attr("stroke-width", 1)            
+            .attr("stroke-dasharray", "5,2")
+            .attr("x1",d => x(d))
+            .attr("x2",d => x(d))
+            .attr("y1",0)
+            .attr("y2",this.height);
+
+        lineMarkers.exit().remove();
+        lineMarkers
+            .attr("x1",d => x(d))
+            .attr("x2",d => x(d))        
     }
 }
