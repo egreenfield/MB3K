@@ -63,13 +63,16 @@ export class Tile extends EventEmitter {
         this.refreshData();
     }
 
-    getTimespan():[number,number] {
+    getTimespan(scale:number = 1):[number,number] {
         let end:number = (this.endTime)? this.endTime:(new Date().getTime());
-        return [end-this.duration,end];
+        let result:[number,number] = [end-this.duration,end];
+        let mid = (result[0] + result[1])/2;
+        result = [(result[0]-mid)*scale+mid,(result[1]-mid)*scale+mid ];
+        return result;
     }
 
-        toMetricFormulaInput(s: Series): FormulaInput {
-        let timespan = this.getTimespan();
+    toMetricFormulaInput(s: Series): FormulaInput {
+        let timespan = this.getTimespan(3);
         return {
             name: s.name,
             valueField: "value",
