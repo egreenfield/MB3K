@@ -1,6 +1,6 @@
 import * as React from "react";
 
-export interface RelatedItemProps { relatedMetric: string, parentMetric: string, addCallback: any }
+export interface RelatedItemProps { relatedMetric: string, parentMetric: string, addCallback: any, addAllCallback: any }
 
 export default class RelatedItem extends React.Component<RelatedItemProps, any>  {
 
@@ -11,7 +11,11 @@ export default class RelatedItem extends React.Component<RelatedItemProps, any> 
     }
 
     handleClick(event: any) {
-        this.props.addCallback([this.props.relatedMetric]);
+        if (event.shiftKey) {
+            this.props.addAllCallback();
+        } else {
+            this.props.addCallback([this.props.relatedMetric]);
+        }
         event.preventDefault();
     }
 

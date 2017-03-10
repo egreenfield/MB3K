@@ -38,6 +38,7 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
 
         this.handleAddFromHistory = this.handleAddFromHistory.bind(this);
         this.handleAddFromRelated = this.handleAddFromRelated.bind(this);
+        this.handleAddAllRelatedMetrics = this.handleAddAllRelatedMetrics.bind(this);
     }
 
     componentWillReceiveProps(nextProps: any) {
@@ -80,6 +81,10 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
     handleAddFromRelated(metrics: string[]) {
         this.setState({mode: "display"});
         this.props.addCallback(metrics);
+    }
+
+    handleAddAllRelatedMetrics() {
+        this.handleAddFromRelated(this.props.metricDB.findRelated(this.props.series.expression));
     }
 
     handleClickDisplay() {
@@ -160,13 +165,15 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
                                                     &nbsp;&nbsp;
                                                     <span>{this.ellipsify(this.props.series.expression)}</span>
                                                 </span>
+
                                                 <div className="popup" style={this.state.relatedMetricsPopupStyle}>
                                                 {
                                                     this.props.metricDB.findRelated(this.props.series.expression).map((m: string) =>
                                                     <RelatedItem
                                                         parentMetric={this.props.series.expression}
                                                         relatedMetric={m}
-                                                        addCallback={this.handleAddFromRelated}/>)
+                                                        addCallback={this.handleAddFromRelated}
+                                                        addAllCallback={this.handleAddAllRelatedMetrics}/>)
                                                 }
                                                 </div>
                                             </div>
