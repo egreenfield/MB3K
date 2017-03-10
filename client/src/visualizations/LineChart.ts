@@ -42,8 +42,9 @@ export class LineChart {
 
         //clippath
          svg.append("defs").append("clipPath").attr("id","plotArea").append("rect")
+            .attr("transform", "translate(0,-8)")
             .attr("width", this.width)
-            .attr("height", this.height)
+            .attr("height", this.height+8)
             .style("fill", "#FFAAAA")
 
         this.rootGroup = svg.append("g")
