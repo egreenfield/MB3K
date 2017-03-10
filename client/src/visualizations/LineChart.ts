@@ -157,6 +157,8 @@ export class LineChart {
             d3.max(data.series, series => d3.max(series.values, v => v.value))
         ]);
 
+        y.nice();
+
 
 
 
