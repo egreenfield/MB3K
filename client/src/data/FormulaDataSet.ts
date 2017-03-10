@@ -65,62 +65,84 @@ export class FormulaDataSet extends DataSet {
 			let mergedProps:string[] = [];
 			let indexField = this.parameters.indexField;
 
+			let hasFormulas = this.parameters.formulas && (this.parameters.formulas.length > 0);
 			for(let anInput of this.parameters.inputs) {
 				
 				let inputData = anInput.dataSet.getData();
 				let inputValues:any[] = inputData.values;
-				let mergedIndex = 0,inputIndex = 0;
-				mergedInputData = mergedOutputData;
-				mergedOutputData = [];
-				
-				// if(false) // MONKEY CHAOS TIME!
-				// {
-				// 	inputValues = inputValues.concat();
-				// 	let randomIndex = Math.floor(Math.random()*inputValues.length);
-				// 	inputValues.splice(randomIndex,1);
-				// 	console.log("input",inputData.name,"now has",inputValues.length,"values");
-				// 	inputData.values = inputValues;
-				// }
-//				console.log("comparing",inputValues.length,mergedInputData.length);
-				while(inputValues[inputIndex] || mergedInputData[mergedIndex]) {					
-					let inputSample = inputValues[inputIndex];
-					let mergedSample = mergedInputData[mergedIndex];
-					let result:any;
+
+				if(hasFormulas)
+				{
+
+					let mergedIndex = 0,inputIndex = 0;
+					mergedInputData = mergedOutputData;
+					mergedOutputData = [];
 					
-					if(inputSample === undefined) {
-						result = mergedSample;
-						mergedIndex++;
-					} else if (mergedSample == undefined) {
-						result = {};
-						result[anInput.name] = inputSample[anInput.valueField];
-						result[indexField] = inputSample[indexField];
-						inputIndex++;						
-					} else {
-//						console.log("i:",inputIndex,mergedIndex," : ",inputSample[indexField] - mergedSample[indexField]);
-						// we have two, let's compare.
-						if(inputSample[indexField] == mergedSample[indexField]) {
-							//same time, easy.
-							mergedSample[anInput.name] = inputSample[anInput.valueField];
+					// if(true) // MONKEY CHAOS TIME!
+					// {
+					// 	inputValues = inputValues.concat();
+					// 	let randomIndex = Math.floor(Math.random()*inputValues.length);
+					// 	inputValues.splice(randomIndex,1);
+					// 	let randomCount = Math.floor(Math.random()*Math.min(inputValues.length,4));
+					// 	inputValues.splice(inputValues.length - randomCount,randomCount);
+					// 	randomCount = Math.floor(Math.random()*Math.min(inputValues.length/2,5));
+					// 	inputValues.splice(0,randomCount);
+					// 	//console.log("input",anInput.name,"now has",JSON.stringify(inputValues.map(v => v.startTimeInMillis)));
+					// 	inputData.values = inputValues;
+					// }
+	//				console.log("comparing",inputValues.length,mergedInputData.length);
+					let inputLen = inputValues.length;
+					let mergedLen = mergedInputData.length;
+					while(inputValues[inputIndex] || mergedInputData[mergedIndex]) {					
+						let inputSample = inputValues[inputIndex];
+						let mergedSample = mergedInputData[mergedIndex];
+						let result:any;
+						
+						if(inputSample === undefined) {
+							//console.log("not enough inputs from",anInput.name)
 							result = mergedSample;
-							inputIndex++;
+							if(inputLen)
+								result[anInput.name] = inputValues[inputLen-1][anInput.name];
+							else
+								result[anInput.name] = 0;
 							mergedIndex++;
-						} else if (mergedSample[indexField] < inputSample[indexField]) {
-							mergedSample[anInput.name] = this.interpolate(inputSample,inputValues[inputIndex-1],anInput.valueField,indexField,mergedSample[indexField]);							
-							result = mergedSample;
-							mergedIndex++;
-						} else { // inputSample must be newer
-							result = {};
+						} else if (mergedSample == undefined) {
+							//console.log("too many inputs from",anInput.name)
+							if(mergedLen) 
+								result = (Object as any).assign({},mergedInputData[mergedLen-1]);
+							else
+								result = {};
 							result[anInput.name] = inputSample[anInput.valueField];
 							result[indexField] = inputSample[indexField];
-							mergedProps.forEach(aProp => {
-								result[aProp] = this.interpolate(mergedSample,mergedInputData[mergedIndex-1],aProp,indexField,inputSample[indexField]);							
-							});
-							inputIndex++;							
+							inputIndex++;						
+						} else {
+	//						console.log("i:",inputIndex,mergedIndex," : ",inputSample[indexField] - mergedSample[indexField]);
+							// we have two, let's compare.
+							if(inputSample[indexField] == mergedSample[indexField]) {
+								//same time, easy.
+								mergedSample[anInput.name] = inputSample[anInput.valueField];
+								result = mergedSample;
+								inputIndex++;
+								mergedIndex++;
+							} else if (mergedSample[indexField] < inputSample[indexField]) {
+								mergedSample[anInput.name] = this.interpolate(inputSample,inputValues[inputIndex-1],anInput.valueField,indexField,mergedSample[indexField]);							
+								result = mergedSample;
+								mergedIndex++;
+							} else { // inputSample must be newer
+								result = {};
+								result[anInput.name] = inputSample[anInput.valueField];
+								result[indexField] = inputSample[indexField];
+								mergedProps.forEach(aProp => {
+									result[aProp] = this.interpolate(mergedSample,mergedInputData[mergedIndex-1],aProp,indexField,inputSample[indexField]);							
+								});
+								inputIndex++;							
+							}
 						}
+						mergedOutputData.push(result);
 					}
-					mergedOutputData.push(result);
-				}
 				mergedProps.push(anInput.name);
+			}
+			
 				inputData.color = anInput.color;
 				result.series.push(inputData);
 			}
