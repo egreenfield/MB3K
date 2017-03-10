@@ -3,7 +3,7 @@ import {EventEmitter} from "EventEmitter3";
 import LineChartView from "../components/LineChartView"
 import Guid from '../utils/Guid';
 import {DataManager} from "data/DataManager";
-import {DataSet,MultiSeriesResult} from "data/DataSet";
+import {DataSet, MultiSeriesResult} from "data/DataSet";
 import {MetricsDataSource, MetricsQueryParameters} from "data/MetricsDataSource";
 import {FormulaDataSet, FormulaInput, FormulaExpression} from "../data/FormulaDataSet";
 import Series from "./Series";
@@ -15,8 +15,8 @@ export class Tile extends EventEmitter {
     series: Series[];
     history: string[];
     query: FormulaDataSet;
-    endTime:number;
-    duration:number;
+    endTime: number;
+    duration: number;
     propertyPicker: SeriesPropertyPicker = new SeriesPropertyPicker();
 
     constructor(DataManager: DataManager) {
@@ -25,7 +25,7 @@ export class Tile extends EventEmitter {
         this.id = Guid.newGuid();
         this.series = [];
         this.history = [];
-        this.duration = 30/*min*/*60/1*1000/1;
+        this.duration = 30/*min*/ * 60 / 1 * 1000 / 1;
 
         this.query = new FormulaDataSet({
             inputs: [],
@@ -35,13 +35,10 @@ export class Tile extends EventEmitter {
     }
 
     addMetricSeries(metricPath: string) {
-        var duplicates = this.series.filter((s) => s.expression == metricPath && !s.isFormula);
-        if (duplicates.length == 0) {
-            var props = this.propertyPicker.pickRandomSeriesProps();
-            var series = new Series(props.name, metricPath, false, props.color);
-            this.series.push(series);
-            this.refreshData();
-        }
+        var props = this.propertyPicker.pickRandomSeriesProps();
+        var series = new Series(props.name, metricPath, false, props.color);
+        this.series.push(series);
+        this.refreshData();
         this.addToHistory(metricPath);
     }
 
@@ -60,11 +57,11 @@ export class Tile extends EventEmitter {
         this.refreshData();
     }
 
-    getTimespan(scale:number = 1):[number,number] {
-        let end:number = (this.endTime)? this.endTime:(new Date().getTime());
-        let result:[number,number] = [end-this.duration,end];
-        let mid = (result[0] + result[1])/2;
-        result = [(result[0]-mid)*scale+mid,(result[1]-mid)*scale+mid ];
+    getTimespan(scale: number = 1): [number, number] {
+        let end: number = (this.endTime) ? this.endTime : (new Date().getTime());
+        let result: [number, number] = [end - this.duration, end];
+        let mid = (result[0] + result[1]) / 2;
+        result = [(result[0] - mid) * scale + mid, (result[1] - mid) * scale + mid];
         return result;
     }
 
@@ -101,21 +98,16 @@ export class Tile extends EventEmitter {
         this.load();
     }
 
-    shiftTimeRangeTo(domain:number[],reload:boolean) {
+    shiftTimeRangeTo(domain: number[], reload: boolean) {
         this.endTime = Math.round(domain[1]);
         this.duration = Math.round((domain[1] - domain[0]));
-        if(reload) {
+        if (reload) {
             this.refreshData();
         }
         this.emit("change");
     }
 
     addToHistory(metricPath: string) {
-        for (var i = this.history.length - 1; i >= 0; i--) {
-            if (this.history[i] == metricPath) {
-                this.history.splice(i);
-            }
-        }
         this.history.unshift(metricPath);
         while (this.history.length > 20) {
             this.history.shift();
