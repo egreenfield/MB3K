@@ -56,8 +56,8 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
     }
 
     ellipsify(s:string) {
-        if (s.length > 50) {
-            return "\u2026" + s.substring(s.length - 49)
+        if (s.length > 47) {
+            return "\u2026" + s.substring(s.length - 46)
         } else {
             return s
         }
