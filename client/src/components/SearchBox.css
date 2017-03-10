@@ -14,6 +14,7 @@
 
 .segment-matched {
     font-weight: bold;
+    color: darkred;
 }
 
 .segment-unmatched {
