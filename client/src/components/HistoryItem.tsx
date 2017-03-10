@@ -11,7 +11,7 @@ export default class HistoryItem extends React.Component<HistoryItemProps, any> 
     }
 
     handleClick(event: any) {
-        this.props.addCallback(this.props.metricPath);
+        this.props.addCallback([this.props.metricPath]);
         event.preventDefault();
     }
 
