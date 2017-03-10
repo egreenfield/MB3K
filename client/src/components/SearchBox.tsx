@@ -145,7 +145,7 @@ export default class SearchBox extends React.Component<SearchBoxProps, any>  {
         for (var i = 0; i < Math.min(15, rows.length); i++) {
             var row:any = rows[i];
             listItems.push(
-                <div className={this.isSelected(i) ? "list-item-selected" : "list-item"}>{
+                <div className={this.isSelected(i) ? "list-item-selected" : "list-item"} style={{'padding-left': '10px'}}>{
                     row.segments.map((seg:any) =>
                         <span className={seg.match ? "segment-matched" : "segment-unmatched"}>{seg.text}</span>
                     )

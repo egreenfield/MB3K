@@ -120,11 +120,11 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
                             {
                                 this.state.mode == "display" && this.props.series ?
                                     <span onMouseDown={this.handleClickDisplay}>
-                                        <span style={{background: this.props.series.color}}>
-                                            &nbsp;&nbsp;&nbsp;&nbsp;
-                                        </span>
-                                        &nbsp;
                                         <b>{this.props.series.name}</b>:
+                                        <span style={{background: this.props.series.color}}>
+                                            &nbsp;&nbsp;&nbsp;
+                                        </span>
+                                        &nbsp;&nbsp;
                                         <span>{this.ellipsify(this.props.series.expression)}</span>
                                     </span>
 
@@ -153,11 +153,11 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
                                             this.state.mode == "related" &&
                                             <div>
                                                 <span onMouseDown={this.handleClickDisplay}>
-                                                    <span style={{background: this.props.series.color}}>
-                                                        &nbsp;&nbsp;&nbsp;&nbsp;
-                                                    </span>
-                                                    &nbsp;
                                                     <b>{this.props.series.name}</b>:
+                                                    <span style={{background: this.props.series.color}}>
+                                                        &nbsp;&nbsp;&nbsp;
+                                                    </span>
+                                                    &nbsp;&nbsp;
                                                     <span>{this.ellipsify(this.props.series.expression)}</span>
                                                 </span>
                                                 <div className="popup" style={this.state.relatedMetricsPopupStyle}>

@@ -4,3 +4,6 @@
     overflow: visible;
     z-index: 10;
 }
+.popup div {
+    padding-left: 10px;
+}
