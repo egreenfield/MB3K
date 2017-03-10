@@ -32,9 +32,6 @@ export class Tile extends EventEmitter {
             indexField: "startTimeInMillis",
             formulas: []
         });
-
-
-        this.addMetricSeries('Business Transaction Performance|Business Transactions|LoanProcessor-Services|/processor/CreditCheck|Average Response Time (ms)');
     }
 
     addMetricSeries(metricPath: string) {

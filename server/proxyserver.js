@@ -1,7 +1,16 @@
 var proxy = require('express-http-proxy'); 
 var app = require('express')();
 var fs = require('fs')
- 
+
+var controller = "ec2-23-20-138-216.compute-1.amazonaws.com:8090"
+var https = false;
+var metrics_file = "test-metrics-amod";
+if (false) { /* OAFLAG */
+    controller = "oa.saas.appdynamics.com";
+    https = true;
+    metrics_file = "test-metrics-oa";
+}
+
 app.use('/api/events', proxy('http://ec2-54-185-117-159.us-west-2.compute.amazonaws.com:9080', {
   // decorateRequest: function(proxyReq, originalReq) {
   //   return proxyReq;
@@ -17,7 +26,8 @@ app.use('/api/events', proxy('http://ec2-54-185-117-159.us-west-2.compute.amazon
   }
 }));
 
-app.use('/api/metrics', proxy('http://ec2-23-20-138-216.compute-1.amazonaws.com:8090', {
+app.use('/api/metrics', proxy(controller, {
+    https:https,
   // decorateRequest: function(proxyReq, originalReq) {
   //   return proxyReq;
   // },
@@ -30,7 +40,7 @@ app.use('/api/metrics', proxy('http://ec2-23-20-138-216.compute-1.amazonaws.com:
    console.log("proxying",require('url').parse(req.url).path);
     console.log("proxying",require('url').parse(req.url).path);
     let url = "/controller/rest" + require('url').parse(req.url).path;
-    console.log("proxied to",url)
+    console.log("proxied to",controller + url)
     return  url;
   }
 }));
@@ -40,7 +50,7 @@ app.get('/api/test-metrics', function(req, res) {
 });
 
 var testMetrics = null
-fs.readFile('test-metrics', 'utf8', function (err,data) {
+fs.readFile(metrics_file, 'utf8', function (err,data) {
     if (err) {
         return console.log(err);
     }

@@ -15,7 +15,7 @@ let manager = new DataManager();
 
 
 manager.addSource("analytics",new AnalyticsDataSource());
-manager.addSource("ADC-metrics",new MetricsDataSource("AD-Capital"));			
+manager.addSource("ADC-metrics",new MetricsDataSource("AD-Capital")); /* OAFLAG */
 
 let dashboard = new Dashboard(manager);
 dashboard.addTile();

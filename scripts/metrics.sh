@@ -20,15 +20,31 @@ function traverse() {
     # Recur on the folders
     local next_folders="$(echo "$result" | jq -r '.[] | select(.type=="folder") | .name')"
     for folder in $next_folders; do
+        if [[ "$folder" == *"By account"* ]]; then
+            continue
+        fi
+        if [[ "$folder" == *"By agent"* ]]; then
+            continue
+        fi
+        if [[ "$folder" == *Disk* ]]; then
+            continue
+        fi
+        if [[ "$folder" == *Network* ]]; then
+            continue
+        fi
+        if [[ "$folder" == *veth* ]]; then
+            continue
+        fi
+        if [[ "$folder" == *beyonce* ]]; then
+            continue
+        fi
+
         if [[ -z "$root" ]]; then
             traverse "$folder"
         else
             traverse "$root|$folder"
         fi
     done
-
-    # Don't DOS the server for now
-    sleep 1
 }
 
-traverse ""
+traverse "Application Infrastructure Performance|shepherd|Custom Metrics|Synthetic|Shepherd"
