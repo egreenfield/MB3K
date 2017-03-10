@@ -70,7 +70,8 @@ export class MetricsDataSource extends DataSource {
 						id:params.id,
 						values:data.metricValues,
 						name:params.metricPath,
-						color: "#E34471"
+						color: "#E34471",
+						weight:1
 					});
 				}
 			})

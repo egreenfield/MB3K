@@ -7,6 +7,7 @@ export interface SeriesChartData {
     series: {
         values:any[];
         color:any;
+        weight:number;
         id:string;
     }[],
     xStart?:any;
@@ -280,11 +281,11 @@ export class LineChart {
                     .attr("stroke-linejoin", "round")
                     .attr("stroke-linecap", "round")
                     .attr("stroke-width", 0)
-                    .datum((d) => {return d.values})
-                    .attr("d", this.line)
+//                    .datum((d) => {return d.values})
+                    .attr("d", d => this.line(d.values))
                     .transition()
-                    .delay((d,i) => {return d.length * 10})
-                    .attr("stroke-width", 1)
+                    .delay((d,i) => {return d.values.length * 10})
+                    .attr("stroke-width", d => d.weight)
 
         
 

@@ -37,6 +37,7 @@ export default class TileView  extends React.Component<TileViewProps, {}>  {
                 return {
                     values:seriesData.values,
                     color: seriesData.color,
+                    weight:seriesData.weight,
                     id: seriesData.id
                 }
             }),

@@ -71,7 +71,8 @@ export class Tile extends EventEmitter {
             name: s.name,
             valueField: "value",
             dataSet: (this.dataManager.sourceFromID("ADC-metrics") as MetricsDataSource).newQuery(s.getMetricsQueryParameters(timespan)),
-            color: s.color
+            color: s.color,
+            weight: 1
         }
     }
 
@@ -80,7 +81,8 @@ export class Tile extends EventEmitter {
             name: s.name,
             valueField: "value",
             expression: s.expression,
-            color: s.color
+            color: s.color,
+            weight:1
         }
     }
 

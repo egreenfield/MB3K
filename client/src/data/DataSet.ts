@@ -14,6 +14,7 @@ export interface SeriesResult extends DataQueryResult {
 	name:string;
 	values:any[];
 	color: string;
+	weight:number;
 };
 
 export interface MultiSeriesResult extends DataQueryResult {

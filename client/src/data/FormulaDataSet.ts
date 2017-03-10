@@ -10,13 +10,15 @@ export interface FormulaInput {
 	dataSet:DataSet,
 	includeInOutput?:boolean;
 	color: string;
+	weight: number;
 };
 
 export interface FormulaExpression {
 	name:string,	
 	valueField:string,
 	expression:string,
-	color: string
+	color: string,
+	weight:number
 };
 
 export interface FormulaParameters{
@@ -144,6 +146,7 @@ export class FormulaDataSet extends DataSet {
 			}
 			
 				inputData.color = anInput.color;
+				inputData.weight = 1;
 				result.series.push(inputData);
 			}
 
@@ -154,6 +157,7 @@ export class FormulaDataSet extends DataSet {
 					name: aFormula.name,
 					values: values,
 					color: aFormula.color,
+					weight:5
 				});
 			}
 
