@@ -69,7 +69,7 @@ export class Tile extends EventEmitter {
     }
 
     toMetricFormulaInput(s: Series): FormulaInput {
-        let timespan = this.getTimespan(3);
+        let timespan = this.getTimespan( 3 );
         return {
             name: s.name,
             valueField: "value",

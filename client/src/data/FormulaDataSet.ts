@@ -60,43 +60,72 @@ export class FormulaDataSet extends DataSet {
 				series:[]				
 			};
 			let outputDataLength = 0;
-			let mergedOutputData = [] as any[];
+			let mergedOutputData:any[] = [];
+			let mergedInputData:any[];
+			let mergedProps:string[] = [];
+			let indexField = this.parameters.indexField;
+
 			for(let anInput of this.parameters.inputs) {
+				
 				let inputData = anInput.dataSet.getData();
-				outputDataLength = Math.max(inputData.values.length,outputDataLength);
-				// if(outputDataLength != inputData.values.length) {
-				// 	console.log("ERROR:",outputDataLength,inputData.values.length);
-				// 	console.log("while processing",anInput.name);
+				let inputValues:any[] = inputData.values;
+				let mergedIndex = 0,inputIndex = 0;
+				mergedInputData = mergedOutputData;
+				mergedOutputData = [];
+				
+				// if(false) // MONKEY CHAOS TIME!
+				// {
+				// 	inputValues = inputValues.concat();
+				// 	let randomIndex = Math.floor(Math.random()*inputValues.length);
+				// 	inputValues.splice(randomIndex,1);
+				// 	console.log("input",inputData.name,"now has",inputValues.length,"values");
+				// 	inputData.values = inputValues;
 				// }
-				for(let i=0;i<outputDataLength;i++) {
-					let mergedSample = mergedOutputData[i];
-					let inputValue = inputData.values[i];					
-					if(mergedSample == null) {
-						mergedOutputData[i] = mergedSample = {};
-						mergedSample[this.parameters.indexField] = inputValue[this.parameters.indexField];
-					}
-					if(inputValue == null)
-						mergedSample[anInput.name] = 0;
-					else {
-						mergedSample[anInput.name] = inputValue[anInput.valueField];
-						if(mergedSample[this.parameters.indexField] != inputValue[this.parameters.indexField]) {
-							throw new Error("TIME FIELDS DON'T MATCH UP");
+//				console.log("comparing",inputValues.length,mergedInputData.length);
+				while(inputValues[inputIndex] || mergedInputData[mergedIndex]) {					
+					let inputSample = inputValues[inputIndex];
+					let mergedSample = mergedInputData[mergedIndex];
+					let result:any;
+					
+					if(inputSample === undefined) {
+						result = mergedSample;
+						mergedIndex++;
+					} else if (mergedSample == undefined) {
+						result = {};
+						result[anInput.name] = inputSample[anInput.valueField];
+						result[indexField] = inputSample[indexField];
+						inputIndex++;						
+					} else {
+//						console.log("i:",inputIndex,mergedIndex," : ",inputSample[indexField] - mergedSample[indexField]);
+						// we have two, let's compare.
+						if(inputSample[indexField] == mergedSample[indexField]) {
+							//same time, easy.
+							mergedSample[anInput.name] = inputSample[anInput.valueField];
+							result = mergedSample;
+							inputIndex++;
+							mergedIndex++;
+						} else if (mergedSample[indexField] < inputSample[indexField]) {
+							mergedSample[anInput.name] = this.interpolate(inputSample,inputValues[inputIndex-1],anInput.valueField,indexField,mergedSample[indexField]);							
+							result = mergedSample;
+							mergedIndex++;
+						} else { // inputSample must be newer
+							result = {};
+							result[anInput.name] = inputSample[anInput.valueField];
+							result[indexField] = inputSample[indexField];
+							mergedProps.forEach(aProp => {
+								result[aProp] = this.interpolate(mergedSample,mergedInputData[mergedIndex-1],aProp,indexField,inputSample[indexField]);							
+							});
+							inputIndex++;							
 						}
 					}
+					mergedOutputData.push(result);
 				}
+				mergedProps.push(anInput.name);
 				inputData.color = anInput.color;
 				result.series.push(inputData);
 			}
+
 			for(let aFormula of this.parameters.formulas) {
-				// let values = [] as any[];
-				// let funcExpression = "(inputs) => { with(inputs) { return " + aFormula.expression + "} }";
-				// let evaluator:Function = eval(funcExpression);
-				// for(let i=0;i<outputDataLength;i++) {
-				// 	let mergedSample = mergedOutputData[i];
-				// 	let newSample:any = {};
-				// 	newSample[aFormula.valueField] = evaluator(mergedSample);
-				// 	values.push(newSample);
-				// }
 				let values = (window as any).evaluator(aFormula.expression,mergedOutputData,aFormula.valueField,this.parameters.indexField);
 				result.series.push( {
 					id: aFormula.name,
@@ -115,6 +144,16 @@ export class FormulaDataSet extends DataSet {
 			this.setState("unloaded");
 		}
 	}
+
+	interpolate(endSample:any,startSample:any,valueField:string,indexField:string,indexTime:number):number {
+		if(startSample === undefined) 
+			return 0;
+		let startTime = startSample[indexField];
+		let endTime = endSample[indexField];
+		let t = (indexTime-startTime)/(endTime-startTime);
+		return startSample[valueField] + (endSample[valueField] - startSample[valueField]) * t;
+	}
+
 	getData():MultiSeriesResult {
 		return this.data;
 	}

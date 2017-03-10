@@ -422,7 +422,6 @@ export class LineChart {
             
             newLines
             .transition()
-            .duration(100)
             .attr("opacity",1)
         	
             newLines.append("text")
