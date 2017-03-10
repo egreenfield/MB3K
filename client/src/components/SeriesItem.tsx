@@ -21,12 +21,12 @@ const floatRight = {
 }
 
 export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
+    private historyButton: HTMLButtonElement;
+
     constructor(props:SeriesItemProps) {
         super(props);
 
-        this.state = {
-            mode: props.series ? "display" : "search" //, "history"
-        };
+        this.state = this.getInitState();
 
         this.handleDeleteClick = this.handleDeleteClick.bind(this);
         this.handleClickDisplay = this.handleClickDisplay.bind(this);
@@ -37,6 +37,26 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
 
         this.handleAddFromHistory = this.handleAddFromHistory.bind(this);
         this.handleAddFromRelated = this.handleAddFromRelated.bind(this);
+    }
+
+    componentWillReceiveProps(nextProps: any) {
+        if (this.historyButton) {
+            var rect = this.historyButton.getBoundingClientRect();
+            this.state = this.getInitState();
+            this.state.historyPopupStyle = {
+                top: rect.bottom,
+                left: rect.left - 500,
+                position: 'fixed',
+                width: 900
+            };
+            this.setState(this.state);
+        }
+    }
+
+    getInitState() {
+        return {
+            mode: this.props.series ? "display" : "search"
+        };
     }
 
     handleDeleteClick() {
@@ -98,16 +118,23 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
                                     <span>{this.ellipsify(this.props.series.expression)}</span>
                                 </span> :
                                 <div>
-                                    {this.state.mode == "search" &&
+                                    {
+                                        this.state.mode == "search" &&
                                         <SearchBox metricDB={this.props.metricDB}
                                                    acceptCallback={this.props.addCallback}
-                                                   cancelCallback={this.handleCancelSearch}/>}
-                                    {this.state.mode == "history" &&
-                                        <table>
-                                            {this.props.tile.getHistory().map((m: string) =>
-                                                <HistoryItem metricPath={m}
-                                                             addCallback={this.handleAddFromHistory}/>)}
-                                        </table>}
+                                                   cancelCallback={this.handleCancelSearch}/>
+                                    }
+                                    {
+                                        this.state.mode == "history" &&
+                                        <div style={this.state.historyPopupStyle}>
+                                            {
+                                                this.props.tile.getHistory().map((m: string) =>
+                                                    <HistoryItem metricPath={m}
+                                                                 addCallback={this.handleAddFromHistory}/>)
+                                            }
+                                        </div>
+
+                                    }
                                     {this.state.mode == "related" &&
                                     <table>
                                         {this.props.metricDB.findRelated(this.props.series.expression).map((m: string) =>
@@ -130,14 +157,12 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
                                 {
                                     this.state.mode != "display" && this.state.mode != "related" &&
                                     <button
+                                        ref={(btn) => { this.historyButton = btn; }}
                                         onClick={this.handleHistoryClick}
                                         className={"btn btn-sm btn-default " + (this.state.mode == "history" ? "active" : "")}>
                                         <span className="glyphicon glyphicon-time" aria-hidden="true"></span>
                                     </button>
                                 }
-                                </div>
-
-                                <div className="btn-group" role="group" style={floatRight}>
                                 {
                                     this.props.deleteCallback &&
                                     <button

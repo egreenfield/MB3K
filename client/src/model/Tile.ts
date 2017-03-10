@@ -108,7 +108,12 @@ export class Tile extends EventEmitter {
     }
 
     addToHistory(metricPath: string) {
-        this.history.unshift(metricPath);
+        for (var i = this.history.length - 1; i >= 0; i--) {
+            if (this.history[i] == metricPath) {
+                this.history.splice(i, 1);
+            }
+        }
+        this.history.splice(0, 0, metricPath);
         while (this.history.length > 20) {
             this.history.shift();
         }
