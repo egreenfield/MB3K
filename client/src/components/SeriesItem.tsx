@@ -39,6 +39,7 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
         this.handleAddFromHistory = this.handleAddFromHistory.bind(this);
         this.handleAddFromRelated = this.handleAddFromRelated.bind(this);
         this.handleAddAllRelatedMetrics = this.handleAddAllRelatedMetrics.bind(this);
+        this.handleItemHover = this.handleItemHover.bind(this);
     }
 
     componentWillReceiveProps(nextProps: any) {
@@ -116,9 +117,15 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
         }
     }
 
+    handleItemHover(event: any) {
+        if (this.props.series) {
+            console.log("hovered over " + this.props.series.name)
+        }
+    }
+
     render() {
         return (
-            <li className="list-group-item" style={{"font-family": "'Inconsolata', monospace"}}>
+            <li onMouseOver={this.handleItemHover} className="list-group-item" style={{"font-family": "'Inconsolata', monospace"}}>
                 <table width="100%">
                     <tr>
                         <td width="*" style={{"padding-right": 10}}>
