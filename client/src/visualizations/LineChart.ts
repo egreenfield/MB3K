@@ -16,6 +16,7 @@ export interface SeriesChartData {
 export class LineChart {
     root:SVGElement;
     rootGroup:d3.Selection<d3.BaseType,{},null,undefined>;
+    dataGroup:d3.Selection<d3.BaseType,{},null,undefined>;
     width:number;
     height:number;
     line:d3.Line<[Number,Number]>;
@@ -40,16 +41,16 @@ export class LineChart {
 
 
         //clippath
-         svg.append("defs").append("rect").
-            attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+         svg.append("defs").append("clipPath").attr("id","plotArea").append("rect")
             .attr("width", this.width)
             .attr("height", this.height)
             .style("fill", "#FFAAAA")
-            .attr("id","clipper")
 
         this.rootGroup = svg.append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-            .style("clip-path","url('#clipper')")
+
+        this.dataGroup = this.rootGroup.append("g")
+            .style("clip-path","url('#plotArea')")
         
         let baseDomain:number[];
         let zoom = d3.zoom()
@@ -123,7 +124,7 @@ export class LineChart {
         let y = this.y;
 
 
-        let lineGroups = this.rootGroup.selectAll(".line")
+        let lineGroups = this.dataGroup.selectAll(".line")
             .data(data.series,(d:any) =>  d.id);
 
         if(this.animateChanges) {
