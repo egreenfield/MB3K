@@ -26,6 +26,7 @@ export class LineChart {
     yAxisGenerator:d3.Axis<number | { valueOf(): number; }>;
     xDomain:[number,number];
     animateChanges:boolean = true;
+    lastTimeUpdateRequested:Date = new Date();
 
     panToCallback:(delta:number[],reload:boolean) => void;
 

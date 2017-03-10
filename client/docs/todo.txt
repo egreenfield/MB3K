@@ -1,22 +1,9 @@
-chart pan/zoom
-chart styling
 tooltips
+markers at days, weeks, etc.
+
+
 better UX representation of metric paths
-support for offset time
-	querying offset times.
-	styling of offset lines
-	UX for specifying offset time
-	how does offset time affect History?
 
-support for expressions
-	UX for setting expressions
-	UX for choosing between expressions and metrics
-	styling of expression lines
-	how do expressions effect history?
-
-overall styling
-popup on search results
-mouse picking of search results.
 
 
 add enter/exit transitions for dots when the x axis changes.
