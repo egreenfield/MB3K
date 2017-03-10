@@ -105,8 +105,8 @@ export default class MetricDB {
                 result.push(metric);
             }
         }
-        console.log(query + " is related to ");
-        console.log(result);
+ //       console.log(query + " is related to ");
+ //       console.log(result);
         return result;
     }
 

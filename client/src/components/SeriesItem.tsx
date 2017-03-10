@@ -21,12 +21,13 @@ const floatRight = {
 }
 
 export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
+    private historyButton: HTMLButtonElement;
+    private relatedMetricsButton: HTMLButtonElement;
+
     constructor(props:SeriesItemProps) {
         super(props);
 
-        this.state = {
-            mode: props.series ? "display" : "search" //, "history"
-        };
+        this.state = this.getInitState();
 
         this.handleDeleteClick = this.handleDeleteClick.bind(this);
         this.handleClickDisplay = this.handleClickDisplay.bind(this);
@@ -37,6 +38,35 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
 
         this.handleAddFromHistory = this.handleAddFromHistory.bind(this);
         this.handleAddFromRelated = this.handleAddFromRelated.bind(this);
+        this.handleAddAllRelatedMetrics = this.handleAddAllRelatedMetrics.bind(this);
+    }
+
+    componentWillReceiveProps(nextProps: any) {
+        if (this.historyButton) {
+            var rect = this.historyButton.getBoundingClientRect();
+            this.state = this.getInitState();
+            this.state.historyPopupStyle = {
+                top: rect.bottom,
+                left: rect.left - 450,
+            };
+            this.setState(this.state);
+        }
+        if (this.relatedMetricsButton) {
+            var rect = this.relatedMetricsButton.getBoundingClientRect();
+            this.state = this.getInitState();
+            this.state.relatedMetricsPopupStyle = {
+                top: rect.bottom,
+                left: rect.left - 450,
+
+            };
+            this.setState(this.state);
+        }
+    }
+
+    getInitState() {
+        return {
+            mode: this.props.series ? "display" : "search"
+        };
     }
 
     handleDeleteClick() {
@@ -51,6 +81,10 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
     handleAddFromRelated(metrics: string[]) {
         this.setState({mode: "display"});
         this.props.addCallback(metrics);
+    }
+
+    handleAddAllRelatedMetrics() {
+        this.handleAddFromRelated(this.props.metricDB.findRelated(this.props.series.expression));
     }
 
     handleClickDisplay() {
@@ -88,33 +122,64 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
                 <table width="100%">
                     <tr>
                         <td width="*" style={{"padding-right": 10}}>
-                            {this.state.mode == "display" && this.props.series ?
-                                <span onMouseDown={this.handleClickDisplay}>
-                                    <span style={{background: this.props.series.color}}>
-                                        &nbsp;&nbsp;&nbsp;&nbsp;
+                            {
+                                this.state.mode == "display" && this.props.series ?
+                                    <span onMouseDown={this.handleClickDisplay}>
+                                        <b>{this.props.series.name}</b>:
+                                        <span style={{background: this.props.series.color}}>
+                                            &nbsp;&nbsp;&nbsp;
+                                        </span>
+                                        &nbsp;&nbsp;
+                                        <span>{this.ellipsify(this.props.series.expression)}</span>
                                     </span>
-                                    &nbsp;
-                                    <b>{this.props.series.name}</b>:
-                                    <span>{this.ellipsify(this.props.series.expression)}</span>
-                                </span> :
-                                <div>
-                                    {this.state.mode == "search" &&
-                                        <SearchBox metricDB={this.props.metricDB}
-                                                   acceptCallback={this.props.addCallback}
-                                                   cancelCallback={this.handleCancelSearch}/>}
-                                    {this.state.mode == "history" &&
-                                        <table>
-                                            {this.props.tile.getHistory().map((m: string) =>
-                                                <HistoryItem metricPath={m}
-                                                             addCallback={this.handleAddFromHistory}/>)}
-                                        </table>}
-                                    {this.state.mode == "related" &&
-                                    <table>
-                                        {this.props.metricDB.findRelated(this.props.series.expression).map((m: string) =>
-                                            <RelatedItem metricPath={m}
-                                                         addCallback={this.handleAddFromRelated}/>)}
-                                    </table>}
-                                </div>}
+
+                                    :
+
+                                    <div>
+                                        {
+                                            this.state.mode == "search" &&
+                                            <SearchBox metricDB={this.props.metricDB}
+                                                       acceptCallback={this.props.addCallback}
+                                                       cancelCallback={this.handleCancelSearch}/>
+                                        }
+                                        {
+                                            this.state.mode == "history" &&
+                                            <div className="popup" style={this.state.historyPopupStyle}>
+                                                {
+                                                    this.props.tile.getHistory().map((m: string) =>
+                                                        <HistoryItem
+                                                            metricPath={m}
+                                                            addCallback={this.handleAddFromHistory}/>)
+                                                }
+                                            </div>
+
+                                        }
+                                        {
+                                            this.state.mode == "related" &&
+                                            <div>
+                                                <span onMouseDown={this.handleClickDisplay}>
+                                                    <b>{this.props.series.name}</b>:
+                                                    <span style={{background: this.props.series.color}}>
+                                                        &nbsp;&nbsp;&nbsp;
+                                                    </span>
+                                                    &nbsp;&nbsp;
+                                                    <span>{this.ellipsify(this.props.series.expression)}</span>
+                                                </span>
+
+                                                <div className="popup" style={this.state.relatedMetricsPopupStyle}>
+                                                {
+                                                    this.props.metricDB.findRelated(this.props.series.expression).map((m: string) =>
+                                                    <RelatedItem
+                                                        parentMetric={this.props.series.expression}
+                                                        relatedMetric={m}
+                                                        addCallback={this.handleAddFromRelated}
+                                                        addAllCallback={this.handleAddAllRelatedMetrics}/>)
+                                                }
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                            }
                         </td>
                         <td width="130" style={{"vertical-align": "top"}}>
                             <div className="btn-toolbar" role="toolbar">
@@ -123,35 +188,38 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
                                     this.state.mode != "display" && this.state.mode != "related" &&
                                     <button
                                         onClick={this.handleSearchClick}
-                                        className={"btn btn-default " + (this.state.mode == "search" ? "active" : "")}>
+                                        className={"btn btn-sm btn-default " + (this.state.mode == "search" ? "active" : "")}>
                                         <span className="glyphicon glyphicon-search" aria-hidden="true"></span>
                                     </button>
                                 }
                                 {
                                     this.state.mode != "display" && this.state.mode != "related" &&
                                     <button
+                                        ref={(btn) => { this.historyButton = btn; }}
                                         onClick={this.handleHistoryClick}
-                                        className={"btn btn-default " + (this.state.mode == "history" ? "active" : "")}>
+                                        className={"btn btn-sm btn-default " + (this.state.mode == "history" ? "active" : "")}>
                                         <span className="glyphicon glyphicon-time" aria-hidden="true"></span>
                                     </button>
                                 }
-                                </div>
                                 {
                                     this.props.deleteCallback &&
-                                    <button type="button" className="btn btn-default"
-                                            onClick={this.handleDeleteClick} style={floatRight}>
+                                    <button
+                                        className="btn btn-default btn-sm"
+                                        onClick={this.handleDeleteClick}>
                                         <span className="glyphicon glyphicon-minus-sign" aria-hidden="true"></span>
                                     </button>
                                 }
                                 {
                                     (this.state.mode=="display" || this.state.mode=="related")  &&
                                     <button
+                                        ref={(btn) => { this.relatedMetricsButton = btn; }}
                                         onClick={this.handleRelatedClick}
-                                        className={"btn btn-default " + (this.state.mode == "related" ? "active" : "")}
+                                        className={"btn btn-default btn-sm " + (this.state.mode == "related" ? "active" : "")}
                                         style={floatRight}>
                                         <span className="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
                                     </button>
                                 }
+                                </div>
                             </div>
                         </td>
                     </tr>

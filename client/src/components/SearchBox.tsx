@@ -89,7 +89,8 @@ export default class SearchBox extends React.Component<SearchBoxProps, any>  {
             top: rect.bottom,
             left: rect.left,
             position: 'fixed',
-            width: 900
+            width: 900,
+            overflow: 'visible'
         };
         this.setState(this.state);
     }
@@ -144,7 +145,7 @@ export default class SearchBox extends React.Component<SearchBoxProps, any>  {
         for (var i = 0; i < Math.min(15, rows.length); i++) {
             var row:any = rows[i];
             listItems.push(
-                <div className={this.isSelected(i) ? "list-item-selected" : "list-item"}>{
+                <div className={this.isSelected(i) ? "list-item-selected" : "list-item"} style={{'padding-left': '10px'}}>{
                     row.segments.map((seg:any) =>
                         <span className={seg.match ? "segment-matched" : "segment-unmatched"}>{seg.text}</span>
                     )
@@ -154,7 +155,7 @@ export default class SearchBox extends React.Component<SearchBoxProps, any>  {
         }
 
         return (
-         <div>
+         <div style={{width: '420px'}}>
              <input type="text" value={this.state.query}
                     style={inputStyle}
                     ref={(input) => { this.input = input; }}

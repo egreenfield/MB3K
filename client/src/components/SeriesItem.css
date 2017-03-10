@@ -1,0 +1,9 @@
+.popup {
+    position: fixed;
+    width: 1100px;
+    overflow: visible;
+    z-index: 10;
+}
+.popup div {
+    padding-left: 10px;
+}

@@ -14,8 +14,16 @@
 
 .segment-matched {
     font-weight: bold;
+    color: darkred;
 }
 
 .segment-unmatched {
 
+}
+
+.relation-name {
+    width:60px;
+    font-weight: bold;
+    color: darkred;
+    background-color: #FFFFCC;
 }
