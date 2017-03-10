@@ -142,8 +142,9 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
                                             <div className="popup" style={this.state.historyPopupStyle}>
                                                 {
                                                     this.props.tile.getHistory().map((m: string) =>
-                                                        <HistoryItem metricPath={m}
-                                                                     addCallback={this.handleAddFromHistory}/>)
+                                                        <HistoryItem
+                                                            metricPath={m}
+                                                            addCallback={this.handleAddFromHistory}/>)
                                                 }
                                             </div>
 
@@ -162,8 +163,10 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
                                                 <div className="popup" style={this.state.relatedMetricsPopupStyle}>
                                                 {
                                                     this.props.metricDB.findRelated(this.props.series.expression).map((m: string) =>
-                                                    <RelatedItem metricPath={m}
-                                                                 addCallback={this.handleAddFromRelated}/>)
+                                                    <RelatedItem
+                                                        parentMetric={this.props.series.expression}
+                                                        relatedMetric={m}
+                                                        addCallback={this.handleAddFromRelated}/>)
                                                 }
                                                 </div>
                                             </div>
