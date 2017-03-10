@@ -357,41 +357,45 @@ export class LineChart {
     
         let matchTicks:Date[] = [];        
         let candidates:Date[] = ticks;
-        ticks.forEach( t=> {
+        let label:string = "minute";
+        candidates.forEach( t=> {
             if(t.getSeconds() == 0) {matchTicks.push(t)};
         });
+
         if (matchTicks.length > maxDividers) {
+            label = "hour";
             candidates = matchTicks;matchTicks = [];
-            ticks.forEach( t=> {
+            candidates.forEach( t=> {
                 if(t.getMinutes() == 0) {matchTicks.push(t)};
             });
         }
         if (matchTicks.length > maxDividers) {
+            label = "day";
             candidates = matchTicks;matchTicks = [];
-            ticks.forEach( t=> {
+            candidates.forEach( t=> {
                 if(t.getHours() == 0) {matchTicks.push(t)};
             });
         }
         if(matchTicks.length > maxDividers) {
+            label = "week";
             candidates = matchTicks;matchTicks = [];
-            ticks.forEach( t=> {
+            candidates.forEach( t=> {
                 if(t.getDay() == 0) {matchTicks.push(t)};
             });
         }
         if(matchTicks.length > maxDividers) {
+            label = "month";
             candidates = matchTicks;matchTicks = [];
-            ticks.forEach( t=> {
+            candidates.forEach( t=> {
                 if(t.getDate() == 0) {matchTicks.push(t)};
             });
         }
         if (matchTicks.length > maxDividers) {
+            label = "year";
             candidates = matchTicks;matchTicks = [];
-            ticks.forEach( t=> {
+            candidates.forEach( t=> {
                 if(t.getMonth() == 0) {matchTicks.push(t)};
             });
-        }
-        if(matchTicks.length > maxDividers) {
-            candidates = matchTicks;
         }
 //        console.log("found ",markedTicks.length,"at scale ",markerScale);
         
@@ -401,21 +405,46 @@ export class LineChart {
 
         //console.log("changing",lineMarkers.size(),"creating",lineMarkers.enter().size(),"destroying",lineMarkers.exit().size());
 
-        lineMarkers
+        let newLines = lineMarkers
             .enter()
+            .append("g")
+            .classed("timeMarker",true);
+
+            newLines
             .append("line")
-            .classed("timeMarker",true)
             .attr("stroke","#CCC")
             .attr("stroke-width", 1)            
             .attr("stroke-dasharray", "5,2")
-            .attr("x1",d => x(d))
-            .attr("x2",d => x(d))
-            .attr("y1",0)
-            .attr("y2",this.height);
+            .attr("y1",-20)
+            .attr("y2",this.height+20)
+            .attr("x1",0)
+            .attr("x2",0)
+            
+            newLines
+            .transition()
+            .duration(100)
+            .attr("opacity",1)
+        	
+            newLines.append("text")
+                .classed("timeMarkerLabel",true)
+		        .attr("transform", "translate(10,-20) rotate(-90)")
+                .attr("dy", ".35em")
+                .attr("text-anchor", "end")
+    		.style("fill", "#CCC")
+        		.text(label);
 
-        lineMarkers.exit().remove();
-        lineMarkers
-            .attr("x1",d => x(d))
-            .attr("x2",d => x(d))        
+        lineMarkers.exit()
+            .transition()
+            .duration(100)
+            .attr("opacity",0)
+            .remove();
+
+        lineMarkers.select(".timeMarkerLabel")
+            .text(label);
+
+        let allLineMarkers = this.lineLayer
+                            .selectAll(".timeMarker")
+        allLineMarkers
+		    .attr("transform", d => "translate(" + (x(d)) + ",0)")
     }
 }
