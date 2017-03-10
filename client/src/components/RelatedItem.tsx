@@ -24,23 +24,37 @@ export default class RelatedItem extends React.Component<RelatedItemProps, any> 
         return false;
     }
 
-    render() {
-        var parentSplits = this.props.parentMetric.split("|");
-        var splits = this.props.relatedMetric.split("|");
-
+    beautify(name:string):any[] {
+        var index = name.indexOf('Individual Nodes');
         var spans = [];
-        for (var i = 0; i < splits.length; i++) {
-            if (this.contains(parentSplits, splits[i])) {
-                spans.push(<span className="segment-matched">{splits[i]}</span>);
-            } else {
-                spans.push(<span className="segment-unmatched">{splits[i]}</span>)
-            }
-            if (i != splits.length - 1) {
-                spans.push(<span className="segment-unmatched">|</span>)
-            }
+        if (index >0) {
+            spans.push(<span className="segment-matched">SIBLING NODES:</span>);
+            spans.push(<span className="segment-unmatched">{name.substr(index + 'Individual Nodes'.length + 1)}</span>);
+        }else {
+            spans.push(<span className="segment-matched">PARENT TIER:</span>);
+            spans.push(<span className="segment-unmatched">{name.substr(name.indexOf("|") + 1)}</span>);
         }
+        return spans;
+    }
 
-        return (<div className="list-item" onClick={this.handleClick}>{spans}</div>)
+
+    render() {
+        // var parentSplits = this.props.parentMetric.split("|");
+        // var splits = this.props.relatedMetric.split("|");
+        //
+        // var spans = [];
+        // for (var i = 0; i < splits.length; i++) {
+        //     if (this.contains(parentSplits, splits[i])) {
+        //         spans.push(<span className="segment-matched">{splits[i]}</span>);
+        //     } else {
+        //         spans.push(<span className="segment-unmatched">{splits[i]}</span>)
+        //     }
+        //     if (i != splits.length - 1) {
+        //         spans.push(<span className="segment-unmatched">|</span>)
+        //     }
+        // }
+
+        return (<div className="list-item" onClick={this.handleClick}>{this.beautify(this.props.relatedMetric)}</div>)
     }
 
 }
