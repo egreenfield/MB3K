@@ -55,12 +55,14 @@ export class LineChart {
 //            .scaleExtent([0, 10])
             .on("start", () => {
                 baseDomain = this.xDomain.concat();
+                this.animateChanges = false;
                 return false  
             })
             .on("end",() => {
 //                this.animateChanges = false;
                 this.panToCallback && this.panToCallback(this.computeNewDomain(baseDomain,d3.event.transform),true);
                 (this.rootGroup.node() as any)["__zoom"] = d3.zoomIdentity.translate(0,0);;                
+                this.animateChanges = true;
             })
             .on("zoom", () => {   
                 this.panToCallback && this.panToCallback(this.computeNewDomain(baseDomain,d3.event.transform),false);
@@ -150,28 +152,36 @@ export class LineChart {
         const sampleExitStagger = 5;
         const lineExitDuration = 50;
         // remove dead lines
-        lineGroups.exit()
-            .selectAll("circle")
-            .transition()
-            .delay((d,i) => i*sampleExitStagger)
-            .duration(lineExitDuration)
-            .attr("r", 0)
-            
-        lineGroups.exit()
-            .selectAll("path")
-            .transition()
-            .delay((d:any) => d.length * sampleExitStagger)
-            .duration(lineExitDuration)
-            .attr("stroke-width", 0)
+        if(this.animateChanges) {
 
         lineGroups.exit()
-            .transition()
-            .delay((d:any) => {
-                let dur = d.values.length * sampleExitStagger + lineExitDuration;
-                exitDuration = Math.max(dur,exitDuration);
-                return dur;
-            })
+                .selectAll("circle")
+                .transition()
+                .delay((d,i) => i*sampleExitStagger)
+                .duration(lineExitDuration)
+                .attr("r", 0)
+                
+            lineGroups.exit()
+                .selectAll("path")
+                .transition()
+                .delay((d:any) => d.length * sampleExitStagger)
+                .duration(lineExitDuration)
+                .attr("stroke-width", 0)
+
+            lineGroups.exit()
+                .transition()
+                .delay((d:any) => {
+                    let dur = d.values.length * sampleExitStagger + lineExitDuration;
+                    exitDuration = Math.max(dur,exitDuration);
+                    return dur;
+                })
+                .remove();
+        } else {
+            
+            lineGroups.exit()
             .remove();
+            
+        }
 // update existing lines, esp. because axes might have changed.
     //    if(this.animateChanges) {
     //         lineGroups.select("path")
@@ -185,13 +195,14 @@ export class LineChart {
     //                     .datum((d) => {return d.values})
     //                     .attr("d", this.line)
     //    }
+        let lineIsSameData = true;
         lineGroups.each((d,i,n) => {
             let circles = d3.select(n[i]).selectAll("circle") 
             .data(d.values,(d:any) =>  d.startTimeInMillis);
-            this.animateChanges = (circles.enter().size() == 0 &&
-                                    circles.exit().size() == 0);
+            //  lineIsSameData = lineIsSameData && (circles.enter().size() == 0 &&
+            //                          circles.exit().size() == 0);
             
-            if(this.animateChanges) {
+            if(this.animateChanges && lineIsSameData) {
                 circles.transition()
                     .delay(exitDuration)
                     .attr("cx", (d:any) => x(d.startTimeInMillis) )
@@ -228,7 +239,7 @@ export class LineChart {
 
 
 // update existing lines, esp. because axes might have changed.
-       if(this.animateChanges) {
+       if(this.animateChanges && lineIsSameData) {
             lineGroups.select("path")
                         .datum((d) => {return d.values})
                         .transition()
@@ -279,21 +290,36 @@ export class LineChart {
         })
         
         //todo why do we need to cast as any?  type def bug, or our bug?
-        let t= this.yAxisView.transition()
-            .delay(exitDuration)
-            .call(this.yAxisGenerator as any);
-        this.yAxisView.select(".domain").remove();
-        t.selectAll(".tick:not(:first-of-type) line")
-            .attr("stroke", "#CCC")
-            .attr("stroke-dasharray", "2,2")
-            .attr("x1",-15);
+        if(this.animateChanges) {
+            let t= this.yAxisView.transition()
+                .delay(exitDuration)
+                .call(this.yAxisGenerator as any);
+            this.yAxisView.select(".domain").remove();
+            t.selectAll(".tick:not(:first-of-type) line")
+                .attr("stroke", "#CCC")
+                .attr("stroke-dasharray", "2,2")
+                .attr("x1",-15);
 
-        t.selectAll(".tick text").attr("x", -8).attr("y", -5);
-        
-        this.xAxisView.transition()
-            .delay(exitDuration)
-            .call(d3.axisBottom(x) as any)
-            .select(".domain").remove();
+            t.selectAll(".tick text").attr("x", -8).attr("y", -5);
+            
+            this.xAxisView.transition()
+                .delay(exitDuration)
+                .call(d3.axisBottom(x) as any)
+                .select(".domain").remove();            
+        } else {
+            let t= this.yAxisView
+                .call(this.yAxisGenerator as any);
+            this.yAxisView.select(".domain").remove();
+            t.selectAll(".tick:not(:first-of-type) line")
+                .attr("stroke", "#CCC")
+                .attr("stroke-dasharray", "2,2")
+                .attr("x1",-15);
 
+            t.selectAll(".tick text").attr("x", -8).attr("y", -5);
+            
+            this.xAxisView
+                .call(d3.axisBottom(x) as any)
+                .select(".domain").remove();                        
+        }
     }
 }
