@@ -1,13 +1,15 @@
 .list-item-selected {
-    background-color: goldenrod;
+    background-color: #5D99F3;
+    color: white;
 }
 
 .list-item {
-    background-color: antiquewhite;
+    background-color: #E5E5E5;
 }
 
 .list-item:hover {
-    background-color: gold;
+    background-color: #5D99F3;
+    color: white;
 }
 
 .segment-matched {

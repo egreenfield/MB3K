@@ -1,6 +1,8 @@
-base_url="http://ec2-23-20-138-216.compute-1.amazonaws.com:8090/controller/rest/applications/AD-Capital"
+echo -n "Auth info (user@account:password): "
+read -s auth
+echo
 
-auth="amodgupta@customer1:welcome-101"
+base_url="https://oa.saas.appdynamics.com/controller/rest/applications/synthetic"
 
 IFS=$'\n'
 

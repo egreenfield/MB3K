@@ -56,8 +56,8 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
     }
 
     ellipsify(s:string) {
-        if (s.length > 50) {
-            return "\u2026" + s.substring(s.length - 49)
+        if (s.length > 47) {
+            return "\u2026" + s.substring(s.length - 46)
         } else {
             return s
         }
@@ -65,7 +65,7 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
 
     render() {
         return (
-            <li className="list-group-item">
+            <li className="list-group-item" style={{"font-family": "'Inconsolata', monospace"}}>
                 <table width="100%">
                     <tr>
                         <td width="*" style={{"padding-right": 10}}>
