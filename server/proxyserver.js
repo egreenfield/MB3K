@@ -5,7 +5,7 @@ var fs = require('fs')
 var controller = "ec2-23-20-138-216.compute-1.amazonaws.com:8090"
 var https = false;
 var metrics_file = "test-metrics-amod";
-if (false) { /* OAFLAG */
+if (true) { /* OAFLAG */
     controller = "oa.saas.appdynamics.com";
     https = true;
     metrics_file = "test-metrics-oa";

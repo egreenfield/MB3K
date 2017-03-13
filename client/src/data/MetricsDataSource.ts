@@ -53,7 +53,7 @@ export class MetricsDataSource extends DataSource {
 				"rollup":params.rollup,
                 "output":"json"
             })
-            .auth('amodgupta@customer1', 'welcome-101') /* OAFLAG */
+            // .auth('amodgupta@customer1', 'welcome-101') /* OAFLAG */
 			.end((err,response) => {
 		      	if (err) reject(err);
 	      		else {
