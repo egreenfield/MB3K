@@ -4,6 +4,7 @@ import {DataSource} from "./DataSource";
 import * as request from "superagent";
 import * as _ from "underscore";
 import {DataManager} from "./DataManager";
+import {Credentials} from "../Credentials.nosave";
 
 export interface MetricsQueryParameters extends DataQueryParameters {
 	id:string;
@@ -53,7 +54,7 @@ export class MetricsDataSource extends DataSource {
 				"rollup":params.rollup,
                 "output":"json"
             })
-            .auth('amodgupta@customer1', 'welcome-101') /* OAFLAG */
+            .auth(Credentials.metricService.username, Credentials.metricService.password) /* OAFLAG */
 			.end((err,response) => {
 		      	if (err) reject(err);
 	      		else {
