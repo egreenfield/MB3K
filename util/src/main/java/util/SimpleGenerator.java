@@ -4,11 +4,7 @@ package util;
 
 import java.sql.*;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.Random;
-import java.util.TimeZone;
 
 public class SimpleGenerator {
     static Random random = new Random();
@@ -29,13 +25,9 @@ public class SimpleGenerator {
     static int avg = 16;   // normal value
     static int numberOfChildren = 4;
 
-    static String createCPUTotal = "create Table cpu_total (timestamp int not null, value int not null)";
-    static String createCPUNode_1 = "create Table cpu_node_1 (timestamp int not null, value int not null)";
-    static String createCPUNode_2 = "create Table cpu_node_2 (timestamp int not null, value int not null)";
-    static String createCPUNode_3 = "create Table cpu_node_3 (timestamp int not null, value int not null)";
-    static String createCPUNode_4 = "create Table cpu_node_4 (timestamp int not null, value int not null)";
+    static String createTable = "create Table metrics (metricpath TEXT not null, timestamp BIGINT not null, value int not null)";
 
-    static String insertCPUTotal = "INSERT INTO cpu_total values(?,?)";
+    static String insertSql = "INSERT INTO metrics values(?,?,?)";
     static Connection conn;
 
     public static void main(String[] args) throws ParseException {
@@ -51,11 +43,13 @@ public class SimpleGenerator {
 //        Date date = sdf.parse("2017-05-03 15:00:00");
 //
 //        int curTime = (int)(date.getTime()/1000);
-        int curTime = (int)(System.currentTimeMillis()/1000);
-        int startTime = curTime- total * 60 ;
+      //  long curTime = System.currentTimeMillis();
+        long startTime = total * 60 * 1000 - 60000;
 
         try {
             generator.setConnection();
+            generator.dropTable();
+            generator.createTable();
             // create cpu data: cpu_total, cpu_node[1-4]
             generator.putCPUData(startTime);
         } catch (Exception e) {
@@ -103,19 +97,25 @@ public class SimpleGenerator {
 //        }
 //        return res;
 //    }
-    private void putCPUData(int startTime) throws SQLException {
-        drop_CPU_tables();
-        create_CPU_tables();
+    private void putCPUData(long startTime) throws SQLException {
+
         int[][] cPUs = generateParentAndChildrenData(numberOfChildren);
         insertToCPUTotal(startTime, cPUs[0]);
-        for (int i = 1; i <= numberOfChildren; i ++) {
-            insertCPUDataForNode(startTime, cPUs[i], i);
-        }
-        selectRows("SELECT * FROM cpu_total");
-        selectRows("SELECT * FROM cpu_node_1");
-        selectRows("SELECT * FROM cpu_node_2");
-        selectRows("SELECT * FROM cpu_node_3");
-        selectRows("SELECT * FROM cpu_node_4");
+//        String[] names = {
+//                "Application Infrastructure Performance|lemminghost|Individual Nodes|ip-10-130-0-175|Hardware Resources|CPU|%Busy",
+//                "Application Infrastructure Performance|lemminghost|Individual Nodes|ip-10-130-0-197|Hardware Resources|CPU|%Busy",
+//                "Application Infrastructure Performance|lemminghost|Individual Nodes|ip-10-130-0-76|Hardware Resources|CPU|%Busy",
+//                "Application Infrastructure Performance|lemminghost|Individual Nodes|ip-10-130-1-51|Hardware Resources|CPU|%Busy",
+//                "Application Infrastructure Performance|lemminghost|Individual Nodes|ip-10-130-1-85|Hardware Resources|CPU|%Busy",
+//                "Application Infrastructure Performance|lemminghost|Individual Nodes|ip-10-130-1-91|Hardware Resources|CPU|%Busy",
+//                "Application Infrastructure Performance|lemminghost|Individual Nodes|ip-10-130-2-128|Hardware Resources|CPU|%Busy",
+//                "Application Infrastructure Performance|lemminghost|Individual Nodes|ip-10-130-2-239|Hardware Resources|CPU|%Busy"
+//        };
+//        for (int i = 1; i <= numberOfChildren; i ++) {
+//            insertCPUDataForNode(startTime, cPUs[i], names[i-1]);
+//        }
+        selectRows("SELECT * FROM metrics");
+
     }
 
     public void setConnection () throws Exception {
@@ -125,47 +125,38 @@ public class SimpleGenerator {
             System.out.println("Connection to SQLite has been established.");
     }
 
-    private void drop_CPU_tables() throws SQLException {
+    private void dropTable() throws SQLException {
         Statement stmt;
         stmt = conn.createStatement();
-        stmt.executeUpdate("Drop table IF EXISTS cpu_total ");
-        stmt.executeUpdate("Drop table IF EXISTS cpu_node_1");
-        stmt.executeUpdate("Drop table IF EXISTS cpu_node_2");
-        stmt.executeUpdate("Drop table IF EXISTS cpu_node_3");
-        stmt.executeUpdate("Drop table IF EXISTS cpu_node_4");
+        stmt.executeUpdate("Drop table IF EXISTS metrics");
         stmt.close();
     }
 
-    private void create_CPU_tables() throws SQLException {
+    private void createTable() throws SQLException {
         Statement stmt;
         stmt = conn.createStatement();
-        stmt.executeUpdate(createCPUTotal);
-        stmt.executeUpdate(createCPUNode_1);
-        stmt.executeUpdate(createCPUNode_2);
-        stmt.executeUpdate(createCPUNode_3);
-        stmt.executeUpdate(createCPUNode_4);
+        stmt.executeUpdate(createTable);
         stmt.close();
     }
 
-    private void insertToCPUTotal(int startTime, int[] values) throws SQLException {
-        System.out.println(insertCPUTotal);
+    private void insertToCPUTotal(long startTime, int[] values) throws SQLException {
+        System.out.println(insertSql);
         PreparedStatement stmt;
-        stmt = conn.prepareStatement(insertCPUTotal);
-        insertByBatch(startTime, values, stmt);
+        stmt = conn.prepareStatement(insertSql);
+        insertByBatch(startTime, values, stmt,"Application Infrastructure Performance|lemminghost|Hardware Resources|CPU|%Busy" );
     }
 
-    private void insertCPUDataForNode(int startTime, int[] values, int index) throws SQLException {
+    private void insertCPUDataForNode(long startTime, int[] values, String name) throws SQLException {
         PreparedStatement stmt;
-        String sql = "INSERT INTO cpu_node_" + index + " values(?,?)";
-        System.out.println(sql);
-        stmt = conn.prepareStatement(sql);
-        insertByBatch(startTime, values, stmt);
+        stmt = conn.prepareStatement(insertSql);
+        insertByBatch(startTime, values, stmt, name);
     }
 
-    private void insertByBatch(int startTime, int[] values, PreparedStatement stmt) throws SQLException {
+    private void insertByBatch(long startTime, int[] values, PreparedStatement stmt, String metricsPath) throws SQLException {
         for (int i = 0; i< values.length; i++) {
-            stmt.setInt(1, startTime + i * 60);
-            stmt.setInt(2, values[i]);
+            stmt.setString(1, metricsPath);
+            stmt.setLong(2, startTime - i * 60 * 1000);
+            stmt.setInt(3, values[i]);
             stmt.addBatch();
         }
         stmt.executeBatch();
@@ -179,11 +170,12 @@ public class SimpleGenerator {
         ResultSet rs = stmt.executeQuery( sql );
         int count = 0;
         while ( rs.next() ) {
-            int timestamp = rs.getInt("timestamp");
+            String name = rs.getString("metricpath");
+            long timestamp = rs.getLong("timestamp");
             int  value = rs.getInt("value");
-            if (value > 16) {
-                System.out.println("count = " + count + "; timestamp = " + timestamp + "; value = " + value);
-            }
+            //if (value > 16) {
+                System.out.println("name = " + name + "; timestamp = " + timestamp + "; value = " + value);
+            //}
             count ++;
         }
         System.out.println(sql);
