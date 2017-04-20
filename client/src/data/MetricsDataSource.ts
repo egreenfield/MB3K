@@ -14,7 +14,7 @@ export interface MetricsQueryParameters extends DataQueryParameters {
 	endTime?:any;
 	durationInMins?:number;
 	offsetInMins?:number;
-	rollup:boolean;	
+	rollup:boolean;
 };
 
 const hashCode = function(str:string){
@@ -29,7 +29,7 @@ const hashCode = function(str:string){
 }
 
 const reduceBy = function(values:DataPoint[],bucketCount:number) {
-	let oldLen = values.length; 
+	let oldLen = values.length;
 //	console.log("simplifying");
 	//						data.metricValues = simplify(data.metricValues,3.5,false);
 
@@ -56,7 +56,7 @@ interface DataPoint {
 	startTimeInMillis:number;
 }
 
-export class MetricsDataSource extends DataSource {		
+export class MetricsDataSource extends DataSource {
 	application:string;
 	constructor(application:string) {
 		super();
@@ -83,7 +83,7 @@ export class MetricsDataSource extends DataSource {
 		}
 
 		// HACK ALERT.
-		params.metricPath = 'Application Infrastructure Performance|lemminghost|Hardware Resources|CPU|%Busy';
+	//	params.metricPath = 'Application Infrastructure Performance|lemminghost|Hardware Resources|CPU|%Busy';
 
 		return new Promise<SeriesResult>((fulfill, reject) => {
 			request.get(url)

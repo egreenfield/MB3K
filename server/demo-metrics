@@ -1,0 +1,16 @@
+[
+"Information Points|Checkout|Purchase $",
+"Transactions|E-Commerce|Checkout|Average Response Time (ms)",
+"Application Infrastructure Performance|E-Commerce|Custom Metrics|Checkout|INTERNAL_ERRORs|Overall",
+"Application Infrastructure Performance|E-Commerce|Custom Metrics|Checkout|INTERNAL_ERRORs|By Error Code|INVENTORY_CHECK_FAILED",
+"Application Infrastructure Performance|E-Commerce|Custom Metrics|Checkout|INTERNAL_ERRORs|By Error Code|INVENTORY_SUBMIT_FAILED",
+"Application Infrastructure Performance|E-Commerce|Custom Metrics|Checkout|INTERNAL_ERRORs|By Error Code|UNKNOWN_ITEM",
+"Application Infrastructure Performance|E-Commerce|Custom Metrics|Checkout|INTERNAL_ERRORs|By Error Code|PAYMENT_CHECK_FAILED",
+"Application Infrastructure Performance|E-Commerce|Custom Metrics|Checkout|INTERNAL_ERRORs|By Error Code|ORDER_SUBMIT_FAILED",
+"Application Infrastructure Performance|E-Commerce|Custom Metrics|Checkout|INTERNAL_ERRORs|By Error Code|FREIGHT_SUBMIT_FAILED",
+"Application Infrastructure Performance|Warehouse|Hardware Resources|CPU|%Busy",
+"Application Infrastructure Performance|Warehouse|Individual Nodes|node-1|Hardware Resources|CPU|%Busy",
+"Application Infrastructure Performance|Warehouse|Individual Nodes|node-2|Hardware Resources|CPU|%Busy",
+"Application Infrastructure Performance|Warehouse|Individual Nodes|node-3|Hardware Resources|CPU|%Busy",
+"Application Infrastructure Performance|Warehouse|Individual Nodes|node-4|Hardware Resources|CPU|%Busy"
+]

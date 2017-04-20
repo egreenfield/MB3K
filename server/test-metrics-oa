@@ -1,4 +1,5 @@
-["Application Infrastructure Performance|shepherd|Custom Metrics|Synthetic|Shepherd|Agent|Registration|Success|Overall",
+[
+"Application Infrastructure Performance|shepherd|Custom Metrics|Synthetic|Shepherd|Agent|Registration|Success|Overall",
 "Application Infrastructure Performance|shepherd|Custom Metrics|Synthetic|Shepherd|Agent|Registration|Success|By Provider|SOFT|Overall",
 "Application Infrastructure Performance|shepherd|Custom Metrics|Synthetic|Shepherd|Agent|Registration|Success|By Provider|SOFT|Attempts|Overall",
 "Application Infrastructure Performance|shepherd|Custom Metrics|Synthetic|Shepherd|Agent|Registration|Success|By Provider|AEC2|Overall",

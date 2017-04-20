@@ -20,20 +20,20 @@ public class SimpleGenerator {
             3, 3, 2, 1,1, 1};
 
     static int[] dropValues = {
-            1, 2, 2, 2, 3,
-            3, 4, 5, 7, 9,
+            8, 10, 12, 15, 20,
+            21, 21, 22, 23, 24,
             12, 15, 18, 22, 27,
-            30, 35, 40, 46, 80,
-            46, 43, 35, 30, 27,
-            22, 18,15, 12, 9,
-            7, 6, 5,4,4,
-            3, 3, 2, 1,1, 1};
+            30, 35, 40, 46, 50,
+            50, 50, 50, 50, 50,
+            50, 50, 50, 50, 50,
+            50, 50, 50, 50, 50,
+            50, 50, 50, 50, 50};
 
     static int[] spikeCPUValues_0 = {
             1, 2, 2, 2, 3,
             3, 4, 5, 7, 9,
             12, 15, 18, 22, 27,
-            30, 35, 40, 46, 78,
+            30, 35, 40, 56, 78,
             46, 43, 35, 30, 27,
             22, 18,15, 12, 9,
             7, 6, 5,4,4,
@@ -43,7 +43,7 @@ public class SimpleGenerator {
             1, 1, 1, 2, 2,
             2, 3, 4, 6, 7,
             10, 14, 17, 20, 25,
-            28, 32, 38, 44, 76,
+            28, 32, 38, 50, 76,
             44, 41, 33, 28, 25,
             20, 16, 15, 10, 7,
             6, 5, 4,3,3,
@@ -52,7 +52,7 @@ public class SimpleGenerator {
             1, 1, 2, 2, 3,
             3, 3, 3, 4, 5,
             11, 15, 18, 23, 26,
-            29, 33, 37, 45, 75,
+            29, 33, 37, 54, 75,
             45, 43, 32, 29, 24,
             21, 17, 16, 11, 8,
             7, 6, 5,3,3,
@@ -60,61 +60,21 @@ public class SimpleGenerator {
     static int[] spikeCPUValues_3 = {
             1, 1, 1, 2, 4,
             5, 6, 7, 8, 10,
-            12, 13, 19, 20, 25,
-            31, 33, 40, 46, 76,
-            47, 44, 35, 31, 26,
-            22, 18,15, 12, 9,
-            7, 6, 5,4,4,
-            3, 3, 2, 1,1, 1};
-    static int[] spikeCPUValues_4 = {
-            1, 2, 2, 2, 3,
-            3, 4, 5, 7, 9,
-            12, 15, 18, 22, 27,
-            30, 35, 43, 45, 76,
-            46, 43, 35, 30, 27,
-            22, 18,15, 12, 9,
-            7, 6, 5,4,4,
-            3, 3, 2, 1,1, 1};
-    static int[] spikeCPUValues_5 = {
-            1, 2, 2, 2, 3,
-            3, 4, 5, 7, 9,
-            12, 15, 18, 22, 27,
-            30, 35, 40, 46, 75,
-            46, 43, 35, 30, 27,
-            22, 18,15, 12, 9,
-            7, 6, 5,4,4,
-            3, 3, 2, 1,1, 1};
-    static int[] spikeCPUValues_6 = {
-            1, 2, 2, 2, 3,
-            3, 4, 5, 7, 9,
-            12, 15, 18, 22, 27,
-            30, 35, 40, 46, 74,
-            46, 43, 35, 30, 27,
-            22, 18,15, 12, 9,
-            7, 6, 5,4,4,
-            3, 3, 2, 1,1, 1};
-    static int[] spikeCPUValues_7 = {
-            1, 2, 2, 2, 3,
-            3, 4, 5, 7, 9,
-            12, 15, 18, 22, 27,
-            30, 35, 40, 46, 73,
-            46, 43, 35, 30, 27,
-            22, 18,15, 12, 9,
-            7, 6, 5,4,4,
+            12, 20, 25, 25, 30,
+            36, 39, 49, 66, 76,
+            66, 50, 40, 36, 31,
+            28, 25, 20, 16, 12,
+            9, 8, 5, 4, 4,
             3, 3, 2, 1,1, 1};
     static int[][] spikeCPUValues = {
             spikeCPUValues_0,
             spikeCPUValues_1,
             spikeCPUValues_2,
-            spikeCPUValues_3,
-            spikeCPUValues_4,
-            spikeCPUValues_5,
-            spikeCPUValues_6,
-            spikeCPUValues_7};
+            spikeCPUValues_3};
     static int total = 60 * 24 * 14;   // two week data, 1 entry per minute
     static int spikeStartPoints = 60 * 24 * 12; // spike start 13th day
     static int peakPoints = 41;   // 41 mins spike
-    static int avg = 20;   // normal value
+   // normal value
     static int numberOfChildren = 8;
 
     static String createTable = "create Table metrics (metricpath TEXT not null, timestamp BIGINT not null, value double not null)";
@@ -136,10 +96,11 @@ public class SimpleGenerator {
 
             // create revenue data
             generator.putRevenueData(startTime);
-            // insert internal error
-            generator.putInternalErrorData(startTime);
-            // create cpu data
-            generator.putCPUData(startTime);
+            generator.putRevenueFeatureData(startTime);
+//            // insert internal error
+//            generator.putInternalErrorData(startTime);
+//            // create cpu data
+//            generator.putCPUData(startTime);
 
             generator.selectRows("SELECT * FROM metrics");
         } catch (Exception e) {
@@ -194,9 +155,16 @@ public class SimpleGenerator {
     }
 
     private void putRevenueData(long startTime) throws  SQLException {
-        double[] values = generateSingleLineDataWithDrop();
-        insertMetricsData(startTime, values, "Custom Metrics|Revenue|Overall");
+        double[] values = generateCheckoutPurchase();
+        insertMetricsData(startTime, values, "Information Points|Checkout|Purchase $");
     }
+
+    private void putRevenueFeatureData(long startTime) throws  SQLException {
+        double[] values = generateCheckoutPurchaseFuture();
+        insertMetricsData(startTime, values, "Information Points|Checkout|Purchase $_FUTURE");
+    }
+
+
     public void setConnection () throws Exception {
             Class.forName("org.sqlite.JDBC");
             conn = DriverManager.getConnection("jdbc:sqlite:demo.db");
@@ -228,6 +196,9 @@ public class SimpleGenerator {
         for (int i = 0; i< values.length; i++) {
             stmt.setString(1, metricsPath);
             stmt.setLong(2, startTime - i * 60 * 1000);
+//            if (i > 17301) {
+//                System.out.println(i + ", " + values[i]);
+//            }
             stmt.setDouble(3, values[i]);
             stmt.addBatch();
         }
@@ -245,9 +216,9 @@ public class SimpleGenerator {
             String name = rs.getString("metricpath");
             long timestamp = rs.getLong("timestamp");
             int  value = rs.getInt("value");
-            if (count % 100 == 0) {
-                System.out.println("name = " + name + "; timestamp = " + timestamp + "; value = " + value);
-            }
+//            if (count > 14150) {
+//                System.out.println(count + "; " + name + "; " + timestamp + "; " + value);
+//            }
             count ++;
         }
         System.out.println(sql);
@@ -257,18 +228,19 @@ public class SimpleGenerator {
     }
 
     private double[] generateSingleLineCPUDataWithSpike(int[] sValues) {
+        int normalValue = 20;
         double[] res = new double[total];
         int bounce = 6;
         for (int i = 0; i< spikeStartPoints; i ++) {
-            res[i] = random.nextInt(bounce) + avg - bounce;
+            res[i] = random.nextInt(bounce) + normalValue - bounce;
         }
         for (int i = spikeStartPoints; i < spikeStartPoints + peakPoints; i ++) {
-            res [i] = sValues[i- spikeStartPoints] + avg;
+            res [i] = sValues[i- spikeStartPoints] + normalValue;
             //System.out.println(i +"==>" + res[i]);
         }
 
         for (int i = spikeStartPoints + peakPoints; i < total ; i ++) {
-            res[i]= random.nextInt(bounce) + avg - bounce;
+            res[i]= random.nextInt(bounce) + normalValue - bounce;
         }
         return res;
     }
@@ -291,23 +263,46 @@ public class SimpleGenerator {
         return res;
     }
 
-    private double[] generateSingleLineDataWithDrop() {
-        double normalValue = 30000;
+    private double[] generateCheckoutPurchase() {
+        double normalValue = 1000;
         double[] res = new double[total];
-        int bounce = 5000;
+        int bounce = 20;
         for (int i = 0; i< spikeStartPoints; i ++) {
             res[i] = random.nextInt(bounce) + normalValue - bounce;
         }
-        for (int i = spikeStartPoints; i < spikeStartPoints + peakPoints; i ++) {
-            res [i] =  normalValue - dropValues[i- spikeStartPoints] * 200;
-            //System.out.println(i +"==>" + res[i]);
+        for (int i = spikeStartPoints; i < spikeStartPoints + 40; i ++) {
+            res [i] = normalValue - dropValues[i- spikeStartPoints] * 10;
+       //     System.out.println(i +"==>" + res[i]);
         }
 
-        for (int i = spikeStartPoints + peakPoints; i < total ; i ++) {
+        for (int i = spikeStartPoints + 40; i < total ; i ++) {
+            res[i]= random.nextInt(bounce) + res [spikeStartPoints + 40 -1];
+        }
+        return res;
+    }
+
+    private double[] generateCheckoutPurchaseFuture() {
+        double normalValue = 1000;
+        double[] res = new double[total];
+        int bounce = 20;
+        for (int i = 0; i< spikeStartPoints; i ++) {
+            res[i] = random.nextInt(bounce) + normalValue - bounce;
+        }
+        for (int i = spikeStartPoints; i < spikeStartPoints + 40; i ++) {
+            res [i] = normalValue - dropValues[i- spikeStartPoints] * 10;
+      //      System.out.println(i +"==>" + res[i]);
+        }
+
+        for (int i = spikeStartPoints + 40; i < total -30; i ++) {
+            res[i]= random.nextInt(bounce) + res [spikeStartPoints + 40 -1];
+        }
+
+        for (int i = total-30; i < total; i ++) {
             res[i]= random.nextInt(bounce) + normalValue - bounce;
         }
         return res;
     }
+
 
     private double[] distributeDataBetweenChildren(double sum, int numOfChildren) {
         double[] res = new double[numOfChildren];

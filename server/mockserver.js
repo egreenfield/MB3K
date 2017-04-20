@@ -31,11 +31,11 @@ if(args.length) {
 }
 
 
-const http = require('http')  
+const http = require('http')
 const port = 8000
 var fs = require('fs')
 var sqlite3 = require('sqlite3').verbose();
-var db = new sqlite3.Database('../util/demo');
+var db = new sqlite3.Database('../util/demo.db');
 
 var url = require('url');
 
@@ -43,7 +43,7 @@ let globalStartTime = 0;
 
 
 var testMetrics = null
-let metrics_file = "test-metrics-amod";
+let metrics_file = "demo-metrics";
 
 fs.readFile(metrics_file, 'utf8', function (err,data) {
     if (err) {
@@ -52,7 +52,7 @@ fs.readFile(metrics_file, 'utf8', function (err,data) {
     testMetrics = data;
 });
 
-const requestHandler = (request, response) => {  
+const requestHandler = (request, response) => {
 
 	var url_parts = url.parse(request.url, true);
 	var query = url_parts.query;
@@ -62,7 +62,7 @@ const requestHandler = (request, response) => {
 	}
 	else {
 	  	let metricPath = query["metric-path"];
-		let originalMetricPath = metricPath; 
+		let originalMetricPath = metricPath;
 	  	if(showFuture)
 	  		metricPath += "_FUTURE";
 
@@ -98,7 +98,7 @@ const requestHandler = (request, response) => {
 db.serialize(function() {
 	const server = http.createServer(requestHandler)
 
-	server.listen(port, (err) => {  
+	server.listen(port, (err) => {
 	  if (err) {
 	    return console.log('something bad happened', err)
 	  }
@@ -107,4 +107,3 @@ db.serialize(function() {
 	})
 
 });
-
