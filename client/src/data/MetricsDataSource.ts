@@ -43,6 +43,9 @@ export class MetricsDataSource extends DataSource {
 			}
 		}
 
+		// HACK ALERT.
+		params.metricPath = 'Application Infrastructure Performance|lemminghost|Hardware Resources|CPU|%Busy';
+
 		return new Promise<SeriesResult>((fulfill, reject) => {
 			request.get(url)
             .query({

@@ -3,6 +3,24 @@
 // time-range-type=BETWEEN_TIMES
 // &start-time=1492636402624
 // &end-time=1492641802624&rollup=false&output=json
+// [{
+//   "metricName": "BTM|Application Summary|Average Response Time (ms)",
+//   "metricId": 31699,
+//   "metricPath": "Overall Application Performance|Average Response Time (ms)",
+//   "frequency": "ONE_MIN",
+//   "metricValues":   [
+//         {
+//       "occurrences": 0,
+//       "current": 8,
+//       "min": 2,
+//       "max": 50437,
+//       "startTimeInMillis": 1492661820000,
+//       "useRange": true,
+//       "count": 55,
+//       "sum": 190908,
+//       "value": 3471,
+//       "standardDeviation": 0
+//     },
 
 const http = require('http')  
 const port = 8000
@@ -41,17 +59,24 @@ const requestHandler = (request, response) => {
 	  	if (globalStartTime == 0) {
 	  		globalStartTime = startTime;
 	  	}
-	  	startTime = globalStartTime - startTime;
-	  	endTime = globalStartTime - endTime;
+	  	startTime = -(globalStartTime - startTime);
+	  	endTime = -(globalStartTime - endTime);
 	  	console.log("querying",startTime,endTime);
-	  //  db.all("SELECT * from cpu_total", function(err, row) {
-	  //  		if(err)
-	  //  			console.log("err is",err);
-	  //  		else
-	  //  			console.log("response is",row);
-			// response.end(JSON.stringify(row));
-	  //   });
-	  response.end("");
+	   db.all(`SELECT (${globalStartTime} + timestamp) as 'startTimeInMillis', (value) AS 'value' from metrics WHERE metricpath = "${metricPath}" AND timestamp > ${startTime} AND timestamp < ${endTime} LIMIT 100`, function(err, rows) {
+	   		if(err) {
+	   			console.log("err is",err);
+	   			response.end("");
+	   			return;
+	   		}
+	   		let restResponse = [{
+				  "metricName": metricPath,
+				  "metricId": 31699,
+				  "metricPath": metricPath,
+				  "frequency": "ONE_MIN",
+				  "metricValues": rows.map(r => {return {startTimeInMillis:r.startTimeInMillis,value:r.value}}),
+			}];
+			response.end(JSON.stringify(restResponse));
+	    });
 
 	}
 
