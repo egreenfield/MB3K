@@ -57,12 +57,12 @@ const requestHandler = (request, response) => {
 	  	let startTime = parseInt(query["start-time"]);
 	  	let endTime = parseInt(query["end-time"]);
 	  	if (globalStartTime == 0) {
-	  		globalStartTime = startTime;
+	  		globalStartTime = endTime;
 	  	}
-	  	startTime = -(globalStartTime - startTime);
-	  	endTime = -(globalStartTime - endTime);
+	  	startTime = -( startTime - globalStartTime);
+	  	endTime = -( endTime - globalStartTime);
 	  	console.log("querying",startTime,endTime);
-	   db.all(`SELECT (${globalStartTime} + timestamp) as 'startTimeInMillis', (value) AS 'value' from metrics WHERE metricpath = "${metricPath}" AND timestamp > ${startTime} AND timestamp < ${endTime} LIMIT 100`, function(err, rows) {
+	   db.all(`SELECT (${globalStartTime} - timestamp) as 'startTimeInMillis', (value) AS 'value' from metrics WHERE metricpath = "${metricPath}" AND timestamp < ${startTime} AND timestamp > ${endTime}`, function(err, rows) {
 	   		if(err) {
 	   			console.log("err is",err);
 	   			response.end("");
