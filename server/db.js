@@ -1,8 +1,8 @@
 var sqlite3 = require('sqlite3').verbose();
-var db = new sqlite3.Database('/Users/meili.wang/projects/hackathon/MB3K/server/demo');
+var db = new sqlite3.Database('../util/demo.db');
 
 db.serialize(function() {
-   db.each("SELECT * from cpu_total", function(err, row) {
+   db.each("SELECT count(*) from metrics", function(err, row) {
        console.log(row);
     });
 

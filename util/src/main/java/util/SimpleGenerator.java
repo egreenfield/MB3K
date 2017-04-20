@@ -21,7 +21,7 @@ public class SimpleGenerator {
             3, 3, 2, 1,1, 1};
 
     static int total = 60 * 24 * 14;   // two week data, 1 entry per minute
-    static int startPoints = 60 * 24 * 12; // spike start 13th day
+    static int spikeStartPoints = 60 * 24 * 12; // spike start 13th day
     static int peakPoints = 41;   // 41 mins spike
     static int avg = 20;   // normal value
     static int numberOfChildren = 8;
@@ -34,7 +34,7 @@ public class SimpleGenerator {
     public static void main(String[] args) throws ParseException {
         SimpleGenerator generator = new SimpleGenerator();
     //    int[] r = generator.generateSpikeValues(5, 1, 30);
-    //  System.out.println(Arrays.toString(generator.distributeDataBetweenChildren(20, 8)));
+//      System.out.println(Arrays.toString(generator.distributeDataBetweenChildrenWhenSpike(20, 8)));
 
         long startTime = total * 60 * 1000 - 60000;
 
@@ -62,7 +62,7 @@ public class SimpleGenerator {
         return res;
     }
     private void putCPUData(long startTime) throws SQLException {
-        double[][] cPUs = generateParentAndChildrenData(numberOfChildren);
+        double[][] cPUs = generateParentAndChildrenDataWithSpike(numberOfChildren);
         insertToCPUTotal(startTime, cPUs[0]);
         String[] names = {
                 "Application Infrastructure Performance|lemminghost|Individual Nodes|ip-10-130-0-175|Hardware Resources|CPU|%Busy",
@@ -83,7 +83,7 @@ public class SimpleGenerator {
 
     public void setConnection () throws Exception {
             Class.forName("org.sqlite.JDBC");
-            conn = DriverManager.getConnection("jdbc:sqlite:demo");
+            conn = DriverManager.getConnection("jdbc:sqlite:demo.db");
             System.out.println("Opened database successfully");
             System.out.println("Connection to SQLite has been established.");
     }
@@ -150,15 +150,15 @@ public class SimpleGenerator {
     private double[] generateSingleLineDataWithSpike() {
         double[] res = new double[total];
         int bounce = 6;
-        for (int i = 0; i< startPoints; i ++) {
+        for (int i = 0; i< spikeStartPoints; i ++) {
             res[i] = random.nextInt(bounce) + avg - bounce;
         }
-        for (int i = startPoints; i < startPoints + peakPoints; i ++) {
-            res [i] = spikeValues[i- startPoints] + avg;
+        for (int i = spikeStartPoints; i < spikeStartPoints + peakPoints; i ++) {
+            res [i] = spikeValues[i- spikeStartPoints] + avg;
             //System.out.println(i +"==>" + res[i]);
         }
 
-        for (int i = startPoints + peakPoints; i < total ; i ++) {
+        for (int i = spikeStartPoints + peakPoints; i < total ; i ++) {
             res[i]= random.nextInt(bounce) + avg - bounce;
         }
         return res;
@@ -186,6 +186,63 @@ public class SimpleGenerator {
         double delta = 0.7 * tgt/(numOfChildren);
         // int midIndex = numOfChildren/2;
         for (int i = 0; i < numOfChildren/2; i ++) {
+            res[i] = tgt - delta;
+            res[numOfChildren -1 - i] = tgt + delta;
+            delta += delta;
+        }
+
+        return res;
+    }
+
+    private double[][] generateParentAndChildrenDataWithSpike(int numOfChildren) {
+        double[][] groupData = new double[numOfChildren+1][total];
+        groupData[0] = generateSingleLineDataWithSpike();
+        for (int i = 0; i < spikeStartPoints; i ++) {
+            double[] subs = distributeDataBetweenChildren(groupData[0][i], numOfChildren);
+            for (int j = 1 ; j <= numOfChildren; j ++) {
+                groupData[j][i]= subs[j-1];
+            }
+        }
+
+        for (int i = spikeStartPoints; i < spikeStartPoints + peakPoints; i++) {
+            double[] subs = distributeDataBetweenChildrenWhenSpike(groupData[0][i], numOfChildren);
+            for (int j = 1 ; j <= numOfChildren; j ++) {
+                groupData[j][i]= subs[j-1];
+            }
+        }
+
+        for (int i = spikeStartPoints + peakPoints; i < total ; i++) {
+            double[] subs = distributeDataBetweenChildren(groupData[0][i], numOfChildren);
+            for (int j = 1 ; j <= numOfChildren; j ++) {
+                groupData[j][i]= subs[j-1];
+            }
+        }
+
+        return groupData;
+    }
+
+    private double[] distributeDataBetweenChildrenWhenSpike(double sum, int numOfChildren) {
+        double[] res = new double[numOfChildren];
+        if (numOfChildren == 1) {
+            res[0]=sum;
+            return res;
+        }
+        res[0] = sum *0.35;
+        if (numOfChildren == 2) {
+            res[numOfChildren-1]=sum * 0.65;
+            return res;
+        } else {
+            res[numOfChildren-1]= sum * 0.4;
+        }
+
+        double tgt = sum *0.25/(numOfChildren -2);
+
+        if (numOfChildren % 2 == 1) {
+            res[numOfChildren/2] = tgt;
+        }
+        double delta = 0.7 * tgt/(numOfChildren);
+
+        for (int i = 1; i < numOfChildren/2; i ++) {
             res[i] = tgt - delta;
             res[numOfChildren -1 - i] = tgt + delta;
             delta += delta;
