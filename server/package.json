@@ -5,11 +5,16 @@
   "author": "<ely.greenfield@appdynamics.com>",
   "license": "MIT",
   "dependencies": {
+    "3": "^1.0.1",
     "express": "^4.15.0",
-    "express-http-proxy": "^0.11.0"
+    "express-http-proxy": "^0.11.0",
+    "sqlite": "^2.5.0"
   },
   "scripts": {
     "start": "node proxyServer.js",
+    "dev": "nodemon proxyServer.js",
+    "dev-mock": "nodemon mockserver.js",
+    "start-mock": "node mockserver.js",
     "clean:dist": "rm -rf dist",
     "clean:tmp": "rm -rf tmp",
     "clean:modules": "rm -rf node_modules",
