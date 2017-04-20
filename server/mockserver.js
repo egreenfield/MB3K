@@ -22,6 +22,15 @@
 //       "standardDeviation": 0
 //     },
 
+let args = process.argv.slice(2);
+let showFuture = false;
+if(args.length) {
+	console.log("\n\nnow accelerating to 88 miles an hour....");
+	console.log("POWER CYCLE REACHING 1.21 GIGAWATTS!!!!!\n\n");
+	showFuture = true;
+}
+
+
 const http = require('http')  
 const port = 8000
 var fs = require('fs')
@@ -52,8 +61,11 @@ const requestHandler = (request, response) => {
 	    response.end(testMetrics);
 	}
 	else {
-	  	console.log("request is",JSON.stringify(query));
 	  	let metricPath = query["metric-path"];
+		let originalMetricPath = metricPath; 
+	  	if(showFuture)
+	  		metricPath += "_FUTURE";
+
 	  	let startTime = parseInt(query["start-time"]);
 	  	let endTime = parseInt(query["end-time"]);
 	  	if (globalStartTime == 0) {
@@ -61,7 +73,7 @@ const requestHandler = (request, response) => {
 	  	}
 	  	startTime = -( startTime - globalStartTime);
 	  	endTime = -( endTime - globalStartTime);
-	  	console.log("querying",startTime,endTime);
+//	  	console.log("querying",startTime,endTime,metricPath);
 	   db.all(`SELECT (${globalStartTime} - timestamp) as 'startTimeInMillis', (value) AS 'value' from metrics WHERE metricpath = "${metricPath}" AND timestamp < ${startTime} AND timestamp > ${endTime}`, function(err, rows) {
 	   		if(err) {
 	   			console.log("err is",err);
@@ -69,9 +81,9 @@ const requestHandler = (request, response) => {
 	   			return;
 	   		}
 	   		let restResponse = [{
-				  "metricName": metricPath,
+				  "metricName": originalMetricPath,
 				  "metricId": 31699,
-				  "metricPath": metricPath,
+				  "metricPath": originalMetricPath,
 				  "frequency": "ONE_MIN",
 				  "metricValues": rows.map(r => {return {startTimeInMillis:r.startTimeInMillis,value:r.value}}),
 			}];
