@@ -4,6 +4,7 @@ package util;
 
 import java.sql.*;
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.Random;
 
 public class SimpleGenerator {
@@ -13,7 +14,7 @@ public class SimpleGenerator {
             1, 2, 2, 2, 3,
             3, 4, 5, 7, 9,
             12, 15, 18, 22, 27,
-            30, 35, 40, 46, 60,
+            30, 35, 40, 46, 80,
             46, 43, 35, 30, 27,
             22, 18,15, 12, 9,
             7, 6, 5,4,4,
@@ -22,35 +23,26 @@ public class SimpleGenerator {
     static int total = 60 * 24 * 14;   // two week data, 1 entry per minute
     static int startPoints = 60 * 24 * 12; // spike start 13th day
     static int peakPoints = 41;   // 41 mins spike
-    static int avg = 16;   // normal value
-    static int numberOfChildren = 4;
+    static int avg = 20;   // normal value
+    static int numberOfChildren = 8;
 
-    static String createTable = "create Table metrics (metricpath TEXT not null, timestamp BIGINT not null, value int not null)";
+    static String createTable = "create Table metrics (metricpath TEXT not null, timestamp BIGINT not null, value double not null)";
 
     static String insertSql = "INSERT INTO metrics values(?,?,?)";
     static Connection conn;
 
     public static void main(String[] args) throws ParseException {
         SimpleGenerator generator = new SimpleGenerator();
-//        int[] r = generator.generateSpikeValues(5, 1, 30);
-//       System.out.println( Arrays.toString(r));
+    //    int[] r = generator.generateSpikeValues(5, 1, 30);
+    //  System.out.println(Arrays.toString(generator.distributeDataBetweenChildren(20, 8)));
 
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-//
-//        String inputString = "00:01:30";
-//
-//        Date date = sdf.parse("2017-05-03 15:00:00");
-//
-//        int curTime = (int)(date.getTime()/1000);
-      //  long curTime = System.currentTimeMillis();
         long startTime = total * 60 * 1000 - 60000;
 
         try {
             generator.setConnection();
             generator.dropTable();
             generator.createTable();
-            // create cpu data: cpu_total, cpu_node[1-4]
+            // create cpu data
             generator.putCPUData(startTime);
         } catch (Exception e) {
             e.printStackTrace();
@@ -65,55 +57,26 @@ public class SimpleGenerator {
 
     // num = 41, 31, 21, 11;
     // TODO
-//    private int[] generateSpikeValues(int num, int low, int high) {
-//        int[]  res  = new int[num];
-//        int mid = num /2;
-//
-//        if (num % 2 == 1) {
-//            res[mid] = high;
-//        }
-//
-//        int delta = (high-low) /3;
-//        int mm = mid/2;
-//
-//        int step = delta / mm;
-//        for (int i = 0; i < mm; i ++) {
-//            res[i] = low + step;
-//            res[num - i -1] = res[i];
-//            step += step;
-//        }
-//        if (mid % 2 == 1) {
-//            res[mm] = high;
-//            res[mm + mid + 1] = res[mm];
-//        } else {
-//            res[mm] = low + delta + step/2;
-//            res[mm + mid - 1] = res[mm];
-//        }
-//        step = (delta * 2) / mm;
-//        for (int i = mm + 1; i < mid; i ++) {
-//            res[i] = res[mm] + step;
-//            res[num - i -1] = res[i];
-//            step += step;
-//        }
-//        return res;
-//    }
+    private int[] generateSpikeValues(int num, int low, int high) {
+        int[]  res  = new int[num];
+        return res;
+    }
     private void putCPUData(long startTime) throws SQLException {
-
-        int[][] cPUs = generateParentAndChildrenData(numberOfChildren);
+        double[][] cPUs = generateParentAndChildrenData(numberOfChildren);
         insertToCPUTotal(startTime, cPUs[0]);
-//        String[] names = {
-//                "Application Infrastructure Performance|lemminghost|Individual Nodes|ip-10-130-0-175|Hardware Resources|CPU|%Busy",
-//                "Application Infrastructure Performance|lemminghost|Individual Nodes|ip-10-130-0-197|Hardware Resources|CPU|%Busy",
-//                "Application Infrastructure Performance|lemminghost|Individual Nodes|ip-10-130-0-76|Hardware Resources|CPU|%Busy",
-//                "Application Infrastructure Performance|lemminghost|Individual Nodes|ip-10-130-1-51|Hardware Resources|CPU|%Busy",
-//                "Application Infrastructure Performance|lemminghost|Individual Nodes|ip-10-130-1-85|Hardware Resources|CPU|%Busy",
-//                "Application Infrastructure Performance|lemminghost|Individual Nodes|ip-10-130-1-91|Hardware Resources|CPU|%Busy",
-//                "Application Infrastructure Performance|lemminghost|Individual Nodes|ip-10-130-2-128|Hardware Resources|CPU|%Busy",
-//                "Application Infrastructure Performance|lemminghost|Individual Nodes|ip-10-130-2-239|Hardware Resources|CPU|%Busy"
-//        };
-//        for (int i = 1; i <= numberOfChildren; i ++) {
-//            insertCPUDataForNode(startTime, cPUs[i], names[i-1]);
-//        }
+        String[] names = {
+                "Application Infrastructure Performance|lemminghost|Individual Nodes|ip-10-130-0-175|Hardware Resources|CPU|%Busy",
+                "Application Infrastructure Performance|lemminghost|Individual Nodes|ip-10-130-0-197|Hardware Resources|CPU|%Busy",
+                "Application Infrastructure Performance|lemminghost|Individual Nodes|ip-10-130-0-76|Hardware Resources|CPU|%Busy",
+                "Application Infrastructure Performance|lemminghost|Individual Nodes|ip-10-130-1-51|Hardware Resources|CPU|%Busy",
+                "Application Infrastructure Performance|lemminghost|Individual Nodes|ip-10-130-1-85|Hardware Resources|CPU|%Busy",
+                "Application Infrastructure Performance|lemminghost|Individual Nodes|ip-10-130-1-91|Hardware Resources|CPU|%Busy",
+                "Application Infrastructure Performance|lemminghost|Individual Nodes|ip-10-130-2-128|Hardware Resources|CPU|%Busy",
+                "Application Infrastructure Performance|lemminghost|Individual Nodes|ip-10-130-2-239|Hardware Resources|CPU|%Busy"
+        };
+        for (int i = 1; i <= numberOfChildren; i ++) {
+            insertCPUDataForNode(startTime, cPUs[i], names[i-1]);
+        }
         selectRows("SELECT * FROM metrics");
 
     }
@@ -139,24 +102,24 @@ public class SimpleGenerator {
         stmt.close();
     }
 
-    private void insertToCPUTotal(long startTime, int[] values) throws SQLException {
+    private void insertToCPUTotal(long startTime, double[] values) throws SQLException {
         System.out.println(insertSql);
         PreparedStatement stmt;
         stmt = conn.prepareStatement(insertSql);
         insertByBatch(startTime, values, stmt,"Application Infrastructure Performance|lemminghost|Hardware Resources|CPU|%Busy" );
     }
 
-    private void insertCPUDataForNode(long startTime, int[] values, String name) throws SQLException {
+    private void insertCPUDataForNode(long startTime, double[] values, String name) throws SQLException {
         PreparedStatement stmt;
         stmt = conn.prepareStatement(insertSql);
         insertByBatch(startTime, values, stmt, name);
     }
 
-    private void insertByBatch(long startTime, int[] values, PreparedStatement stmt, String metricsPath) throws SQLException {
+    private void insertByBatch(long startTime, double[] values, PreparedStatement stmt, String metricsPath) throws SQLException {
         for (int i = 0; i< values.length; i++) {
             stmt.setString(1, metricsPath);
             stmt.setLong(2, startTime - i * 60 * 1000);
-            stmt.setInt(3, values[i]);
+            stmt.setDouble(3, values[i]);
             stmt.addBatch();
         }
         stmt.executeBatch();
@@ -173,9 +136,9 @@ public class SimpleGenerator {
             String name = rs.getString("metricpath");
             long timestamp = rs.getLong("timestamp");
             int  value = rs.getInt("value");
-            //if (value > 16) {
+            if (value > avg) {
                 System.out.println("name = " + name + "; timestamp = " + timestamp + "; value = " + value);
-            //}
+            }
             count ++;
         }
         System.out.println(sql);
@@ -184,8 +147,8 @@ public class SimpleGenerator {
         stmt.close();
     }
 
-    private int[] generateSingleLineDataWithSpike() {
-        int[] res = new int[total];
+    private double[] generateSingleLineDataWithSpike() {
+        double[] res = new double[total];
         int bounce = 6;
         for (int i = 0; i< startPoints; i ++) {
             res[i] = random.nextInt(bounce) + avg - bounce;
@@ -201,11 +164,11 @@ public class SimpleGenerator {
         return res;
     }
 
-    private int[][] generateParentAndChildrenData(int numOfChildren) {
-        int[][] groupData = new int[numOfChildren+1][total];
+    private double[][] generateParentAndChildrenData(int numOfChildren) {
+        double[][] groupData = new double[numOfChildren+1][total];
         groupData[0] = generateSingleLineDataWithSpike();
         for (int i = 0; i < total; i ++) {
-            int[] subs = distributeDataBetweenChildren(groupData[0][i], numOfChildren);
+            double[] subs = distributeDataBetweenChildren(groupData[0][i], numOfChildren);
             for (int j = 1 ; j <= numOfChildren; j ++) {
                 groupData[j][i]= subs[j-1];
             }
@@ -213,22 +176,18 @@ public class SimpleGenerator {
         return groupData;
     }
 
-    private int[] distributeDataBetweenChildren(int sum, int numOfChildren) {
-        int[] res = new int[numOfChildren];
-        int tgt = sum/numOfChildren;
-//        res[0]= tgt - tgt/numOfChildren;
-//        res[1]= tgt - 2*tgt/numOfChildren;
-//        res[2] = tgt + tgt/numOfChildren;
-//        res[3]= tgt + 2*tgt/numOfChildren;
+    private double[] distributeDataBetweenChildren(double sum, int numOfChildren) {
+        double[] res = new double[numOfChildren];
+        double tgt = sum/numOfChildren;
 
         if (numOfChildren % 2 == 1) {
             res[numOfChildren/2] = tgt;
         }
-        int delta = tgt/numOfChildren;
-        int midIndex = numOfChildren/2;
+        double delta = 0.7 * tgt/(numOfChildren);
+        // int midIndex = numOfChildren/2;
         for (int i = 0; i < numOfChildren/2; i ++) {
             res[i] = tgt - delta;
-            res[midIndex + i] = tgt + delta;
+            res[numOfChildren -1 - i] = tgt + delta;
             delta += delta;
         }
 
