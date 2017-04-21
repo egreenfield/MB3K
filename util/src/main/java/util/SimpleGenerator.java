@@ -19,11 +19,12 @@ public class SimpleGenerator {
             26,30,34,38,42,
             46,50,58,66,74,
             80,84,90,100,120};
-    static int[] spikeErrors_60 = {
-            6,15,21,27,33,
-            39,45,51,57,63,
-            69,75,87,99,111,
-            120,126,135,150,180};
+    static int[] spikeErrors_55 = {
+            5,13,19,24,30,
+            35,41,46,52,57,
+            63,68,79,90,101,
+            110,115,123,137,165};
+
     static int[] dropValues = {
             8, 10, 12, 13, 14,
             15, 16, 17, 18, 20,
@@ -31,8 +32,7 @@ public class SimpleGenerator {
             30, 35, 40, 46, 50};
 
     static int total = 60 * 24 * 14;   // two week data, 1 entry per minute
-    static int spikeStartPoints = 60 * 24 * 12; // spike start 13th day
-    static int peakPoints = 41;   // 41 mins spike
+    static int spikeStartPoints = 60 * 24 * 13 + 60 * 12; // spike start 13th day
 
     static String createTable = "create Table metrics (metricpath TEXT not null, timestamp BIGINT not null, value double not null)";
 
@@ -43,7 +43,9 @@ public class SimpleGenerator {
         SimpleGenerator generator = new SimpleGenerator();
 
         long startTime = total * 60 * 1000 - 60000;
-
+//        for (int i =0 ; i < overAllSpikeErrors.length; i++) {
+//            System.out.print((int) (overAllSpikeErrors[i]* 0.55) +",");
+//        }
         try {
             generator.setConnection();
             generator.dropTable();
@@ -94,7 +96,7 @@ public class SimpleGenerator {
     }
 
     private double[] generateOverallInternalErrorFuture() {
-        double normalValue=0;
+        double normalValue=15;
         double[] res = new double[total];
         int bounce = 0;
         for (int i = 0; i< spikeStartPoints; i ++) {
@@ -110,11 +112,11 @@ public class SimpleGenerator {
         }
         int top = 260;
         int count = 0;
-        for (int i = total-20; i < total -10; i ++) {
-            res[i] = top - count * 25;
+        for (int i = total-20; i < total -15; i ++) {
+            res[i] = top - count * 25 * 2;
             count ++;
         }
-        for (int i = total-10; i < total; i ++) {
+        for (int i = total-15; i < total; i ++) {
             res[i] = normalValue;
         }
         return res;
@@ -201,9 +203,6 @@ public class SimpleGenerator {
             String name = rs.getString("metricpath");
             long timestamp = rs.getLong("timestamp");
             int  value = rs.getInt("value");
-//            if (count > 14150) {
-//                System.out.println(count + "; " + name + "; " + timestamp + "; " + value);
-//            }
             count ++;
         }
         System.out.println(sql);
@@ -212,33 +211,15 @@ public class SimpleGenerator {
         stmt.close();
     }
 
-    private double[] generateSingleLineCPUDataWithSpike(int[] sValues) {
-        int normalValue = 20;
-        double[] res = new double[total];
-        int bounce = 6;
-        for (int i = 0; i< spikeStartPoints; i ++) {
-            res[i] = random.nextInt(bounce) + normalValue - bounce;
-        }
-        for (int i = spikeStartPoints; i < spikeStartPoints + peakPoints; i ++) {
-            res [i] = sValues[i- spikeStartPoints] + normalValue;
-            //System.out.println(i +"==>" + res[i]);
-        }
-
-        for (int i = spikeStartPoints + peakPoints; i < total ; i ++) {
-            res[i]= random.nextInt(bounce) + normalValue - bounce;
-        }
-        return res;
-    }
-
     private double[] generateInternalErrorData(int[] spikeValues) {
-        double normalValue=0;
+        double normalValue=15;
         double[] res = new double[total];
-        int bounce = 0;
+        int bounce = 2;
         for (int i = 0; i< spikeStartPoints; i ++) {
             res[i] = normalValue;
         }
         for (int i = spikeStartPoints; i < spikeStartPoints + 20; i ++) {
-            res [i] = spikeValues[i- spikeStartPoints] + normalValue;
+            res [i] = spikeValues[i- spikeStartPoints];
             //System.out.println(i +"==>" + res[i]);
         }
 
@@ -251,30 +232,30 @@ public class SimpleGenerator {
     private double[] generateResponse() {
         double normalValue = 50;
         double[] res = new double[total];
+        int bounce = 5;
+        for (int i = 0; i< total; i ++) {
+            res[i] = random.nextInt(bounce) + normalValue - bounce;
+        }
+//        for (int i = spikeStartPoints; i < spikeStartPoints + 20; i ++) {
+//            res [i] = normalValue + dropValues[i- spikeStartPoints] * 10;
+//            //     System.out.println(i +"==>" + res[i]);
+//        }
+//
+//        for (int i = spikeStartPoints + 20; i < total ; i ++) {
+//            res[i]= random.nextInt(bounce) + res[spikeStartPoints + 20 -1];
+//        }
+        return res;
+    }
+
+    private double[] generateCheckoutPurchase() {
+        double normalValue = 580;
+        double[] res = new double[total];
         int bounce = 10;
         for (int i = 0; i< spikeStartPoints; i ++) {
             res[i] = random.nextInt(bounce) + normalValue - bounce;
         }
         for (int i = spikeStartPoints; i < spikeStartPoints + 20; i ++) {
-            res [i] = normalValue + dropValues[i- spikeStartPoints] * 10;
-            //     System.out.println(i +"==>" + res[i]);
-        }
-
-        for (int i = spikeStartPoints + 20; i < total ; i ++) {
-            res[i]= random.nextInt(bounce) + res[spikeStartPoints + 20 -1];
-        }
-        return res;
-    }
-
-    private double[] generateCheckoutPurchase() {
-        double normalValue = 1000;
-        double[] res = new double[total];
-        int bounce = 20;
-        for (int i = 0; i< spikeStartPoints; i ++) {
-            res[i] = random.nextInt(bounce) + normalValue - bounce;
-        }
-        for (int i = spikeStartPoints; i < spikeStartPoints + 20; i ++) {
-            res [i] = normalValue - dropValues[i- spikeStartPoints] * 10;
+            res [i] = normalValue - dropValues[i- spikeStartPoints] * 8;
        //     System.out.println(i +"==>" + res[i]);
         }
 
@@ -285,14 +266,14 @@ public class SimpleGenerator {
     }
 
     private double[] generateCheckoutPurchaseFuture() {
-        double normalValue = 1000;
+        double normalValue = 580;
         double[] res = new double[total];
-        int bounce = 20;
+        int bounce = 10;
         for (int i = 0; i< spikeStartPoints; i ++) {
             res[i] = random.nextInt(bounce) + normalValue - bounce;
         }
         for (int i = spikeStartPoints; i < spikeStartPoints + 20; i ++) {
-            res [i] = normalValue - dropValues[i- spikeStartPoints] * 10;
+            res [i] = normalValue - dropValues[i- spikeStartPoints] * 8;
       //      System.out.println(i +"==>" + res[i]);
         }
 
@@ -347,11 +328,10 @@ public class SimpleGenerator {
         double[][] groupData = new double[numOfChildren+1][total];
         groupData[0] = generateInternalErrorData(overAllSpikeErrors);
         groupData[1] = generateInternalErrorData(spikeErrors_40);
-        groupData[2] = generateInternalErrorData(spikeErrors_60);
+        groupData[2] = generateInternalErrorData(spikeErrors_55);
         for (int i = 0; i < total; i ++) {
-            for (int j = 3; j <= numOfChildren; j ++) {
-                groupData[j][i]= 0;
-            }
+            groupData[3][i]= random.nextInt(10) ;
+            groupData[4][i]= 15 - groupData[3][i];
         }
 
         return groupData;
