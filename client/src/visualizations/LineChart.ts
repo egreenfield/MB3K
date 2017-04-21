@@ -9,6 +9,7 @@ export interface SeriesChartData {
         color:any;
         weight:number;
         id:string;
+        name:string;
     }[],
     xStart?:any;
     xEnd?:any;
@@ -152,10 +153,15 @@ export class LineChart {
         // console.log("domain is",new Date(this.xDomain[0]),new Date(this.xDomain[1]));
         // console.log("times are",data.series[0].values.map(v => new Date(v.startTimeInMillis)));
         x.domain(this.xDomain);
-        
+
+        let yHi = Math.max(20,d3.max(data.series, series => d3.max(series.values, v => v.value)));
+        if (data.series.filter(s => s.name == "Information Points|Checkout|Purchase $").length > 0) {
+            yHi = Math.max(yHi, 700);
+        }
+
         yScale.domain([
             Math.min(0,d3.min(data.series, series => d3.min(series.values, v => v.value))),
-            Math.max(20,d3.max(data.series, series => d3.max(series.values, v => v.value)))
+            yHi
         ]);
 
         yScale.nice();
