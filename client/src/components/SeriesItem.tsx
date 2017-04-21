@@ -223,8 +223,9 @@ export default class SeriesItem extends React.Component<SeriesItemProps, any>  {
                                         onClick={this.handleRelatedClick}
                                         className={"btn btn-default btn-sm " + (this.state.mode == "related" ? "active" : "")}
                                         style={floatRight}>
-                                        <span className="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
+                                        <img src="/src/lightbulb.svg" width="16" style={{"margin-top": -4, "margin-left": -2, "margin-right": -2}}/>
                                     </button>
+
                                 }
                                 </div>
                             </div>
