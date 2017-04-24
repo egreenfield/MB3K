@@ -1,6 +1,8 @@
-
+kill $(ps aux | grep 'node mockserver.js' | awk '{print $2}') 2>/dev/null
 echo "now accelerating to 88 miles an hour...."
+sleep 1
 echo "POWER CYCLE REACHING 1.21 GIGAWATTS!!!!!"
+sleep 1
 echo "GREAT SCOTT!!!"
 node mockserver.js $ >/dev/null
 
