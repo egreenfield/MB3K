@@ -1,0 +1,6 @@
+
+echo "now accelerating to 88 miles an hour...."
+echo "POWER CYCLE REACHING 1.21 GIGAWATTS!!!!!"
+echo "GREAT SCOTT!!!"
+node mockserver.js $ >/dev/null
+
