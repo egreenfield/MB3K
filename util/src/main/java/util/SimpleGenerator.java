@@ -129,10 +129,10 @@ public class SimpleGenerator {
         String[] names = {
             "Application Infrastructure Performance|Inventory|Hardware Resources|MAX_CPU|%Busy",
             "Application Infrastructure Performance|Inventory|Individual Nodes|node-1|Hardware Resources|MAX_CPU|%Busy",
-            "Application Infrastructure Performance|Inventory|Individual Nodes|node-2|Hardware Resources|MAX_CPU|%Busy"};
-            // ,
-            // "Application Infrastructure Performance|Inventory|Individual Nodes|node-3|Hardware Resources|MAX_CPU|%Busy",
-            // "Application Infrastructure Performance|Inventory|Individual Nodes|node-4|Hardware Resources|MAX_CPU|%Busy"
+            "Application Infrastructure Performance|Inventory|Individual Nodes|node-2|Hardware Resources|MAX_CPU|%Busy",
+            "Application Infrastructure Performance|Inventory|Individual Nodes|node-3|Hardware Resources|MAX_CPU|%Busy",
+            "Application Infrastructure Performance|Inventory|Individual Nodes|node-4|Hardware Resources|MAX_CPU|%Busy"};
+
         double[][] cPUs = generateCPUDatas(names.length -1);
 
         for (int i = 0; i < names.length; i ++) {
@@ -296,11 +296,11 @@ public class SimpleGenerator {
 
     private double[][] generateCPUDatas(int numOfChildren) {
         double[][] groupData = new double[numOfChildren+1][total];
-        groupData[0] = generateCPUData(90, 194);
-        groupData[1] = generateCPUData(48, 95);
-        groupData[2] = generateCPUData(52, 93);
-        // groupData[3] = generateCPUData(50, 60);
-        // groupData[4] = generateCPUData(55, 65);
+        groupData[0] = generateCPUData(46, 100);
+        groupData[1] = generateCPUData(43, 95);
+        groupData[2] = generateCPUData(45, 93);
+        groupData[3] = generateCPUData(42, 57);
+        groupData[4] = generateCPUData(44, 58);
 
         return groupData;
     }
@@ -308,7 +308,7 @@ public class SimpleGenerator {
     private double[] generateCPUData(int lowValue, int peakValue) {
         double normalValue = lowValue;
         double[] res = new double[total];
-        int bounce = 10;
+        int bounce = 6;
         for (int i = 0; i< spikeStartPoints; i ++) {
             res[i] = random.nextInt(bounce) + normalValue;
         }
@@ -321,7 +321,7 @@ public class SimpleGenerator {
 
         for (int i = spikeStartPoints + 20; i < total ; i ++) {
             res[i]= random.nextInt(bounce) + res [spikeStartPoints + 20 -1];
-            res[i] = res[i] > 200 ? 200 : res[i];
+            res[i] = res[i] > 100 ? 100 : res[i];
         }
         return res;
     }
