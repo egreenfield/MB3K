@@ -161,7 +161,7 @@ export default class SearchBox extends React.Component<SearchBoxProps, any>  {
                     ref={(input) => { this.input = input; }}
                     onChange={this.handleQueryChange}
                     onKeyDown={this.handleInputKeyDown}/>
-             <div style={this.state.popupStyle}>
+             <div className="list-item-container" style={this.state.popupStyle}>
              {listItems}
              </div>
          </div>
