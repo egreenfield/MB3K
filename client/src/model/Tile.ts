@@ -24,7 +24,7 @@ export class Tile extends EventEmitter {
         this.dataManager = DataManager;
         this.id = Guid.newGuid();
         this.series = [];
-        this.history = ['Application Infrastructure Performance|Warehouse|Hardware Resources|CPU|%Busy'];
+        this.history = ['Application Infrastructure Performance|Inventory|Hardware Resources|MAX_CPU|%Busy'];
         this.duration = 30/*min*/ * 60 / 1 * 1000 / 1;
 
         this.query = new FormulaDataSet({

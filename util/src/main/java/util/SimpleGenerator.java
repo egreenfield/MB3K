@@ -117,7 +117,7 @@ public class SimpleGenerator {
             count ++;
         }
         for (int i = total-15; i < total; i ++) {
-            res[i] = normalValue + random.nextInt(bounce);;
+            res[i] = normalValue + random.nextInt(bounce/2);;
         }
         return res;
 
@@ -127,11 +127,12 @@ public class SimpleGenerator {
 
     private void putCPUData(long startTime) throws SQLException {
         String[] names = {
-                "Application Infrastructure Performance|Warehouse|Hardware Resources|CPU|%Busy",
-                "Application Infrastructure Performance|Warehouse|Individual Nodes|node-1|Hardware Resources|CPU|%Busy",
-                "Application Infrastructure Performance|Warehouse|Individual Nodes|node-2|Hardware Resources|CPU|%Busy",
-                "Application Infrastructure Performance|Warehouse|Individual Nodes|node-3|Hardware Resources|CPU|%Busy",
-                "Application Infrastructure Performance|Warehouse|Individual Nodes|node-4|Hardware Resources|CPU|%Busy" };
+            "Application Infrastructure Performance|Inventory|Hardware Resources|MAX_CPU|%Busy",
+            "Application Infrastructure Performance|Inventory|Individual Nodes|node-1|Hardware Resources|MAX_CPU|%Busy",
+            "Application Infrastructure Performance|Inventory|Individual Nodes|node-2|Hardware Resources|MAX_CPU|%Busy"};
+            // ,
+            // "Application Infrastructure Performance|Inventory|Individual Nodes|node-3|Hardware Resources|MAX_CPU|%Busy",
+            // "Application Infrastructure Performance|Inventory|Individual Nodes|node-4|Hardware Resources|MAX_CPU|%Busy"
         double[][] cPUs = generateCPUDatas(names.length -1);
 
         for (int i = 0; i < names.length; i ++) {
@@ -142,12 +143,12 @@ public class SimpleGenerator {
 
     private void putRevenueData(long startTime) throws  SQLException {
         double[] values = generateCheckoutPurchase();
-        insertMetricsData(startTime, values, "Information Points|Checkout|Purchase $");
+        insertMetricsData(startTime, values, "Information Points|Checkout|Purchase £");
     }
 
     private void putRevenueFutureData(long startTime) throws  SQLException {
         double[] values = generateCheckoutPurchaseFuture();
-        insertMetricsData(startTime, values, "Information Points|Checkout|Purchase $_FUTURE");
+        insertMetricsData(startTime, values, "Information Points|Checkout|Purchase £_FUTURE");
     }
 
     private void putResponseData(long startTime) throws  SQLException {
@@ -295,11 +296,11 @@ public class SimpleGenerator {
 
     private double[][] generateCPUDatas(int numOfChildren) {
         double[][] groupData = new double[numOfChildren+1][total];
-        groupData[0] = generateCPUData(53, 80);
-        groupData[1] = generateCPUData(50, 94);
-        groupData[2] = generateCPUData(55, 90);
-        groupData[3] = generateCPUData(50, 60);
-        groupData[4] = generateCPUData(55, 65);
+        groupData[0] = generateCPUData(90, 194);
+        groupData[1] = generateCPUData(48, 95);
+        groupData[2] = generateCPUData(52, 93);
+        // groupData[3] = generateCPUData(50, 60);
+        // groupData[4] = generateCPUData(55, 65);
 
         return groupData;
     }
@@ -320,6 +321,7 @@ public class SimpleGenerator {
 
         for (int i = spikeStartPoints + 20; i < total ; i ++) {
             res[i]= random.nextInt(bounce) + res [spikeStartPoints + 20 -1];
+            res[i] = res[i] > 200 ? 200 : res[i];
         }
         return res;
     }
@@ -339,6 +341,3 @@ public class SimpleGenerator {
 
 
 }
-
-
-
